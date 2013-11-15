@@ -1,6 +1,7 @@
 ################################################################################
 # File:             .bashrc
-# Description:      Bash shell environment file
+# Description:      Bash shell environment file; should be target of symlink
+#                       ~/.bashrc
 ################################################################################
 
     # TODO: figure out a way to add auto-updating version info (using git?)

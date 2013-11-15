@@ -6,7 +6,7 @@ Various config files I want to keep synchronized between working environments. S
 config to eventually include directly
 -----------
 
- * .bashrc
+ * .bashrc -- DONE!
    * .aliases
    * .bash_functions.personal
    * .bash_profile
@@ -20,4 +20,5 @@ config files to eventually re-write as generated code
 -----------
  * .i3
  * .xmodmap-ld50
+ * crontab (how to generate programmatically?)
 
