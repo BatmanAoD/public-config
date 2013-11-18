@@ -10,7 +10,7 @@ config to eventually include directly
    * .aliases
    * .bash_functions.personal
    * .bash_profile
- * .vim
+ * .vim -- DONE!
    * .vim73
    * .vimpagerrc
    * .vimrc
@@ -22,3 +22,6 @@ config files to eventually re-write as generated code
  * .xmodmap-ld50
  * crontab (how to generate programmatically?)
 
+other TODO items
+-----------
+ * one-stop-shopping: easy way to install/update all this stuff

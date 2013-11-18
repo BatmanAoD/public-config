@@ -311,5 +311,5 @@ au BufWritePost * if exists("b:oldfile") | let b:newfile = expand("<afile>")
 " Avago-specific config.
 let avagovimfile = expand("~/.vim_avago")
 if filereadable(avagovimfile)
-    so ~/.vim_avago
+    exec ":source " . avagovimfile
 endif
