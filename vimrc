@@ -178,7 +178,7 @@ nnoremap <Space> :
 " every time I change buffers, check if I need to use tabs
 autocmd BufEnter * :call PickTabUsage()
 
-nnoremap <Leader>w :set wrap!
+nnoremap <Leader>w :set wrap!<cr>
 
 " quick uniquification
 nnoremap <Leader>u :sort u
@@ -277,10 +277,11 @@ unmap <CR>
 nnoremap / /\v
 cnoremap s/ s/\v
 
-" quick filewide search and replace
-nnoremap <C-s> :%s/
+" quick filewide search and replace; recursive to take advantage of 'magic'
+" remapping
+nmap <C-s> :%s/
 " quick selection search and replace
-vnoremap <C-s> :s/
+vmap <C-s> :s/
 " quick word count
 nnoremap <C-c> :%s///n<cr>
 inoremap <C-c> :%s///n<cr>

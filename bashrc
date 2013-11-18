@@ -129,8 +129,8 @@
     fi
 
     # Load aliases
-    if [ -f ${HOME}/.aliases ]; then
-        . ${HOME}/.aliases
+    if [ -f ${HOME}/.bash_aliases.personal ]; then
+        . ${HOME}/.bash_aliases.personal
     fi
 
     # Load functions
