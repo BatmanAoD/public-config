@@ -7,9 +7,8 @@ config to eventually include directly
 -----------
 
  * .bashrc -- DONE!
-   * .aliases
-   * .bash_functions.personal
-   * .bash_profile
+   * .aliases -- DONE!
+   * .bash_functions.personal -- DONE!
  * .vim -- DONE!
    * .vim73
    * .vimpagerrc
