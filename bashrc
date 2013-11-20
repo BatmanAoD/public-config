@@ -53,7 +53,7 @@
     # create a personal-use tmp dir
     # for now, Avago is the only place with an NFS setup that
     # makes this useful.
-    export TMP="${TMP}/tmp/personal_tmp"
+    export TMP="/tmp/personal_tmp"
     mkdir -p $TMP
 
     # Create the needed history directories

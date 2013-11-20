@@ -9,10 +9,10 @@ config to eventually include directly
  * .bashrc -- DONE!
    * .aliases -- DONE!
    * .bash_functions.personal -- DONE!
- * .vim -- DONE!
-   * .vim73
+ * .vim 
    * .vimpagerrc
-   * .vimrc
+   * .vim73 -- DONE!
+   * .vimrc -- DONE!
  * .zshrc
 
 config files to eventually re-write as generated code

@@ -1,0 +1,17 @@
+" vim: ft=vim
+" This is for features not available in 7.2 and earlier
+
+set relativenumber
+function ToggleRelativeNumbering()
+    if(&relativenumber == 1)
+        set norelativenumber
+    else
+        set relativenumber
+    endif
+endfunc
+nnoremap <Leader>l :call ToggleRelativeNumbering()<cr>
+
+set undodir=~/.vim/undodir
+set undofile
+set undolevels=1000 "maximum number of changes that can be undone
+set undoreload=10000 "maximum number lines to save for undo on a buffer reload

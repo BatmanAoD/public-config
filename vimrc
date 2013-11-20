@@ -91,15 +91,6 @@ set nobackup
 set nowritebackup
 set nu
 if version >= 703
-  set relativenumber
-  function ToggleRelativeNumbering()
-      if(&relativenumber == 1)
-          set norelativenumber
-      else
-          set relativenumber
-      endif
-  endfunc
-  nnoremap <Leader>l :call ToggleRelativeNumbering()<cr>
   source ~/.vim73
 endif
 
