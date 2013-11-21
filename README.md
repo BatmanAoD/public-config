@@ -6,11 +6,8 @@ Various config files I want to keep synchronized between working environments. S
 config to eventually include directly
 -----------
 
- * .bashrc -- DONE!
-   * .aliases -- DONE!
-   * .bash_functions.personal -- DONE!
- * .vim 
-   * .vimpagerrc
+ * .vim (this dir is auto-generated, I think...but test this)
+   * .vimpagerrc -- DONE!
    * .vim73 -- DONE!
    * .vimrc -- DONE!
  * .zshrc
@@ -23,4 +20,5 @@ config files to eventually re-write as generated code
 
 other TODO items
 -----------
+ * Test stuff on another computer...
  * one-stop-shopping: easy way to install/update all this stuff

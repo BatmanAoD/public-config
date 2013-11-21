@@ -1,0 +1,13 @@
+" for using vim as a pager
+
+" first, source all the normal stuff
+so ~/.vimrc
+
+" pager-specific bindings
+nnoremap <Space> <PageDown>
+nnoremap b <PageUp>
+nnoremap q :bw<cr>
+
+" other pager-specific settings
+" why doesn't this work??
+set nu
