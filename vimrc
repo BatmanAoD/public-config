@@ -130,6 +130,7 @@ set softtabstop=4
 " exit vim when exiting last buffer
 " stolen from
 " http://vim.1045645.n5.nabble.com/buffer-list-count-td1200936.html
+" TODO: figure out why this causes problems with directory-viewer, etc
  function CountNonemptyBuffers() 
      let cnt = 0 
      for nr in range(1,bufnr("$")) 
@@ -151,9 +152,6 @@ autocmd BufDelete * :call QuitIfLastBuffer()
 
  " one-line version from http://superuser.com/a/668612/199803
  " autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
-
-" Could always set list...but for now, trust autocommand
-" set list
 
 function PickTabUsage()
     if search('\t','nw') > 0
@@ -256,8 +254,12 @@ nnoremap ZQ <nop>
 " harder to do accidentally, hopefully:
 nnoremap WQ :Wd<cr>
 " use three Q's to avoid trying to start a recording w/ qq and accidentally
-" using caps lock
+" using caps
 nnoremap QQQ :bd!<cr>
+" because I often try to quit after highlighting/selecting
+vnoremap :q<Enter> <Esc>:q<cr>
+vnoremap WQ <Esc>:Wd<cr>
+vnoremap QQQ <Esc>:bd!<cr>
 
 " for multi-cursor mode
 nnoremap <C-m> :MultipleCursorsFind 

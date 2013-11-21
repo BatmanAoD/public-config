@@ -71,7 +71,7 @@
 #    set -u                  # attempting to expand unset variables is an error
     set -o monitor             # enable job control
     set -o vi                    # vi command-line editing
-    if [ "$DISPLAY" != "" ]; then
+    if [[ -n $DISPLAY ]]; then
         export VISUAL="gvim"
         export EDITOR="gvim -f"
     else
@@ -83,15 +83,9 @@
     set -o ignoreeof          # do not let CNTL-D exit the shell
     shopt -s checkwinsize    # Reset LINES and COLUMNS after each command
 
-    # Fix backspace problems in vi when remotely logged into HP-UX
-    if test "$(uname)x" = "HP-UXx"; then
-        stty erase "^?"
-    fi
-
     # Set the prompt
     PS1='\h|\W> '    
     # Make it cyan
-    # appears to let it get overwritten....
     PS1="\[\e[0;36m\]${PS1}\[\e[m\]"
     # Export it
     export PS1
@@ -99,33 +93,17 @@
     # Uncomment the following line to share history in all windows.
     # PROMPT_COMMAND="history -a;history -c;history -r"
 
-    # Set the DISPLAY variable
-    if [[ -z ${DISPLAY} ]]; then
-        TERMINAL=$(last -n 1 -a ${LOGNAME} 2> /dev/null | head -n 1)
-        NON_TERMINAL=$(last -n 1 -R ${LOGNAME} 2> /dev/null | head -n 1)
-        if [[ "${TERMINAL}" != "${NON_TERMINAL} " ]]
-        then
-            export TERMINAL=$(echo ${TERMINAL} | awk '{print $NF}')
-            export DISPLAY=${TERMINAL}:0.0
-        else
-            unset TERMINAL
-            unset DISPLAY
-        fi
-        unset NON_TERMINAL
-    fi
+    # unset LANG so that some commands may run faster
+    # .....?
+    # unset LANG
 
-    # unset LANG so that some command may run faster
-    # Reference: /etc/rc.config.d/LANG
-    unset LANG
-
-     # Make less display colors and not clear the screen
-    export LESS="-XR"
+    # Make less display colors and not clear the screen
+    # ....not reeeeeally sure what this does...
+    # export LESS="-XR"
 
     # Load completion function
-    if [ ${BASH_VERSINFO[0]} -eq 2 ] && [[ ${BASH_VERSINFO[1]} > 04 ]] || [ ${BASH_VERSINFO[0]} -gt 2 ]; then
-         if [ -r /etc/bash_completion ]; then
-              . /etc/bash_completion
-         fi
+    if [ -r /etc/bash_completion ]; then
+         . /etc/bash_completion
     fi
 
     # Load aliases
