@@ -100,6 +100,11 @@ function ednew () {
     edit $1
 }
 
+# edit something on path
+function edex () {
+    edit $(which $1)
+}
+
 function cptmp() {
     cp $@ $TMP/
 }
@@ -151,9 +156,10 @@ function backup() {
 }
 
 function edvar() {
-    eval echo \$$1 > /tmp/editvar_$1
-    $EDITOR /tmp/editvar_$1
-    eval export $1=\"`cat /tmp/editvar_$1`\"
+    eval echo \$$1 > $TMP/editvar_$1
+    $EDITOR $TMP/editvar_$1
+    eval export $1=\"`cat $TMP/editvar_$1`\"
+    rm $TMP/editvar_$1
 }
 
 function switch() {
@@ -161,9 +167,9 @@ function switch() {
     then
         echo "not enough args!"
     else
-        /bin/cp $1 /tmp/switch_$1_$2
+        /bin/cp $1 $TMP/switch_$1_$2
         /bin/cp $2 $1
-        /bin/cp /tmp/switch_$1_$2 $2
+        /bin/cp $TMP/switch_$1_$2 $2
     fi
 }
 

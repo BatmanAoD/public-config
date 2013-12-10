@@ -50,6 +50,9 @@
     fi
     export PAGER
 
+    # I'd expect there to be a way to do this in my gitconfig, but...maybe not?
+    export GIT_ASKPASS=
+
     # create a personal-use tmp dir
     # for now, Avago is the only place with an NFS setup that
     # makes this useful.

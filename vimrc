@@ -1,3 +1,5 @@
+" Functions and commands are defined with '!' to avoid errors when re-sourcing
+
 set noerrorbells t_vb=
 set hidden
 " apparently not on by default in 7.4?
@@ -16,8 +18,8 @@ set incsearch
 set guifont=DejaVu\ Sans\ Mono\ 10
 " set guifont=Liberation\ Mono\ 10
 
-" turn this back on if for some reason I start to miss swap files...
-set noswapfile
+" Don't use this; makes file recovery impossible
+" set noswapfile
 " turn this back off if I prefer to always specify case insensitivity w/ \c
 set ignorecase
 set smartcase
@@ -36,8 +38,6 @@ set scrolloff=5
 " expand tabs even when chars are shown explicitly; also show trailing spaces
 " and end-of-line with 'set list'
 set lcs=tab:»·,trail:¬
-" can't remember why I wanted eol in the first place.
-" set lcs=tab:»·,trail:¬,eol:¶
 set backspace=indent,eol,start
 " hopefully this will stop some of the 'Press Enter to continue' stuff.
 set shortmess=at
@@ -95,7 +95,7 @@ if version >= 703
 endif
 
 " Don't get caught off-guard by tabs
-function Usetabs()
+function! Usetabs()
   set shiftwidth=8
   set tabstop=8
   set noexpandtab
@@ -105,22 +105,40 @@ endfunction
 " Once I've acknowledged that tabs are in use, make the colors quieter and
 " bring out the end-of-line character a bit (because trailing spaces are in
 " the same category as tabs are, so they'll get dimmer too)
+" However, the eol character is still annoying, so on second though...don't
+" bother showing it.
+" TODO: can I make the syntax color category for trailing spaces be something
+" else, instead?
+function! Tabcolors()
+    if has('gui_running')
+        let g:jellybeans_overrides.SpecialKey = {'guifg':'444444'}
+        let g:jellybeans_overrides.NonText    = {'guifg':'7777CC'}
+        colors jellybeans
+    else
+        set lcs=tab:»·,trail:¬
+    endif
+endfunction
 nnoremap <Leader>t :call Usetabs()<cr>
-                \:let g:jellybeans_overrides.SpecialKey = {'guifg':'444444'}<cr>
-                \:let g:jellybeans_overrides.NonText    = {'guifg':'7777CC'}<cr>
-                \:colors jellybeans<cr>
-function Nousetabs()
+                  \:call Tabcolors()<cr>
+function! Nousetabs()
   set shiftwidth=4
   set tabstop=4
   set expandtab
   " still might want to see trailing spaces.
   " set nolist
 endfunction
+function! Nontabcolors()
+    if has('gui_running')
+        let g:jellybeans_overrides.SpecialKey = {'guifg':'FFFA00'}
+        let g:jellybeans_overrides.NonText    = {'guifg':'444499'}
+        colors jellybeans
+    else
+        set nolist
+    endif
+endfunction
 nnoremap <Leader>n :call Nousetabs()<cr>
-                \:let g:jellybeans_overrides.SpecialKey = {'guifg':'FFFA00'}<cr>
-                \:let g:jellybeans_overrides.NonText    = {'guifg':'444499'}<cr>
-                \:colors jellybeans<cr>
-function Untab()
+                  \:call Nontabcolors()<cr>
+function! Untab()
   set expandtab
   retab
 endfunction
@@ -131,41 +149,46 @@ set softtabstop=4
 " stolen from
 " http://vim.1045645.n5.nabble.com/buffer-list-count-td1200936.html
 " TODO: figure out why this causes problems with directory-viewer, etc
- function CountNonemptyBuffers() 
-     let cnt = 0 
-     for nr in range(1,bufnr("$")) 
-         if buflisted(nr) && ! empty(bufname(nr)) || ! empty(getbufvar(nr, '&buftype'))
-             let cnt += 1 
-         endif 
-     endfor 
-     return cnt 
- endfunction 
- 
- " if I've deleted all buffers, quit vim
- function QuitIfLastBuffer()
-     if CountNonemptyBuffers() == 1
-         :q
-     endif
- endfunction
- 
-autocmd BufDelete * :call QuitIfLastBuffer()
-
+function! CountNonemptyBuffers()
+    let cnt = 0
+    for nr in range(1,bufnr("$"))
+        if buflisted(nr) && ! empty(bufname(nr)) || ! empty(getbufvar(nr, '&buftype'))
+            let cnt += 1
+        endif
+    endfor
+    return cnt
+endfunction
+function! QuitIfLastBuffer()
+    if CountNonemptyBuffers() == 1
+        :q
+    endif
+endfunction
+augroup closebuf
+    autocmd BufDelete * :call QuitIfLastBuffer()
+augroup END
  " one-line version from http://superuser.com/a/668612/199803
  " autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
 
-function PickTabUsage()
-    if search('\t','nw') > 0
-        call Usetabs()
+function! PickTabUsage()
+    if &readonly || ! &modifiable
+        set nolist
     else
-        call Nousetabs()
+        if search('\t','nw') > 0
+            call Usetabs()
+        else
+            call Nousetabs()
+        endif
     endif
 endfunction
 
 " hm....is this actually a good idea?
 nnoremap <Space> :
 
-" every time I change buffers, check if I need to use tabs
-autocmd BufEnter * :call PickTabUsage()
+" every time I change buffers or reload file, check if I need to use tabs
+augroup autotabs
+    autocmd BufEnter * :call PickTabUsage()
+    autocmd BufRead * :call PickTabUsage()
+augroup END
 
 nnoremap <Leader>w :set wrap!<cr>
 
@@ -241,12 +264,12 @@ nnoremap Q <nop>
 inoremap kj <Esc>
 
 " Easily write and exit buffers
-function WriteAndDelete()
+function! WriteAndDelete()
   :w
   :bd
 endfunction
 
-command Wd :call WriteAndDelete()
+command! Wd :call WriteAndDelete()
 
 " save/quitting should be deliberate, and NEVER accidental
 nnoremap ZZ <nop>
@@ -279,28 +302,44 @@ vmap <C-s> :s/
 nnoremap <C-c> :%s///n<cr>
 inoremap <C-c> :%s///n<cr>
 
-function ToggleGuiMenu()
+function! ToggleGuiMenu()
     if(&guioptions =~# 'm')
-         set guioptions-=m
-         echo "menu off"
+        set guioptions-=m
+        echo "menu off"
     else
-         set guioptions+=m
-         echo "menu on"
+        set guioptions+=m
+        echo "menu on"
     endif
 endfunction
 
-autocmd GUIEnter * set guioptions-=T
-autocmd GUIEnter * set guioptions-=m
-autocmd GUIEnter * nnoremap <Leader>m :call ToggleGuiMenu()<cr>
-autocmd GUIEnter * set guioptions-=r
-autocmd GUIEnter * set nomousehide
+" If file is very large, show scrollbar
+function! ScrollLarge()
+    if ! has("gui_running")
+        return
+    endif
+    if line('$') > 3000
+        set guioptions+=r
+    else
+        set guioptions-=r
+    endif
+endfunction
+
+augroup guiopts
+    autocmd BufEnter * :call ScrollLarge()
+    autocmd GUIEnter * set guioptions-=m
+    autocmd GUIEnter * nnoremap <Leader>m :call ToggleGuiMenu()<cr>
+    autocmd GUIEnter * set guioptions-=T
+    autocmd GUIEnter * set nomousehide
+augroup END
 
 " the following is from http://superuser.com/a/657733/199803
-au BufRead * let b:oldfile = expand("<afile>")
-au BufWritePost * if exists("b:oldfile") | let b:newfile = expand("<afile>") 
-            \| if b:newfile != b:oldfile 
-            \| silent echo system("chmod --reference=".b:oldfile." ".b:newfile) 
-            \| endif |endif
+augroup matchperms
+    au BufRead * let b:oldfile = expand("<afile>")
+    au BufWritePost * if exists("b:oldfile") | let b:newfile = expand("<afile>") 
+                \| if b:newfile != b:oldfile 
+                \| silent echo system("chmod --reference=".b:oldfile." ".b:newfile) 
+                \| endif |endif
+augroup END
 
 " Avago-specific config.
 let avagovimfile = expand("~/.vim_avago")
