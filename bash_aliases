@@ -16,7 +16,7 @@ alias lsplain="ls --format=single-column --indicator-style=none --color=none"
 alias lf="ls -d "
 alias ldir="ls -d "
 alias chomd=chmod
-alias follow="tail -F -n +0"
+alias follow="clear && tail -F -n +0"
 
 # the "-p" option for `history` is a bit like an "eval" for ! events.
 alias histeval='history -p'
@@ -54,6 +54,13 @@ alias quit="exit"
 alias :q="exit"
 alias QQQ="exit"
 
+# avoid accidentally messing up shell with control characters when using
+# cat on binary files
+alias cat="cat -v"
+# TODO: write a function wrapper around 'cat' that checks whether a file is
+# binary and, if so, uses -A (which is more comprehensive than -v); otherwise,
+# don't add any options
+
 alias more="$PAGER"
 alias moer="$PAGER"
 alias mroe="$PAGER"
@@ -85,7 +92,7 @@ alias gmake="gmake -s"
 alias lsd='echo "DIR:"; pwd; echo "*    *    *    *"; ls -U '
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
-alias reload='unalias -a ; source ~/.bashrc ; if [[ -n $CURRCLONE ]]; then defcbfuncs; fi'
+alias reload='unalias -a ; source ~/.bashrc '
 alias home="go ~"
 alias back='eval go $(dirs +1); popd -n &> /dev/null ; popd -n &> /dev/null'
 
@@ -108,15 +115,15 @@ alias sudoinstall=sinstall
 # alias batchnotabs='$EDITOR -S <(echo -e "call Nousetabs()\n")'
 
 # edit vimrc
-alias edvi="edit ~/.vimrc"
+alias edvi="edit ~/.vimrc*"
 
 # because crontab uses $VISUAL for some reason...which doesn't work.
 alias edcron="VISUAL=\"$EDITOR\" crontab -e"
 
 # convenient way to add/edit bash stuff
 alias edrc="$EDITOR ~/.bashrc && reload"
-alias edal="$EDITOR ~/.bash_aliases.personal && reload"
-alias edfx="$EDITOR ~/.bash_functions.personal && reload"
+alias edal="$EDITOR ~/.bash_aliases* && reload"
+alias edfx="$EDITOR ~/.bash_functions* && reload"
 
 # configure i3 setup
 # TODO: when I switch to generating this, edit source instead
@@ -136,7 +143,7 @@ alias swin='~/bin/start_synergy'
 alias svnc='~/bin/start_vnc &'
 # because x0vncserver conflicts with synergy...
 # but for now I'm not using x0vncserver
-# alias spause='pkill synergy; echo "press ENTER to resume Synergy."; read cont; swin'
+alias spause='pkill synergy; echo "press ENTER to resume Synergy."; read cont; swin'
 # while using VNC, turn monitors on/off
 alias xon='xset dpms force on'
 alias xoff='xset dpms force off'

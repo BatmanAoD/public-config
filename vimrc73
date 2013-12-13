@@ -2,6 +2,8 @@
 " This is for features not available in 7.2 and earlier
 
 set relativenumber
+
+" Useful if not using gVim
 function! ToggleRelativeNumbering()
     if(&relativenumber == 1)
         set norelativenumber
@@ -10,6 +12,11 @@ function! ToggleRelativeNumbering()
     endif
 endfunction
 nnoremap <Leader>l :call ToggleRelativeNumbering()<cr>
+
+augroup RelativeFocus
+    au FocusLost * :set norelativenumber
+    au FocusGained * :set relativenumber
+augroup END
 
 set undodir=~/.vim/undodir
 set undofile

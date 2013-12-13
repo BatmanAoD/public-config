@@ -91,7 +91,7 @@ set nobackup
 set nowritebackup
 set nu
 if version >= 703
-  source ~/.vim73
+  source ~/.vimrc73
 endif
 
 " Don't get caught off-guard by tabs
@@ -102,11 +102,10 @@ function! Usetabs()
   " if I'm using tabs, LOOK AT THEM.
   set list
 endfunction
-" Once I've acknowledged that tabs are in use, make the colors quieter and
-" bring out the end-of-line character a bit (because trailing spaces are in
-" the same category as tabs are, so they'll get dimmer too)
-" However, the eol character is still annoying, so on second though...don't
-" bother showing it.
+" Once I've acknowledged that tabs are in use, make the colors quieter.
+" Trailing spaces are in the same category as tabs are, so they'll get dimmer
+" too. One way to deal with this would be to show the eol character.
+" However, the eol character is still annoying, so don't bother.
 " TODO: can I make the syntax color category for trailing spaces be something
 " else, instead?
 function! Tabcolors()
@@ -172,6 +171,7 @@ augroup END
 function! PickTabUsage()
     if &readonly || ! &modifiable
         set nolist
+        set tabstop=8
     else
         if search('\t','nw') > 0
             call Usetabs()
@@ -283,6 +283,8 @@ nnoremap QQQ :bd!<cr>
 vnoremap :q<Enter> <Esc>:q<cr>
 vnoremap WQ <Esc>:Wd<cr>
 vnoremap QQQ <Esc>:bd!<cr>
+" easily close all buffers
+command! Q :qa
 
 " for multi-cursor mode
 nnoremap <C-m> :MultipleCursorsFind 
@@ -342,7 +344,7 @@ augroup matchperms
 augroup END
 
 " Avago-specific config.
-let avagovimfile = expand("~/.vim_avago")
+let avagovimfile = expand("~/.vimrc_avago")
 if filereadable(avagovimfile)
     exec ":source " . avagovimfile
 endif
