@@ -105,19 +105,19 @@
     # export LESS="-XR"
 
     # Load completion function
-    if [ -r /etc/bash_completion ]; then
+    if [[ -r /etc/bash_completion ]]; then
          . /etc/bash_completion
     fi
 
     # Load aliases
-    if [ -f ${HOME}/.bash_aliases.personal ]; then
-        . ${HOME}/.bash_aliases.personal
+    if [[ -f ${HOME}/.bash_aliases ]]; then
+        . ${HOME}/.bash_aliases
     fi
 
     # Load functions
-    if [[ -f ${HOME}/.bash_functions.personal ]]
+    if [[ -f ${HOME}/.bash_functions ]]
     then
-        . ${HOME}/.bash_functions.personal
+        . ${HOME}/.bash_functions
     fi
 
     # Avago-specific
