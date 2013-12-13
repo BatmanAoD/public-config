@@ -4,6 +4,8 @@
 set relativenumber
 
 " Useful if not using gVim
+" TODO: figure out how to turn off the RelativeFocus autogroup once I've
+" used this function to take manual control of this feature.
 function! ToggleRelativeNumbering()
     if(&relativenumber == 1)
         set norelativenumber
