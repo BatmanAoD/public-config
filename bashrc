@@ -121,7 +121,7 @@
     fi
 
     # Avago-specific
-    if dnsdomainname | grep -q avago; then
+    if [[ -r ${HOME}/.bash_avago ]]; then
         . ${HOME}/.bash_avago
     fi
 

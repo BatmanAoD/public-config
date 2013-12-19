@@ -90,7 +90,8 @@ cmap w!! w !sudo tee > /dev/null %
 set nobackup
 set nowritebackup
 set nu
-if version >= 703
+let vim73file = expand("~/.vimrc73")
+if version >= 703 && filereadable(vim73file)
   source ~/.vimrc73
 endif
 
