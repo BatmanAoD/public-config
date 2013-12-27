@@ -39,7 +39,7 @@
         shopt -s globstar
         shopt -s autocd
     fi
-    bind Space:magic-space
+    # bind Space:magic-space
 
     # use Vim as pager.
     # export PAGER='view -S ~/.vimpager'
@@ -86,6 +86,8 @@
     set -o ignoreeof          # do not let CNTL-D exit the shell
     shopt -s checkwinsize    # Reset LINES and COLUMNS after each command
 
+    bind Space:magic-space # ...for some reason this can't come earlier...?
+
     # Set the prompt
     PS1='\h|\W> '    
     # Make it cyan
@@ -110,12 +112,12 @@
     fi
 
     # Load aliases
-    if [ -f ${HOME}/.bash_aliases.personal ]; then
+    if [ -r ${HOME}/.bash_aliases.personal ]; then
         . ${HOME}/.bash_aliases.personal
     fi
 
     # Load functions
-    if [[ -f ${HOME}/.bash_functions.personal ]]
+    if [[ -r ${HOME}/.bash_functions.personal ]]
     then
         . ${HOME}/.bash_functions.personal
     fi

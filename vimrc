@@ -194,7 +194,7 @@ augroup END
 nnoremap <Leader>w :set wrap!<cr>
 
 " quick uniquification
-nnoremap <Leader>u :sort u
+nnoremap <Leader>u :sort u<cr>
 
 " edit this file without using the edit menu
 nnoremap <Leader>v :e $MYVIMRC<cr>
