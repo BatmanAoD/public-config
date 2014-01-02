@@ -96,7 +96,8 @@ cmap w!! w !sudo tee > /dev/null %
 set nobackup
 set nowritebackup
 set nu
-if version >= 703
+let vim73file = expand("~/.vimrc73")
+if version >= 703 && filereadable(vim73file)
   source ~/.vimrc73
 endif
 
@@ -199,7 +200,7 @@ augroup END
 nnoremap <Leader>w :set wrap!<cr>
 
 " quick uniquification
-nnoremap <Leader>u :sort u
+nnoremap <Leader>u :sort u<cr>
 
 " edit this file without using the edit menu
 nnoremap <Leader>v :e $MYVIMRC<cr>
