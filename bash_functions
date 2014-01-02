@@ -1,7 +1,7 @@
 #!/bin/bash
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
-# Non-Avago-specific Bash functions
+# generic Bash functions
 
 function go() { 
     if [ "$1" != "" ]
