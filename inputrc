@@ -1,0 +1,15 @@
+#set variable value
+
+# Show matches with a single TAB
+set show-all-if-ambiguous on
+
+# Ignore case for tab-completion
+set completion-ignore-case On
+
+# Turn on vi editing mode
+set editing-mode vi
+set keymap vi
+set convert-meta on
+
+# Make ESC-ESC do filename completion like in ksh.
+M-ESC: complete
