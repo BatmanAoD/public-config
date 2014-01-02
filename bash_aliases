@@ -77,7 +77,7 @@ alias ehco=echo
 alias goog=google
 alias gsearch=google
 
-alias edit='$VISUAL'
+# Now that 'edit' uses the '&' syntax, it's a function.
 alias ed=edit
 alias e=edit
 alias v=vim

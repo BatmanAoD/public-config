@@ -75,7 +75,9 @@
     set -o monitor             # enable job control
     set -o vi                    # vi command-line editing
     if [[ -n $DISPLAY ]]; then
-        export VISUAL="gvim"
+        # always run in foreground unless '&' is used; useful with bash shortcut
+        # to edit command in editor
+        export VISUAL="gvim -f"
         export EDITOR="gvim -f"
     else
         export VISUAL=vim

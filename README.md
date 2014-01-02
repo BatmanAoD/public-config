@@ -8,6 +8,7 @@ config files included directly
  * .vimpagerrc
  * .vim73
  * .vimrc
+ * .inputrc
 
 config to eventually include directly
 -----------

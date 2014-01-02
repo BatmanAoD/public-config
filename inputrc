@@ -13,3 +13,8 @@ set convert-meta on
 
 # Make ESC-ESC do filename completion like in ksh.
 M-ESC: complete
+
+# Vim-specific mappings
+set keymap vi-command
+# 'vi-like' quit
+":q": "ddi:q"

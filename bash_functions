@@ -94,6 +94,10 @@ function localize () {
     done
 }
 
+function edit () {
+    $VISUAL $@ &
+}
+
 function ednew () {
     touch $1
     chmod a+x $1

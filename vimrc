@@ -282,15 +282,15 @@ command! Wd :call WriteAndDelete()
 nnoremap ZZ <nop>
 nnoremap ZQ <nop>
 " harder to do accidentally, hopefully:
-nnoremap WQ :Wd<cr>
 " use three Q's to avoid trying to start a recording w/ qq and accidentally
 " using caps
 nnoremap QQQ :bd!<cr>
 " because I often try to quit after highlighting/selecting
 vnoremap :q<Enter> <Esc>:q<cr>
-vnoremap WQ <Esc>:Wd<cr>
+vnoremap :WQ <Esc>:WQ<cr>
 vnoremap QQQ <Esc>:bd!<cr>
 " easily close all buffers
+command! WQ :wqa
 command! Q :qa
 
 " for multi-cursor mode
