@@ -95,7 +95,8 @@ function localize () {
 }
 
 function edit () {
-    $VISUAL $@ &
+    # run in background and suppress job details
+    ($VISUAL $@ &)
 }
 
 function ednew () {
