@@ -1,4 +1,9 @@
 " Functions and commands are defined with '!' to avoid errors when re-sourcing
+"
+" TODO fix the following problems:
+" * the close-when-last-buffer-is-closed autocommand appears to prevent opening
+"   directories
+" * in non-gui Vim, help window is apparently unavailable
 
 set noerrorbells t_vb=
 set hidden
@@ -32,7 +37,7 @@ set splitright
 " Figure out what the right behavior is...don't want unintended linebreaks, e.g.
 " when editing a long path in a bash script.
 " set tw=80
-set ww=h,l
+set ww=h,l,<,>
 " start scrolling 5 lines from edge of screen
 set scrolloff=5
 " expand tabs even when chars are shown explicitly; also show trailing spaces
@@ -68,6 +73,7 @@ Bundle 'SearchComplete'
 Bundle 'sjl/gundo.vim.git'
 Bundle 'sjl/clam.vim'
 Bundle 'rkitover/vimpager'
+Bundle 'tpope/vim-surround'
 
 filetype plugin indent on     " required!
 "
@@ -276,15 +282,15 @@ command! Wd :call WriteAndDelete()
 nnoremap ZZ <nop>
 nnoremap ZQ <nop>
 " harder to do accidentally, hopefully:
-nnoremap WQ :Wd<cr>
 " use three Q's to avoid trying to start a recording w/ qq and accidentally
 " using caps
 nnoremap QQQ :bd!<cr>
 " because I often try to quit after highlighting/selecting
 vnoremap :q<Enter> <Esc>:q<cr>
-vnoremap WQ <Esc>:Wd<cr>
+vnoremap :WQ <Esc>:WQ<cr>
 vnoremap QQQ <Esc>:bd!<cr>
 " easily close all buffers
+command! WQ :wqa
 command! Q :qa
 
 " for multi-cursor mode
@@ -294,7 +300,8 @@ unmap <CR>
 
 " always make your regex 'very magic'
 nnoremap / /\v
-cnoremap s/ s/\v
+cnoremap %s/ %s/\v
+cnoremap >s/ >s/\v
 
 " quick filewide search and replace; recursive to take advantage of 'magic'
 " remapping
@@ -332,6 +339,7 @@ augroup guiopts
     autocmd GUIEnter * set guioptions-=m
     autocmd GUIEnter * nnoremap <Leader>m :call ToggleGuiMenu()<cr>
     autocmd GUIEnter * set guioptions-=T
+    autocmd GUIEnter * set guioptions+=c
     autocmd GUIEnter * set nomousehide
 augroup END
 

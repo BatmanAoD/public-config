@@ -77,7 +77,7 @@ alias ehco=echo
 alias goog=google
 alias gsearch=google
 
-alias edit='$VISUAL'
+# Now that 'edit' uses the '&' syntax, it's a function.
 alias ed=edit
 alias e=edit
 alias v=vim
@@ -117,8 +117,10 @@ alias sudoinstall=sinstall
 # edit vimrc
 alias edvi="edit ~/.vimrc*"
 
-# because crontab uses $VISUAL for some reason...which doesn't work.
-alias edcron="VISUAL=\"$EDITOR\" crontab -e"
+# crontab uses VISUAL, but this only works in batch mode.
+# Currently, VISUAL implies batch mode.
+# alias edcron="VISUAL=\"$EDITOR\" crontab -e"
+alias edcron="crontab -e"
 
 # convenient way to add/edit bash stuff
 alias edrc="$EDITOR ~/.bashrc && reload"

@@ -75,7 +75,9 @@
     set -o monitor             # enable job control
     set -o vi                    # vi command-line editing
     if [[ -n $DISPLAY ]]; then
-        export VISUAL="gvim"
+        # always run in foreground unless '&' is used; useful with bash shortcut
+        # to edit command in editor
+        export VISUAL="gvim -f"
         export EDITOR="gvim -f"
     else
         export VISUAL=vim
@@ -107,19 +109,19 @@
     # export LESS="-XR"
 
     # Load completion function
-    if [ -r /etc/bash_completion ]; then
+    if [[ -r /etc/bash_completion ]]; then
          . /etc/bash_completion
     fi
 
     # Load aliases
-    if [ -r ${HOME}/.bash_aliases.personal ]; then
-        . ${HOME}/.bash_aliases.personal
+    if [[ -f ${HOME}/.bash_aliases ]]; then
+        . ${HOME}/.bash_aliases
     fi
 
     # Load functions
-    if [[ -r ${HOME}/.bash_functions.personal ]]
+    if [[ -f ${HOME}/.bash_functions ]]
     then
-        . ${HOME}/.bash_functions.personal
+        . ${HOME}/.bash_functions
     fi
 
     # Avago-specific

@@ -1,7 +1,7 @@
 #!/bin/bash
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
-# Non-Avago-specific Bash functions
+# generic Bash functions
 
 function go() { 
     if [ "$1" != "" ]
@@ -92,6 +92,10 @@ function localize () {
         cat $1 > $1.local && mv -f $1.local $1
         shift
     done
+}
+
+function edit () {
+    $VISUAL $@ &
 }
 
 function ednew () {
