@@ -9,6 +9,8 @@ config files included directly
  * .vim73
  * .vimrc
  * .inputrc
+ * .gdbinit
+ * .i3/config -- should eventually be generated
 
 config to eventually include directly
 -----------
@@ -21,7 +23,7 @@ config to eventually include directly
 
 config files to eventually re-write as generated code
 -----------
- * .i3
+ * .i3/config
  * crontab (how to generate programmatically?)
 
 other TODO items
