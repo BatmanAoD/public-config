@@ -148,3 +148,4 @@ alias spause='pkill synergy; echo "press ENTER to resume Synergy."; read cont; s
 alias xon='xset dpms force on'
 alias xoff='xset dpms force off'
 
+alias gdoc='google docs edit --editor="$EDITOR"'
