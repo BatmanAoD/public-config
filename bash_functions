@@ -35,7 +35,12 @@ function up() {
 
 # get an absolute path
 function abspath() {
-    tmp_path=$(readlink -f $1)
+    if [[ -n $1 ]]; then
+        targ=$1
+    else
+        targ=$PWD
+    fi
+    tmp_path=$(readlink -f $targ)
     # ...way to make this more generic?
     tmp_path=${tmp_path/#$(eval echo -e ~${USER})/~${USER}}
     echo $tmp_path

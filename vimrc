@@ -74,6 +74,8 @@ Bundle 'sjl/gundo.vim.git'
 Bundle 'sjl/clam.vim'
 Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
+" Get 'rename' in a bundle somehow?
+" https://github.com/DelvarWorld/configs/blob/master/.vim/bundle/Rename/plugin/Rename.vim
 
 filetype plugin indent on     " required!
 "
