@@ -35,7 +35,12 @@ function up() {
 
 # get an absolute path
 function abspath() {
-    tmp_path=$(readlink -f $1)
+    if [[ -n $1 ]]; then
+        targ=$1
+    else
+        targ=$PWD
+    fi
+    tmp_path=$(readlink -f $targ)
     # ...way to make this more generic?
     tmp_path=${tmp_path/#$(eval echo -e ~${USER})/~${USER}}
     echo $tmp_path
@@ -58,7 +63,7 @@ function quickpgrep() {
 function swaptwo() {
     local tmpfile
     tmpfile=$(mktemp $TMP/fswapXXXXXXXXX)
-    trap "rm -f $tmpfile" RETURN
+    trap "rm -f $tmpfile; trap - RETURN" RETURN
     #TODO for safety, check permissions first
     mv -f $1 $tmpfile
     mv -f $2 $1
@@ -95,7 +100,8 @@ function localize () {
 }
 
 function edit () {
-    $VISUAL $@ &
+    # run in background and suppress job details
+    ($VISUAL $@ &)
 }
 
 function ednew () {
@@ -108,6 +114,37 @@ function ednew () {
 function edex () {
     edit $(which $1)
 }
+
+# edit a bash function in the current session
+function edfunc () {
+    tmp_def_file=$TMP/edfunc_$1
+    trap "rm -f $tmp_def_file*; trap - RETURN" RETURN
+    type $1 > $tmp_def_file
+    if [[ $? -eq 1 ]]; then
+        echo -e "function $1 ()\n{\n\n}" > $tmp_def_file
+    elif grep "$1 is a function" $tmp_def_file; then
+        echo -n "function " > ${tmp_def_file}.new
+        tail -n +2 $tmp_def_file >> ${tmp_def_file}.new
+        mv -f ${tmp_def_file}{.new,}
+    else
+        echo "ERROR: $1 is not a function!"
+        return
+    fi
+    cp $tmp_def_file{,.bak}
+    $EDITOR $tmp_def_file
+    diff $tmp_def_file{,.bak} >/dev/null 2>&1 
+    if [[ $? -eq 1 ]]; then
+        . $tmp_def_file
+    fi
+}
+
+function edvar() {
+    eval echo \$$1 > $TMP/editvar_$1
+    $EDITOR $TMP/editvar_$1
+    eval export $1=\"`cat $TMP/editvar_$1`\"
+    rm $TMP/editvar_$1
+}
+
 
 function cptmp() {
     cp $@ $TMP/
@@ -157,13 +194,6 @@ function backup() {
         cp -a $1 $1.bak
         shift
     done
-}
-
-function edvar() {
-    eval echo \$$1 > $TMP/editvar_$1
-    $EDITOR $TMP/editvar_$1
-    eval export $1=\"`cat $TMP/editvar_$1`\"
-    rm $TMP/editvar_$1
 }
 
 function switch() {

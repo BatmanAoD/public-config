@@ -9,18 +9,21 @@ config files included directly
  * .vim73
  * .vimrc
  * .inputrc
+ * .gdbinit
+ * .i3/config -- should eventually be generated
 
 config to eventually include directly
 -----------
 
- * .Xkbmap -- not sure under what conditions this should be installed
+ * .Xkbmap -- currently, my Avago computer's settings are manually maintained
+                using xkeycaps, a graphical keymapping editor; I should switch
+                to using a single, synchronized .Xkbmap file.
  * .zshrc
  * git config file? Or should this be generated?
 
 config files to eventually re-write as generated code
 -----------
- * .i3
- * .xmodmap-ld50
+ * .i3/config
  * crontab (how to generate programmatically?)
 
 other TODO items

@@ -16,6 +16,13 @@
     # TODO include version info?
     echo "-> bashrc"
 
+    if [[ -d /usr/lib/stderred  && -r /usr/lib/stderred/build/libstderred.so ]]; then
+        export LD_PRELOAD="/usr/lib/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
+    else
+        echo "stderred not installed!" >&2
+        echo "Get stderred from https://github.com/sickill/stderred" >&2
+    fi
+
     # Do profile if asked.  Used when invoking a shell via remsh, since
     # this isnt a bona fide login
     test "${DO_PROFILE}" != "" && . ${HOME}/.bash_profile
