@@ -16,8 +16,23 @@
     # TODO include version info?
     echo "-> bashrc"
 
-    if [[ -d /usr/lib/stderred  && -r /usr/lib/stderred/build/libstderred.so ]]; then
-        export LD_PRELOAD="/usr/lib/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
+    # Set a path to my personal machine.
+    # TODO make this...better.
+    # This could probably be done by creating a list of "known" machines, 
+    # ordered by some kind of "priority", and then checking each to see if
+    # it's accessible on the path, then stopping when I find one.
+    # Priority probably doesn't matter, since I don't think there will be
+    # cases when I could potentially find multiple machines I "know".
+    if [[ -d /net/erard ]]; then
+        PERSONALMACHINEPATH=/net/erard
+    else
+        # use whatever local machine I'm on
+        PERSONALMACHINEPATH=
+    fi
+
+    if [[ -d ${PERSONALMACHINEPATH}/usr/lib/stderred  && \
+          -r ${PERSONALMACHINEPATH}/usr/lib/stderred/build/libstderred.so ]]; then
+        export LD_PRELOAD="${PERSONALMACHINEPATH}/usr/lib/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
     else
         echo "stderred not installed!" >&2
         echo "Get stderred from https://github.com/sickill/stderred" >&2
@@ -61,9 +76,7 @@
     export GIT_ASKPASS=
 
     # create a personal-use tmp dir
-    # for now, Avago is the only place with an NFS setup that
-    # makes this useful.
-    export TMP="/tmp/personal_tmp"
+    export TMP="${PERSONALMACHINEPATH}/tmp/personal_tmp"
     mkdir -p $TMP
 
     # Create the needed history directories

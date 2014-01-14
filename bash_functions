@@ -104,6 +104,19 @@ function edit () {
     ($VISUAL $@ &)
 }
 
+# This must change if I switch my $VISUAL editor to Emacs or something.
+function edline () {
+    # This check is actually mostly just to ensure that our first arg
+    # is actually a number and the second arg is actually a file.
+    # I don't know how to get wc to suppress the file name, so I use awk.
+    if [[ $1 -le $(wc -l $2 | awk '{print $1}') ]]; then
+        $VISUAL +$1 $2
+    else
+        echo "first arg must be an integer <= the number of lines in" >&2
+        echo "the file specified by the second arg" >&2
+    fi
+}
+
 function ednew () {
     touch $1
     chmod a+x $1
@@ -117,24 +130,45 @@ function edex () {
 
 # edit a bash function in the current session
 function edfunc () {
-    tmp_def_file=$TMP/edfunc_$1
-    trap "rm -f $tmp_def_file*; trap - RETURN" RETURN
-    type $1 > $tmp_def_file
-    if [[ $? -eq 1 ]]; then
-        echo -e "function $1 ()\n{\n\n}" > $tmp_def_file
-    elif grep "$1 is a function" $tmp_def_file; then
-        echo -n "function " > ${tmp_def_file}.new
-        tail -n +2 $tmp_def_file >> ${tmp_def_file}.new
-        mv -f ${tmp_def_file}{.new,}
+    # If function is from an rc file and hasn't already been modified,
+    # edit the original rc file(s) and reload.
+    diff <((unset -f $1 ; reload >/dev/null; type $1 2>/dev/null))\
+         <(type $1) &>/dev/null
+    if [[ $? -eq 0 ]]; then
+        edline $(grep -n "function $1" ~/.*functions* |
+            awk -F  ":" '{print $2, $1}')
+        reload
     else
-        echo "ERROR: $1 is not a function!"
-        return
-    fi
-    cp $tmp_def_file{,.bak}
-    $EDITOR $tmp_def_file
-    diff $tmp_def_file{,.bak} >/dev/null 2>&1 
-    if [[ $? -eq 1 ]]; then
-        . $tmp_def_file
+        mkdir -p -p $TMP/shellfuncs;
+        # Use proc num to decrease (but not elminate) the chance of name
+        # collision when funcs from different shell sessions edit different
+        # functions with the same name.
+        tmp_def_file=$TMP/shellfuncs/edfunc_$1_$$;
+        # Keep the primary files around in case I end the session and want to
+        # recover a function from a closed session, or in case I want to load
+        # a function into a different session.
+        ### trap "rm -f $tmp_def_file*; trap - RETURN" RETURN
+        # Do, however, delete the other temp files (.new and .bak).
+        trap "rm -f $tmp_def_file.*; trap - RETURN" RETURN
+        type $1 > $tmp_def_file
+        # We could easily insert instructions as comments in the tmp file.
+        if [[ $? -eq 1 ]]; then
+            echo -e "function $1 ()\n{\n\n}" > $tmp_def_file
+        elif grep -q "$1 is a function" $tmp_def_file; then
+            echo -n "function " > ${tmp_def_file}.new
+            tail -n +2 $tmp_def_file >> ${tmp_def_file}.new
+            mv -f ${tmp_def_file}{.new,}
+        else
+            # TODO: handle aliases of functions?
+            echo "ERROR: $1 is not a function!"
+            return
+        fi
+        cp $tmp_def_file{,.bak}
+        $EDITOR $tmp_def_file
+        diff $tmp_def_file{,.bak} >/dev/null 2>&1 
+        if [[ $? -eq 1 ]]; then
+            . $tmp_def_file
+        fi
     fi
 }
 
