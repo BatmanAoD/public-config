@@ -191,6 +191,8 @@ new_window normal
 
 # I think globbing only works in later versions of i3.
 # for_window [title="VUE*"] floating enable
+#
+# XXX this stuff is mostly Avago-specific, but not sensitive IP.
 
 for_window [title="Yakuake"] floating enable
 

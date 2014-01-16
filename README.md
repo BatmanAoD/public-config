@@ -18,6 +18,9 @@ config to eventually include directly
  * .Xkbmap -- currently, my Avago computer's settings are manually maintained
                 using xkeycaps, a graphical keymapping editor; I should switch
                 to using a single, synchronized .Xkbmap file.
+                The one currently in the project is from my home Linux machine,
+                and unfortunately it merely switches caps-lock with Esc rather
+                than mapping Esc to Enter.
  * .zshrc
  * git config file? Or should this be generated?
 
