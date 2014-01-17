@@ -104,13 +104,13 @@ function edit () {
     ($VISUAL $@ &)
 }
 
-# This must change if I switch my $VISUAL editor to Emacs or something.
+# This must change if I switch my editor to Emacs or something.
 function edline () {
     # This check is actually mostly just to ensure that our first arg
     # is actually a number and the second arg is actually a file.
     # I don't know how to get wc to suppress the file name, so I use awk.
     if [[ $1 -le $(wc -l $2 | awk '{print $1}') ]]; then
-        $VISUAL +$1 $2
+        $EDITOR +$1 $2
     else
         echo "first arg must be an integer <= the number of lines in" >&2
         echo "the file specified by the second arg" >&2
