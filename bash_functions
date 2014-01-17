@@ -129,6 +129,7 @@ function edex () {
 }
 
 # edit a bash function in the current session
+# TODO: apparently this doesn't work on home machine...why?
 function edfunc () {
     # If function is from an rc file and hasn't already been modified,
     # edit the original rc file(s) and reload.
