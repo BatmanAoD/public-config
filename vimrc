@@ -19,7 +19,12 @@ set virtualedit=block
 set nostartofline
 " Include - as a 'word' character
 set iskeyword+=-
+" Single ~ acts like g~ by allowing motion commands
+"   (so ~l acts like ~ does with notildeop)
+set tildeop
 set incsearch
+" Why is this even limited?
+set undolevels=9999999999
 set guifont=DejaVu\ Sans\ Mono\ 10
 " set guifont=Liberation\ Mono\ 10
 
@@ -90,7 +95,6 @@ filetype plugin indent on     " required!
 
 " source $VIMRUNTIME/mswin.vim
 
-" TODO learn to use this...
 nnoremap <F5> :GundoToggle<CR>
 
 cmap w!! w !sudo tee > /dev/null %
@@ -301,9 +305,14 @@ nnoremap <C-m> :MultipleCursorsFind
 unmap <CR>
 
 " always make your regex 'very magic'
-nnoremap / /\v
-cnoremap %s/ %s/\v
-cnoremap >s/ >s/\v
+"  Actually, this is mostly just annoying, mostly due to the complications of 
+"  seach-history, commands that use // to represent the last search, etc.
+"  This seems like it could be fixed with a plugin, but I don't know of any
+"  that do what I want, which is for manual searches to just behave
+"  'magically' without needing the extra two characters.
+" nnoremap / /\v
+" cnoremap %s/ %s/\v
+" cnoremap >s/ >s/\v
 
 " quick filewide search and replace; recursive to take advantage of 'magic'
 " remapping
@@ -324,6 +333,16 @@ function! ToggleGuiMenu()
     endif
 endfunction
 
+function! ToggleGuiScroll()
+    if(&guioptions =~# 'r')
+        set guioptions-=r
+        echo "scroll off"
+    else
+        set guioptions+=r
+        echo "scroll on"
+    endif
+endfunction
+
 " If file is very large, show scrollbar
 function! ScrollLarge()
     if ! has("gui_running")
@@ -338,6 +357,7 @@ endfunction
 
 augroup guiopts
     autocmd BufEnter * :call ScrollLarge()
+    autocmd GUIEnter * nnoremap <Leader>s :call ToggleGuiScroll()<cr>
     autocmd GUIEnter * set guioptions-=m
     autocmd GUIEnter * nnoremap <Leader>m :call ToggleGuiMenu()<cr>
     autocmd GUIEnter * set guioptions-=T
