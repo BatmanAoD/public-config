@@ -131,45 +131,47 @@ function edex () {
 # edit a bash function in the current session
 # TODO: apparently this doesn't work on home machine...why?
 function edfunc () {
-    # If function is from an rc file and hasn't already been modified,
-    # edit the original rc file(s) and reload.
-    diff <((unset -f $1 ; reload >/dev/null; type $1 2>/dev/null))\
-         <(type $1) &>/dev/null
-    if [[ $? -eq 0 ]]; then
-        edline $(grep -n "function $1" ~/.*functions* |
-            awk -F  ":" '{print $2, $1}')
-        reload
-    else
-        mkdir -p -p $TMP/shellfuncs;
-        # Use proc num to decrease (but not elminate) the chance of name
-        # collision when funcs from different shell sessions edit different
-        # functions with the same name.
-        tmp_def_file=$TMP/shellfuncs/edfunc_$1_$$;
-        # Keep the primary files around in case I end the session and want to
-        # recover a function from a closed session, or in case I want to load
-        # a function into a different session.
-        ### trap "rm -f $tmp_def_file*; trap - RETURN" RETURN
-        # Do, however, delete the other temp files (.new and .bak).
-        trap "rm -f $tmp_def_file.*; trap - RETURN" RETURN
-        type $1 > $tmp_def_file
-        # We could easily insert instructions as comments in the tmp file.
-        if [[ $? -eq 1 ]]; then
-            echo -e "function $1 ()\n{\n\n}" > $tmp_def_file
-        elif grep -q "$1 is a function" $tmp_def_file; then
+    mkdir -p $TMP/shellfuncs;
+    # Use proc num to decrease (but not elminate) the chance of name
+    # collision when funcs from different shell sessions edit different
+    # functions with the same name.
+    tmp_def_file=$TMP/shellfuncs/edfunc_$1_$$;
+    # Keep the primary files around in case I end the session and want to
+    # recover a function from a closed session, or in case I want to load
+    # a function into a different session.
+    ### trap "rm -f $tmp_def_file*; trap - RETURN" RETURN
+    # Do, however, delete the other temp files (.new and .bak).
+    trap "rm -f $tmp_def_file.*; trap - RETURN" RETURN
+    type $1 > $tmp_def_file
+    # We could easily insert instructions as comments in the tmp file.
+    if [[ $? -eq 1 ]]; then
+        echo -e "function $1 ()\n{\n\n}" > $tmp_def_file
+    elif grep -q "$1 is a function" $tmp_def_file; then
+        # If function is from an rc file and hasn't already been modified,
+        # edit the original rc file(s) and reload.
+        diff <((unset -f $1 ; reload >/dev/null; type $1 2>/dev/null))\
+             ${tmp_def_file} &>/dev/null
+        if [[ $? -eq 0 ]]; then
+            # mv so that the "rm" trap will delete unnecessary file
+            mv $tmp_def_file ${tmp_def_file}.type
+            edline $(grep -n "function $1" ~/.*functions* |
+                awk -F  ":" '{print $2, $1}')
+            reload
+        else
             echo -n "function " > ${tmp_def_file}.new
             tail -n +2 $tmp_def_file >> ${tmp_def_file}.new
             mv -f ${tmp_def_file}{.new,}
-        else
-            # TODO: handle aliases of functions?
-            echo "ERROR: $1 is not a function!"
-            return
         fi
-        cp $tmp_def_file{,.bak}
-        $EDITOR $tmp_def_file
-        diff $tmp_def_file{,.bak} >/dev/null 2>&1 
-        if [[ $? -eq 1 ]]; then
-            . $tmp_def_file
-        fi
+    else
+        # TODO: handle aliases of functions?
+        echo "ERROR: $1 is not a function!"
+        return
+    fi
+    cp $tmp_def_file{,.bak}
+    $EDITOR $tmp_def_file
+    diff $tmp_def_file{,.bak} >/dev/null 2>&1 
+    if [[ $? -eq 1 ]]; then
+        . $tmp_def_file
     fi
 }
 

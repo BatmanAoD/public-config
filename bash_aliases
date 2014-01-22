@@ -22,6 +22,10 @@ alias follow="clear && tail -F -n +0"
 alias histeval='history -p'
 alias heval=histeval
 
+# import/export history (i.e., write history so far, re-read history file)
+alias histout='history -a'
+alias histin='history -r'
+
 # Overridden by Avago config to have better network awareness
 alias absp=abspath
 
