@@ -3,6 +3,8 @@ public-config
 
 Various config files I want to keep synchronized between working environments. SHOULD NOT contain any proprietary code, OR any code that will be bundled with proprietary code.
 
+Also contains various general-use scripts; 
+
 config files included directly
 -----------
  * .vimpagerrc
@@ -11,6 +13,9 @@ config files included directly
  * .inputrc
  * .gdbinit
  * .i3/config -- should eventually be generated
+ * Various general-use scripts, which should be linked to in ~/bin; not
+        exactly "config" files, but still used to configure a standardized
+        working environment
 
 config to eventually include directly
 -----------
