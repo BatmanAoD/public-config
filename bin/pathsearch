@@ -1,0 +1,14 @@
+#!/bin/bash
+[[ $# -gt 0 ]] || { echo "Usage: $0 <filename> [pathspec]" >&2 ; exit 1 ; }
+if [[ $# -gt 1 ]] ; then
+        P="$2"
+else
+        P="$PATH"
+fi
+
+IFS=:
+for DIR in $P ; do
+        if [[ -e "$DIR/$1" ]] ; then
+                echo "$DIR/$1"
+        fi
+done
