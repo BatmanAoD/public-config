@@ -149,8 +149,8 @@ function edfunc () {
     elif grep -q "$1 is a function" $tmp_def_file; then
         # If function is from an rc file and hasn't already been modified,
         # edit the original rc file(s) and reload.
-        diff <((unset -f $1 ; reload >/dev/null; type $1 2>/dev/null))\
-             ${tmp_def_file} &>/dev/null
+        diff <((unset -f $1 ; reload >/dev/null; defallfuncs; \
+            type $1 2>/dev/null)) ${tmp_def_file} &>/dev/null
         if [[ $? -eq 0 ]]; then
             # mv so that the "rm" trap will delete unnecessary file
             mv $tmp_def_file ${tmp_def_file}.type

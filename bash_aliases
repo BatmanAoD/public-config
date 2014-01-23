@@ -23,6 +23,9 @@ alias histeval='history -p'
 alias heval=histeval
 
 # import/export history (i.e., write history so far, re-read history file)
+# TODO: rewrite these as functions; if they have an argument, use it as
+# the $HISTFILE name (i.e., in a subshell, change the variable, then
+# do the operation)
 alias histout='history -a'
 alias histin='history -r'
 
@@ -155,3 +158,6 @@ alias xon='xset dpms force on'
 alias xoff='xset dpms force off'
 
 alias gdoc='google docs edit --editor="$EDITOR"'
+
+# some funcs and aliases aren't immediately loaded. Define these.
+alias defallfuncs='eval ${functions_with_defs}'

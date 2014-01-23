@@ -1,0 +1,6 @@
+#!/usr/bin/python
+
+from sys import argv
+from os import system
+
+system("find . -name "+" -o -name ".join(argv[1:]))

@@ -48,6 +48,8 @@
     # Set information about the history files
     export histchars='!^'  # Get comments saved in history
     HISTDIR=${HOME}/.hist
+    #TODO figure out what the heck is going on here.
+    # Also, remove the reference to CB.
     HISTFILE_BASH="${HISTDIR}/bash/hist_xxxxxx"
     export CBHISTFILE="${HISTDIR}/cb/hist_xxxxxx"
     export IEDHISTFILE="${HISTDIR}/ied/hist_xxxxxx"
