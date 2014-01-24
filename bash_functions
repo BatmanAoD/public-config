@@ -109,7 +109,8 @@ function edline () {
     # This check is actually mostly just to ensure that our first arg
     # is actually a number and the second arg is actually a file.
     # I don't know how to get wc to suppress the file name, so I use awk.
-    if [[ $1 -le $(wc -l $2 | awk '{print $1}') ]]; then
+    # Note that this only works with the single-bracket conditional.
+    if [ $1 -le $(wc -l $2 | awk '{print $1}') ] 2>/dev/null ; then
         $EDITOR +$1 $2
     else
         echo "first arg must be an integer <= the number of lines in" >&2
@@ -154,9 +155,12 @@ function edfunc () {
         if [[ $? -eq 0 ]]; then
             # mv so that the "rm" trap will delete unnecessary file
             mv $tmp_def_file ${tmp_def_file}.type
-            edline $(grep -n "function $1" ~/.*functions* |
+            # Need to explicitly tell grep to print filename, since some
+            # setups might only have one .*functions* file.
+            edline $(grep -H -n "function $1" ~/.*functions* |
                 awk -F  ":" '{print $2, $1}')
             reload
+            return
         else
             echo -n "function " > ${tmp_def_file}.new
             tail -n +2 $tmp_def_file >> ${tmp_def_file}.new
