@@ -30,9 +30,11 @@
         PERSONALMACHINEPATH=
     fi
 
-    if [[ -d ${PERSONALMACHINEPATH}/usr/lib/stderred  && \
-          -r ${PERSONALMACHINEPATH}/usr/lib/stderred/build/libstderred.so ]]; then
-        export LD_PRELOAD="${PERSONALMACHINEPATH}/usr/lib/stderred/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
+    stderred_path=${PERSONALMACHINEPATH}/usr/lib/stderred
+
+    if [[ -d ${stderred_path}  && \
+          -r ${stderred_path}/build/libstderred.so ]]; then
+        export LD_PRELOAD="${stderred_path}/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
     else
         echo "stderred not installed!" >&2
         echo "Get stderred from https://github.com/sickill/stderred" >&2
