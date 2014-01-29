@@ -89,6 +89,7 @@ Bundle 'sjl/gundo.vim.git'
 Bundle 'sjl/clam.vim'
 Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
+Bundle 'AndrewRadev/linediff.vim'
 " Get 'rename' in a bundle somehow?
 " https://github.com/DelvarWorld/configs/blob/master/.vim/bundle/Rename/plugin/Rename.vim
 
@@ -105,7 +106,15 @@ filetype plugin indent on     " required!
 
 " source $VIMRUNTIME/mswin.vim
 
+" Mappings for use with plugins:
 nnoremap <F5> :GundoToggle<CR>
+" do a diff:
+vnoremap <Leader>ld :Linediff<CR>
+" start a diff and go to end of diff section:
+vnoremap <Leader>ls :Linediff<CR>`>
+" clear diff:
+vnoremap <Leader>lc :LinediffReset<CR>
+nnoremap <Leader>lc :LinediffReset<CR>
 
 cmap w!! w !sudo tee > /dev/null %
 
@@ -117,9 +126,14 @@ if version >= 703 && filereadable(vim73file)
   source ~/.vimrc73
 endif
 
+" Always use 4 columns for indentation.
+set shiftwidth=4
+
 " Don't get caught off-guard by tabs
 function! Usetabs()
-  set shiftwidth=8
+  " shiftwidth has to do with auto-indent & similar, NOT tabbing.
+  " So keep 4 all the time.
+  " set shiftwidth=8
   set tabstop=8
   set noexpandtab
   " if I'm using tabs, LOOK AT THEM.
@@ -143,7 +157,9 @@ endfunction
 nnoremap <Leader>t :call Usetabs()<cr>
                   \:call Tabcolors()<cr>
 function! Nousetabs()
-  set shiftwidth=4
+  " shiftwidth has to do with auto-indent & similar, NOT tabbing.
+  " So keep 4 all the time.
+  " set shiftwidth=4
   set tabstop=4
   set expandtab
   " still might want to see trailing spaces.
