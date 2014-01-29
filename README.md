@@ -37,5 +37,8 @@ config files to eventually re-write as generated code
 other TODO items
 -----------
  * one-stop-shopping: easy way to install/update all this stuff
+ * file or set of files just containing variables for options that should be
+    easy to change without digging through code and adjusting multiple things 
+    (e.g. setting primary editor to be Vim, Emacs, or Sublime)
  * bash autocomplete stuff (specifically, caps insensitivity and tab
     completion) doesn't seem to behave identically on laptop and work computer

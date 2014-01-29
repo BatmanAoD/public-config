@@ -22,6 +22,10 @@ alias follow="clear && tail -F -n +0"
 alias histeval='history -p'
 alias heval=histeval
 
+# This is more useful than >&2 when using stderred. (use with | )
+# TODO: is a better use I could make of this?
+alias toerr="perl -n -e 'print STDERR \$_'"
+
 # import/export history (i.e., write history so far, re-read history file)
 # TODO: rewrite these as functions; if they have an argument, use it as
 # the $HISTFILE name (i.e., in a subshell, change the variable, then

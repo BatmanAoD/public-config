@@ -55,6 +55,36 @@ function abspath() {
 # disabled for now because I don't actually like this function that much yet.
 # alias '**'=myglobfunc
 
+# Somewhat similar to the above, but use zsh since that's what I really want.
+function zeval () {
+    echo $@ | zsh
+}
+alias z*='zeval echo'
+
+# TODO write a function that will watch the timestamp of an exe and wait until
+# it changes.
+# This is useful while waiting for something to compile.
+# use inotifywait--but make sure it's installed before creating this function!
+# function comp_wait ()
+# {
+#     if [[ -z $1 ]]; then
+#         exe=trantor;
+#     else
+#         exe=$1;
+#     fi;
+#     alias tmp_do_ll="lsplain -l $(which $exe)"
+#     llstr=$(tmp_do_ll)
+#     if echo $llstr | grep "no $exe in"; then
+#         init="00:00"
+#     else
+#         init=$(echo $llstr | awk '{print $8}');
+#     fi
+#     while [[ $ | awk '{print $8}') == $init ]]; do
+#         sleep 1;
+#     done
+#     unalias tmp_do_ll
+# }
+
 function quickpgrep() {
     # don't use [p]attern trick b/c might have multiple terms
     ps -ef | grep $@ | grep -v grep
@@ -100,8 +130,13 @@ function localize () {
 }
 
 function edit () {
-    # run in background and suppress job details
-    ($VISUAL $@ &)
+    if [[ -n $DISPLAY ]]; then
+        # run in background and suppress job details
+        ($VISUAL $@ &)
+    else
+        # in a terminal, so DON'T run in background!
+        $VISUAL $@
+    fi
 }
 
 # This must change if I switch my editor to Emacs or something.
@@ -143,6 +178,11 @@ function edfunc () {
     ### trap "rm -f $tmp_def_file*; trap - RETURN" RETURN
     # Do, however, delete the other temp files (.new and .bak).
     trap "rm -f $tmp_def_file.*; trap - RETURN" RETURN
+    # TODO figure out a way to deal with pre-existing $tmp_def_file.
+    if [[ -e $tmp_def_file ]]; then
+        echo FOUND OLD $tmp_def_file! >&2
+        cat $tmp_def_file
+    fi
     type $1 > $tmp_def_file
     # We could easily insert instructions as comments in the tmp file.
     if [[ $? -eq 1 ]]; then

@@ -1,6 +1,6 @@
 " Functions and commands are defined with '!' to avoid errors when re-sourcing
 "
-" TODO fix the following problems:
+" TODO fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
 "   directories
 " * in non-gui Vim, help window is apparently unavailable
@@ -15,13 +15,23 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
-set virtualedit=block
+" switch back to 'block' if this is too open-ended ... main problem is
+" that clicking after the end of a line doesn't bring you to the end of the
+" line, but this is easily fixed with 'A' or '$'.
+" alternatively, only set to 'all' if I'm editing a file with tabs.
+" This is easy since I already have the 'PickTabUsage' function.
+set virtualedit=all
 set nostartofline
 " Include - as a 'word' character
+" TODO: figure out how *only* set this if filetype is some kind of sh or
+" an unknown type.
+" See http://stackoverflow.com/questions/2779379/find-what-filetype-is-loaded-in-vim
 set iskeyword+=-
 " Single ~ acts like g~ by allowing motion commands
 "   (so ~l acts like ~ does with notildeop)
-set tildeop
+" Actually, this is kind of annoying, because apparently I apply ~ to a single
+" letter rather frequently.
+" set tildeop
 set incsearch
 " Why is this even limited?
 set undolevels=9999999999
@@ -257,10 +267,10 @@ function! RepeatChar(char, count)
  nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
 " somehow I got it into my head that these were the defaults anyway.
-nnoremap B _
-nnoremap E g_
-vnoremap B _
-vnoremap E g_
+" nnoremap B _
+" nnoremap E g_
+" vnoremap B _
+" vnoremap E g_
 
 " for consistency with D and C
 nnoremap Y y$
