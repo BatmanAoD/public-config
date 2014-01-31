@@ -68,12 +68,16 @@
     # bind Space:magic-space
 
     # use Vim as pager.
+    # Disabled for now because it's actually really annoying.
+    # TODO: if I can figure out how to get VIM to do colors correctly, then
+    # I can just implement it myself without all the annoyances built in
+    # by whoever programmed this thing.
     # export PAGER='view -S ~/.vimpager'
-    if [[ -e ${HOME}/bin/vimpager ]]; then
-        PAGER=$(readlink -f ${HOME}/bin/vimpager)
-    else
+    # if [[ -e ${HOME}/bin/vimpager ]]; then
+    #     PAGER=$(readlink -f ${HOME}/bin/vimpager)
+    # else
         PAGER="less -n -Q"
-    fi
+    # fi
     export PAGER
 
     # I'd expect there to be a way to do this in my gitconfig, but...maybe not?
