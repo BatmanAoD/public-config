@@ -23,7 +23,7 @@ alias histeval='history -p'
 alias heval=histeval
 
 # This is more useful than >&2 when using stderred. (use with | )
-# TODO: is a better use I could make of this?
+# TODO: is there a better use I could make of this?
 alias toerr="perl -n -e 'print STDERR \$_'"
 
 # import/export history (i.e., write history so far, re-read history file)
@@ -50,7 +50,8 @@ alias find='find -H'
 
 alias psearch=pathsearch
 
-alias cd='pushd $PWD &> /dev/null; cd'
+alias cd=go
+#alias cd='pushd $PWD &> /dev/null; cd'
 
 alias lstmp="ls $TMP"
 alias ltmp="ls $TMP"

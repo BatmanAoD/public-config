@@ -6,7 +6,7 @@
 function go() { 
     if [ "$1" != "" ]
     then
-        cd "$1"
+        \cd "$1" && pushd $PWD &> /dev/null
         if [[ $? -ne 0 ]]; then
             return 1
         fi
@@ -27,10 +27,11 @@ function up() {
     else
         numdirs=${#1}
     fi
+    pdir=''
     for (( i=1; i<=$numdirs; i++)); do
-        cd ../
+        pdir="../$pdir"
     done
-    lsd
+    go $pdir
 }
 
 # get an absolute path
@@ -42,7 +43,10 @@ function abspath() {
     fi
     tmp_path=$(readlink -f $targ)
     # ...way to make this more generic?
-    tmp_path=${tmp_path/#$(eval echo -e ~${USER})/~${USER}}
+    #tmp_path=${tmp_path/#$(eval echo -e ~${USER})/~${USER}}
+    # how about this?
+    home_parent=$(readlink -f $(dirname $HOME))/
+    tmp_path=${tmp_path/#$home_parent/\~}
     echo $tmp_path
 }
 
