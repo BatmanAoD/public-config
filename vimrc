@@ -318,7 +318,7 @@ nnoremap ZQ <nop>
 " using caps
 nnoremap QQQ :bd!<cr>
 " because I often try to quit after highlighting/selecting
-vnoremap :q<Enter> <Esc>:q<cr>
+vnoremap :q <Esc>:q
 vnoremap :WQ <Esc>:WQ<cr>
 vnoremap QQQ <Esc>:bd!<cr>
 " easily close all buffers
@@ -374,7 +374,7 @@ function! ScrollLarge()
     if ! has("gui_running")
         return
     endif
-    if line('$') > 3000
+    if line('$') > 1000
         set guioptions+=r
     else
         set guioptions-=r

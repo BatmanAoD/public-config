@@ -13,8 +13,15 @@ set convert-meta on
 
 # Make ESC-ESC do filename completion like in ksh.
 M-ESC: complete
+# Steal from emacs in order to make the 'o' binding below work
+"\C-o": operate-and-get-next
 
 # Vim-specific mappings
 set keymap vi-command
 # 'vi-like' quit
 ":q": "ddi:q"
+# present in emacs mode, but missing for some reason in vi mode
+"o": "\C-o"
+# same problem; so use the binding from my .vimrc
+"\\r": re-read-init-file
+"foo": "ibar"

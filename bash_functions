@@ -259,6 +259,7 @@ function tosandbox() {
 }
 
 # check if file $1 contains $2
+# TODO use 'comm' instead.
 function contains() {
     if [[ $(diff $1 $2 | grep -P "^<") == "" ]]; then
         echo $1 contains $2
