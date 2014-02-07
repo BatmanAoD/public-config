@@ -68,10 +68,9 @@ alias QQQ="exit"
 
 # avoid accidentally messing up shell with control characters when using
 # cat on binary files
-alias cat="cat -v"
-# TODO: write a function wrapper around 'cat' that checks whether a file is
-# binary and, if so, uses -A (which is more comprehensive than -v); otherwise,
-# don't add any options
+# To cat binary files in the default 'cat' style (i.e. without the '-A'
+# option), just use '-u' (which is usually ignored by cat).
+alias cat=qcat
 
 alias more="$PAGER"
 alias moer="$PAGER"

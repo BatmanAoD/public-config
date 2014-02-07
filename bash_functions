@@ -45,6 +45,7 @@ function abspath() {
     # If this is under a home dir, replace with the correct ~usrname
     # To do this, determine who owns it; presumably, if it's under a
     # homedir, that user should own it.
+    # NOTE: this will cause an error on nonexistent files.
     tmp_usr=$(ls -l -d $targ | awk '{print $3}')
     # Figure out what "readlink" outputs for that user's home dir.
     home_parent=$(eval readlink -f ~${tmp_usr})
@@ -53,6 +54,24 @@ function abspath() {
     tmp_path=${tmp_path/#${home_parent}/~${tmp_usr}}
     echo $tmp_path
 }
+
+# set `cat` options based on filetype
+function qcat() {
+    binoption=
+    for file in $@; do
+        # if explicit opts are given, just do the cat.
+        if [[ $file == -* ]]; then
+            binoption=
+            break
+        fi
+        if ! grep -q 'text|script' <(file -L -p $file); then
+            binoption='-A'
+            # don't break, because *any* options provided should override
+            # mine.
+         fi
+     done
+     \cat $binoption $@
+ }
 
 # function myglobfunc () {
 #     if [[ -n $1 ]]; then rootdir=$1; else rootdir='.'; fi

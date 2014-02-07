@@ -55,6 +55,11 @@ set splitright
 set ww=h,l,<,>
 " start scrolling 5 lines from edge of screen
 set scrolloff=5
+" after leaving insert mode, move cursor one position to the right.
+" From http://stackoverflow.com/a/2295430/1858225.
+" Note: this is controversial. See
+" http://unix.stackexchange.com/a/11403/38050.
+inoremap <silent> <Esc> <C-O>:stopinsert<CR>
 " expand tabs even when chars are shown explicitly; also show trailing spaces
 " and end-of-line with 'set list'
 set lcs=tab:»·,trail:¬
