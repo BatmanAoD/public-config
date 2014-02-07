@@ -143,12 +143,16 @@ alias edfx="$EDITOR ~/.bash_functions* && reload"
 # TODO: when I switch to generating this, edit source instead
 alias edi3='edit ~/.i3/config'
 
-# arbitrary workspace
-alias qwks='i3-msg workspace'
-alias iwks=qwks
-
 # generic i3 commands
 alias qi=i3-msg
+
+# create arbitrary workspace
+alias qwks='i3-msg workspace'
+alias iwks=qwks
+# move to arbitrary workspace
+alias ic='qi workspace'
+alias qc='ic'
+
 
 # TODO this could be more generic, though it's not technically Avago-specific
 alias vrestart='vncserver -geometry 1280x1024   -pixelformat  RGB888'
@@ -166,3 +170,11 @@ alias gdoc='google docs edit --editor="$EDITOR"'
 
 # some funcs and aliases aren't immediately loaded. Define these.
 alias defallfuncs='eval ${functions_with_defs}'
+
+# add $TMP/ex to path, which is where temporary executables are
+# ongoingly
+alias tmppath="export PATH=\$TMP/ex:\$PATH"
+# one-time only
+alias tmpex="PATH=\$TMP/ex:\$PATH "
+
+#TODO write function for easily adding new aliases

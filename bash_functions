@@ -42,11 +42,15 @@ function abspath() {
         targ=$PWD
     fi
     tmp_path=$(readlink -f $targ)
-    # ...way to make this more generic?
-    #tmp_path=${tmp_path/#$(eval echo -e ~${USER})/~${USER}}
-    # how about this?
-    home_parent=$(readlink -f $(dirname $HOME))/
-    tmp_path=${tmp_path/#$home_parent/\~}
+    # If this is under a home dir, replace with the correct ~usrname
+    # To do this, determine who owns it; presumably, if it's under a
+    # homedir, that user should own it.
+    tmp_usr=$(ls -l -d $targ | awk '{print $3}')
+    # Figure out what "readlink" outputs for that user's home dir.
+    home_parent=$(eval readlink -f ~${tmp_usr})
+    # Do the replacement if possible. Otherwise, assume it's not under
+    # a home dir.
+    tmp_path=${tmp_path/#${home_parent}/~${tmp_usr}}
     echo $tmp_path
 }
 
