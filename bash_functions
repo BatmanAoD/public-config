@@ -57,20 +57,21 @@ function abspath() {
 
 # set `cat` options based on filetype
 function qcat() {
-    binoption=
+    # default opt for ASCII files
+    catopts='-v'
     for file in $@; do
         # if explicit opts are given, just do the cat.
         if [[ $file == -* ]]; then
-            binoption=
+            catopts=
             break
         fi
-        if ! grep -q 'text|script' <(file -L -p $file); then
-            binoption='-A'
+        if ! grep -q 'text\|script' <(file -L -p $file); then
+            catopts='-A'
             # don't break, because *any* options provided should override
             # mine.
          fi
      done
-     \cat $binoption $@
+     \cat $catopts $@
  }
 
 # function myglobfunc () {

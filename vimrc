@@ -15,12 +15,20 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
-" switch back to 'block' if this is too open-ended ... main problem is
-" that clicking after the end of a line doesn't bring you to the end of the
-" line, but this is easily fixed with 'A' or '$'.
+" switch back to 'block' if this is too open-ended.
 " alternatively, only set to 'all' if I'm editing a file with tabs.
-" This is easy since I already have the 'PickTabUsage' function.
+" This would be easy since I already have the 'PickTabUsage' function.
+" TODO: is there a better way to do this than using two separate functions
+" that must always be used in conjunction?
+function! TempNonVirtual()
+    let g:oldvirtualedit=&virtualedit
+    set virtualedit=
+endfunction
+function! RestoreVirtual()
+    let &virtualedit=g:oldvirtualedit
+endfunction
 set virtualedit=all
+nnoremap <silent> <LeftMouse> :call TempNonVirtual()<CR><LeftMouse>:call RestoreVirtual()<CR>
 set nostartofline
 " Include - as a 'word' character
 " TODO: figure out how *only* set this if filetype is some kind of sh or
@@ -56,10 +64,12 @@ set ww=h,l,<,>
 " start scrolling 5 lines from edge of screen
 set scrolloff=5
 " after leaving insert mode, move cursor one position to the right.
-" From http://stackoverflow.com/a/2295430/1858225.
+" From http://unix.stackexchange.com/a/79083/38050
 " Note: this is controversial. See
 " http://unix.stackexchange.com/a/11403/38050.
-inoremap <silent> <Esc> <C-O>:stopinsert<CR>
+" Also, this will put the cursor past the end of the line if virtualedit is
+" on--which, in my setup, it is.
+au InsertLeave * call cursor([getpos('.')[1], getpos('.')[2]+1])
 " expand tabs even when chars are shown explicitly; also show trailing spaces
 " and end-of-line with 'set list'
 set lcs=tab:»·,trail:¬
@@ -112,7 +122,7 @@ filetype plugin indent on     " required!
 " source $VIMRUNTIME/mswin.vim
 
 " Mappings for use with plugins:
-nnoremap <F5> :GundoToggle<CR>
+nnoremap <silent> <F5> :GundoToggle<CR>
 " do a diff:
 vnoremap <Leader>ld :Linediff<CR>
 " start a diff and go to end of diff section:
@@ -121,7 +131,7 @@ vnoremap <Leader>ls :Linediff<CR>`>
 vnoremap <Leader>lc :LinediffReset<CR>
 nnoremap <Leader>lc :LinediffReset<CR>
 
-cmap w!! w !sudo tee > /dev/null %
+cmap <silent> w!! w !sudo tee > /dev/null %
 
 set nobackup
 set nowritebackup
@@ -159,7 +169,7 @@ function! Tabcolors()
         set lcs=tab:»·,trail:¬
     endif
 endfunction
-nnoremap <Leader>t :call Usetabs()<cr>
+nnoremap <silent> <Leader>t :call Usetabs()<cr>
                   \:call Tabcolors()<cr>
 function! Nousetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
@@ -179,7 +189,7 @@ function! Nontabcolors()
         set nolist
     endif
 endfunction
-nnoremap <Leader>n :call Nousetabs()<cr>
+nnoremap <silent> <Leader>n :call Nousetabs()<cr>
                   \:call Nontabcolors()<cr>
 function! Untab()
   set expandtab
@@ -284,6 +294,8 @@ nnoremap <C-l> <Right>
 function! RepeatChar(char, count)
    return repeat(a:char, a:count)
  endfunction
+ " TODO why doesn't <silent> work here? Also, why does my cursor jump
+ " forward when I use this?
  nnoremap s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
  nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 

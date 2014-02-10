@@ -176,4 +176,16 @@ alias tmppath="export PATH=\$TMP/ex:\$PATH"
 # one-time only
 alias tmpex="PATH=\$TMP/ex:\$PATH "
 
+# make some aliases for "doge"-style git.
+function dogegit() {
+    alias much=git
+    alias many=git
+    alias so=git
+    alias very=git
+    alias such=git
+    alias wow='git status'
+    alias amaze='git status'
+    alias excite='git status'
+}
+
 #TODO write function for easily adding new aliases
