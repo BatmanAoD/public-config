@@ -18,17 +18,23 @@ set wildmode=longest,list
 " switch back to 'block' if this is too open-ended.
 " alternatively, only set to 'all' if I'm editing a file with tabs.
 " This would be easy since I already have the 'PickTabUsage' function.
-" TODO: is there a better way to do this than using two separate functions
-" that must always be used in conjunction?
 function! TempNonVirtual()
     let g:oldvirtualedit=&virtualedit
     set virtualedit=
 endfunction
+" TODO: is there a better way to clean up than using two separate functions
+" that must always be used in conjunction?
 function! RestoreVirtual()
     let &virtualedit=g:oldvirtualedit
 endfunction
 set virtualedit=all
+" TODO: make 'a' synonymous with 'A' after end-of-line
 nnoremap <silent> <LeftMouse> :call TempNonVirtual()<CR><LeftMouse>:call RestoreVirtual()<CR>
+" TODO: figure out a way to only enter insert mode if cursor is past
+" end-of-line (something like getpos > col('$')), and to do the standard
+" visual-mode word-highlight otherwise.
+" TODO: figure out how to make this work...
+" nnoremap <silent> <2-LeftMouse> <LeftMouse>i
 set nostartofline
 " Include - as a 'word' character
 " TODO: figure out how *only* set this if filetype is some kind of sh or
@@ -69,7 +75,13 @@ set scrolloff=5
 " http://unix.stackexchange.com/a/11403/38050.
 " Also, this will put the cursor past the end of the line if virtualedit is
 " on--which, in my setup, it is.
-au InsertLeave * call cursor([getpos('.')[1], getpos('.')[2]+1])
+" Also also, after leaving an insert, 'p' will insert the text one character
+" to the right of what's expected.
+" This must be in a group because otherwise it's cumulative every time this
+" file is reloaded.
+augroup insertleave
+    au InsertLeave * if (getpos('.')[2] > 1) | call cursor([getpos('.')[1], getpos('.')[2]+1])
+augroup END
 " expand tabs even when chars are shown explicitly; also show trailing spaces
 " and end-of-line with 'set list'
 set lcs=tab:»·,trail:¬
@@ -149,6 +161,7 @@ function! Usetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
   " set shiftwidth=8
+  " Ensure that tabstop is 8, which shoudl be true already anyway.
   set tabstop=8
   set noexpandtab
   " if I'm using tabs, LOOK AT THEM.
@@ -175,7 +188,9 @@ function! Nousetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
   " set shiftwidth=4
-  set tabstop=4
+  " If there are already tabs in the file, I should probably keep
+  " whatever tabstop I already have. If not, then it shouldn't matter.
+  " set tabstop=4
   set expandtab
   " still might want to see trailing spaces.
   " set nolist
@@ -294,10 +309,8 @@ nnoremap <C-l> <Right>
 function! RepeatChar(char, count)
    return repeat(a:char, a:count)
  endfunction
- " TODO why doesn't <silent> work here? Also, why does my cursor jump
- " forward when I use this?
- nnoremap s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
- nnoremap S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
+ nnoremap <silent> s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
+ nnoremap <silent> S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
 " somehow I got it into my head that these were the defaults anyway.
 " nnoremap B _
