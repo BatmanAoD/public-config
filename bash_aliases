@@ -68,9 +68,10 @@ alias QQQ="exit"
 
 # avoid accidentally messing up shell with control characters when using
 # cat on binary files
-# To cat binary files in the default 'cat' style (i.e. without the '-A'
-# option), just use '-u' (which is usually ignored by cat).
-alias cat=qcat
+alias cat='cat -v'
+# this function is...less useful than I'd hoped, because '-A' usually just 
+# looks silly.
+# alias cat=qcat
 
 alias more="$PAGER"
 alias moer="$PAGER"
@@ -188,4 +189,13 @@ function dogegit() {
     alias excite='git status'
 }
 
-#TODO write function for easily adding new aliases
+alias save_func=save_function
+alias savefunction=save_function
+alias savefunc=save_function
+alias savfunc=save_function
+alias sfunc=save_function
+
+alias savealias=save_alias
+alias savalias=save_alias
+alias salias=save_alias
+# Aliases added by the "save_alias" function

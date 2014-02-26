@@ -56,6 +56,9 @@ function abspath() {
 }
 
 # set `cat` options based on filetype
+# I...can't remember why I thought '-A' was a good idea.
+# To cat binary files in the default 'cat' style (i.e. without the '-A'
+# option), just use '-u' (which is usually ignored by cat).
 function qcat() {
     # default opt for ASCII files
     catopts='-v'
@@ -213,6 +216,7 @@ function edfunc () {
     fi
     type $1 > $tmp_def_file
     # We could easily insert instructions as comments in the tmp file.
+    # TODO use declare -f??
     if [[ $? -eq 1 ]]; then
         echo -e "function $1 ()\n{\n\n}" > $tmp_def_file
     elif grep -q "$1 is a function" $tmp_def_file; then
@@ -374,3 +378,39 @@ function extract () {
 #     googurl="http://www.google.com/search?q="
 #     firefox $googurl$(echo $@ | sed -e 's/ /\%20/g');
 # }
+
+save_alias () 
+{ 
+    local suffix tosave;
+    while [[ $# -ne 0 ]]; do
+        case $1 in 
+            --suff* | -s)
+                suffix=".$2";
+                shift 2
+            ;;
+            *)
+                tosave="$tosave $1";
+                shift
+            ;;
+        esac;
+    done;
+    alias $tosave >> ~/.bash_aliases$suffix
+}
+save_function () 
+{ 
+    local suffix tosave;
+    while [[ $# -ne 0 ]]; do
+        case $1 in 
+            --suff* | -s)
+                suffix=".$2";
+                shift 2
+            ;;
+            *)
+                tosave="$tosave $1";
+                shift
+            ;;
+        esac;
+    done;
+    declare -f $tosave >> ~/.bash_functions$suffix
+}
+# Functions defined by 'save_function'
