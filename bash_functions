@@ -391,7 +391,15 @@ histout ()
 }
 histin () 
 { 
+    local ORIG_HISTFILE
+    if [[ -n $1 ]]; then
+        ORIG_HISTFILE=$HISTFILE
+        HISTFILE=$1;
+    fi
     history -r
+    if [[ -n $ORIG_HISTFILE ]]; then
+        export HISTFILE=$ORIG_HISTFILE
+    fi
 }
 
 save_alias () 
