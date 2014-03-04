@@ -379,6 +379,21 @@ function extract () {
 #     firefox $googurl$(echo $@ | sed -e 's/ /\%20/g');
 # }
 
+# import/export history (i.e., write history so far, re-read history file)
+histout () 
+{ 
+    if [[ -n $1 ]]; then
+        ( HISTFILE=$1;
+        history -a );
+    else
+        history -a;
+    fi
+}
+histin () 
+{ 
+    history -r
+}
+
 save_alias () 
 { 
     local suffix tosave;

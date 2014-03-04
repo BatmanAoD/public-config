@@ -23,15 +23,14 @@ alias histeval='history -p'
 alias heval=histeval
 
 # This is more useful than >&2 when using stderred. (use with | )
-# TODO: is there a better use I could make of this?
+# is there a better use I could make of this?
 alias toerr="perl -n -e 'print STDERR \$_'"
 
 # import/export history (i.e., write history so far, re-read history file)
-# TODO: rewrite these as functions; if they have an argument, use it as
-# the $HISTFILE name (i.e., in a subshell, change the variable, then
-# do the operation)
-alias histout='history -a'
-alias histin='history -r'
+alias savehist=histout
+alias histsave=histout
+alias loadhist=histin
+alias histload=histin
 
 # Overridden by Avago config to have better network awareness
 alias absp=abspath
@@ -154,10 +153,9 @@ alias ic='qi workspace'
 alias qc='ic'
 
 
-# TODO this could be more generic, though it's not technically Avago-specific
-alias vrestart='vncserver -geometry 1280x1024   -pixelformat  RGB888'
+# Won't work without "start_synergy" and "start_vnc" scripts, which are
+# currently not included in public_config since they may be system-specific.
 alias swin='~/bin/start_synergy'
-# how do I disown this proc?
 alias svnc='~/bin/start_vnc &'
 # because x0vncserver conflicts with synergy...
 # but for now I'm not using x0vncserver
