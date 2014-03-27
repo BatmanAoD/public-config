@@ -36,11 +36,15 @@ nnoremap <silent> <LeftMouse> :call TempNonVirtual()<CR><LeftMouse>:call Restore
 " TODO: figure out how to make this work...
 " nnoremap <silent> <2-LeftMouse> <LeftMouse>i
 set nostartofline
-" Include - as a 'word' character
-" TODO: figure out how *only* set this if filetype is some kind of sh or
-" an unknown type.
-" See http://stackoverflow.com/questions/2779379/find-what-filetype-is-loaded-in-vim
-set iskeyword+=-
+
+function! GenericFile()
+    " is this what I want?
+    setlocal ft=sh
+    " Include - as a 'word' character
+    set iskeyword+=-
+endfunction
+autocmd BufEnter * if &filetype == "" | :call GenericFile() | endif
+
 " Single ~ acts like g~ by allowing motion commands
 "   (so ~l acts like ~ does with notildeop)
 " Actually, this is kind of annoying, because apparently I apply ~ to a single
@@ -54,9 +58,9 @@ set guifont=DejaVu\ Sans\ Mono\ 10
 
 " Don't use this; makes file recovery impossible
 " set noswapfile
-" turn this back off if I prefer to always specify case insensitivity w/ \c
-set ignorecase
+
 set smartcase
+nnoremap <Leader>c :set smartcase!<cr>
 " turn this back off if I start making accidental replacements
 " (to get a one-off single replacement, use /g option)
 set gdefault

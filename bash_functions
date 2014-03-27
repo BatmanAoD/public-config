@@ -3,7 +3,7 @@
 
 # generic Bash functions
 
-function go() { 
+go() { 
     if [ "$1" != "" ]
     then
         \cd "$1" && pushd $PWD &> /dev/null
@@ -16,26 +16,36 @@ function go() {
     fi
 }
 
-function up() {
+up() {
+    DOWN_DIR=$PWD
     local numdirs
     if [[ -z $1 ]]; then
         go ../
-        return
-    fi
-    if [[ "$1" -eq "$1" ]] 2>/dev/null; then
-        numdirs=$1
     else
-        numdirs=${#1}
+        if [[ "$1" -eq "$1" ]] 2>/dev/null; then
+            numdirs=$1
+        else
+            numdirs=${#1}
+        fi
+        pdir=''
+        for (( i=1; i<=$numdirs; i++)); do
+            pdir="../$pdir"
+        done
+        go $pdir
     fi
-    pdir=''
-    for (( i=1; i<=$numdirs; i++)); do
-        pdir="../$pdir"
-    done
-    go $pdir
+    UP_DIR=$PWD
+}
+
+down() {
+    if [[ $UP_DIR != $PWD ]]; then
+        echo "Must be in the last directory accessed by 'up'!" >&2
+        return 1
+    fi
+    cd $DOWN_DIR
 }
 
 # get an absolute path
-function abspath() {
+abspath() {
     if [[ -n $1 ]]; then
         targ=$1
     else
@@ -59,7 +69,7 @@ function abspath() {
 # I...can't remember why I thought '-A' was a good idea.
 # To cat binary files in the default 'cat' style (i.e. without the '-A'
 # option), just use '-u' (which is usually ignored by cat).
-function qcat() {
+qcat() {
     # default opt for ASCII files
     catopts='-v'
     for file in $@; do
@@ -77,17 +87,17 @@ function qcat() {
      \cat $catopts $@
  }
 
-# function myglobfunc () {
+# myglobfunc () {
 #     if [[ -n $1 ]]; then rootdir=$1; else rootdir='.'; fi
 #     if [[ -n $2 ]]; then childdir='-path *$2'; else childdir=''; fi
 #     find -H $rootdir -type f $childdir
 # }
-# because I can't just name a function '**', as far as I can tell...
+# because I can't just name a '**', as far as I can tell...
 # disabled for now because I don't actually like this function that much yet.
 # alias '**'=myglobfunc
 
 # Somewhat similar to the above, but use zsh since that's what I really want.
-function zeval () {
+zeval () {
     echo $@ | zsh
 }
 alias z*='zeval echo'
@@ -96,7 +106,7 @@ alias z*='zeval echo'
 # it changes.
 # This is useful while waiting for something to compile.
 # use inotifywait--but make sure it's installed before creating this function!
-# function comp_wait ()
+# comp_wait ()
 # {
 #     if [[ -z $1 ]]; then
 #         exe=trantor;
@@ -116,12 +126,14 @@ alias z*='zeval echo'
 #     unalias tmp_do_ll
 # }
 
-function quickpgrep() {
-    # don't use [p]attern trick b/c might have multiple terms
-    ps -ef | grep $@ | grep -v grep
-}
+# Old version (see aliases for new version):
+#quickpgrep() {
+#    # for some reason neither $@ and $* works with the {var:1} trick.
+#    argstr=$@
+#    ps -ef | grep "[${1:0:1}]${argstr:1}"
+#}
 
-function swaptwo() {
+swaptwo() {
     local tmpfile
     tmpfile=$(mktemp $TMP/fswapXXXXXXXXX)
     trap "rm -f $tmpfile; trap - RETURN" RETURN
@@ -131,7 +143,7 @@ function swaptwo() {
     mv -f $tmpfile $1
 }
 
-function fswap() {
+fswap() {
     local src dst files
     src=
     dst=
@@ -147,20 +159,23 @@ function fswap() {
     if [[ -z $dst || -z $src ]]; then
         swaptwo $files
     else
+        if [[ -n $files ]]; then
+            files=$(\ls $src)
+        fi
         for fname in $files; do
             swaptwo $src/$fname $dst/$fname
         done
     fi
 }
 
-function localize () {
+localize () {
     while [[ $# -ne 0 ]]; do
         cat $1 > $1.local && mv -f $1.local $1
         shift
     done
 }
 
-function edit () {
+edit () {
     if [[ -n $DISPLAY ]]; then
         # run in background and suppress job details
         ($VISUAL $@ &)
@@ -171,7 +186,7 @@ function edit () {
 }
 
 # This must change if I switch my editor to Emacs or something.
-function edline () {
+edline () {
     # This check is actually mostly just to ensure that our first arg
     # is actually a number and the second arg is actually a file.
     # I don't know how to get wc to suppress the file name, so I use awk.
@@ -184,20 +199,20 @@ function edline () {
     fi
 }
 
-function ednew () {
+ednew () {
     touch $1
     chmod a+x $1
     edit $1
 }
 
 # edit something on path
-function edex () {
+edex () {
     edit $(which $1)
 }
 
 # edit a bash function in the current session
 # TODO: apparently this doesn't work on home machine...why?
-function edfunc () {
+edfunc () {
     mkdir -p $TMP/shellfuncs;
     # Use proc num to decrease (but not elminate) the chance of name
     # collision when funcs from different shell sessions edit different
@@ -218,7 +233,7 @@ function edfunc () {
     # We could easily insert instructions as comments in the tmp file.
     # TODO use declare -f??
     if [[ $? -eq 1 ]]; then
-        echo -e "function $1 ()\n{\n\n}" > $tmp_def_file
+        echo -e "$1 ()\n{\n\n}" > $tmp_def_file
     elif grep -q "$1 is a function" $tmp_def_file; then
         # If function is from an rc file and hasn't already been modified,
         # edit the original rc file(s) and reload.
@@ -229,12 +244,11 @@ function edfunc () {
             mv $tmp_def_file ${tmp_def_file}.type
             # Need to explicitly tell grep to print filename, since some
             # setups might only have one .*functions* file.
-            edline $(grep -H -n "function $1" ~/.*functions* |
+            edline $(grep -H -n -P "$1\s*()" ~/.*functions* |
                 awk -F  ":" '{print $2, $1}')
             reload
             return
         else
-            echo -n "function " > ${tmp_def_file}.new
             tail -n +2 $tmp_def_file >> ${tmp_def_file}.new
             mv -f ${tmp_def_file}{.new,}
         fi
@@ -251,7 +265,7 @@ function edfunc () {
     fi
 }
 
-function edvar() {
+edvar() {
     eval echo \$$1 > $TMP/editvar_$1
     $EDITOR $TMP/editvar_$1
     eval export $1=\"`cat $TMP/editvar_$1`\"
@@ -259,11 +273,11 @@ function edvar() {
 }
 
 
-function cptmp() {
+cptmp() {
     cp $@ $TMP/
 }
 
-function mvtmp() {
+mvtmp() {
     while [[ $# -ne 0 ]]
     do
         mv $1 $TMP/
@@ -272,7 +286,7 @@ function mvtmp() {
 }
 
 # move a local file to a sandbox location
-function tosandbox() {
+tosandbox() {
     if [[ -n $2 ]]; then
         sanddir=$2
     else
@@ -288,7 +302,7 @@ function tosandbox() {
 
 # check if file $1 contains $2
 # TODO use 'comm' instead.
-function contains() {
+contains() {
     if [[ $(diff $1 $2 | grep -P "^<") == "" ]]; then
         echo $1 contains $2
         return 0
@@ -298,11 +312,11 @@ function contains() {
 }
 
 # print a large notification when command completes
-function loud() {
+loud() {
 eval "$@" ; bigresult $?
 }
 
-function backup() {
+backup() {
     while [[ $# -ne 0 ]]
     do
         cp -a $1 $1.bak
@@ -310,7 +324,7 @@ function backup() {
     done
 }
 
-function switch() {
+switch() {
     if [ "$1" == "" ] || [ "$2" == "" ]
     then
         echo "not enough args!"
@@ -321,7 +335,7 @@ function switch() {
     fi
 }
 
-function mkgoodbad() {
+mkgoodbad() {
     if [ "$1" == "" ]
     then
         echo "not enough args!"
@@ -331,7 +345,7 @@ function mkgoodbad() {
     fi
 }
 
-function usegood() {
+usegood() {
     if [ "$1" == "" ]
     then
         echo "not enough args!"
@@ -340,7 +354,7 @@ function usegood() {
     fi
 }
 
-function usebad() {
+usebad() {
     if [ "$1" == "" ]
     then
         echo "not enough args!"
@@ -349,10 +363,10 @@ function usebad() {
     fi
 }
     
-function mkc() { mkdir "$@" ; cd "$@";}
+mkc() { mkdir "$@" ; cd "$@";}
 
 # Easy extract
-function extract () {
+extract () {
   if [ -f $1 ] ; then
       case $1 in
           *.tar.bz2)   tar xvjf $1    ;;
@@ -374,7 +388,7 @@ function extract () {
   fi
 } 
 
-# function google () {
+# google () {
 #     googurl="http://www.google.com/search?q="
 #     firefox $googurl$(echo $@ | sed -e 's/ /\%20/g');
 # }

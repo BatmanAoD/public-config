@@ -73,11 +73,14 @@
     # I can just implement it myself without all the annoyances built in
     # by whoever programmed this thing.
     # export PAGER='view -S ~/.vimpager'
-    # if [[ -e ${HOME}/bin/vimpager ]]; then
-    #     PAGER=$(readlink -f ${HOME}/bin/vimpager)
-    # else
-        PAGER="less -n -Q"
-    # fi
+    # TODO: make a list of things that bug me about this thing, because I can't
+    # actually remember why I stopped using it.
+    #   * numbers not on by default, even though 'set nu' is in vimrc
+    if [[ -e ${HOME}/bin/vimpager ]]; then
+        PAGER=$(readlink -f ${HOME}/bin/vimpager)
+    else
+      PAGER="less -n -Q"
+    fi
     export PAGER
 
     # I'd expect there to be a way to do this in my gitconfig, but...maybe not?

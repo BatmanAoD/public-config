@@ -26,6 +26,12 @@ alias heval=histeval
 # is there a better use I could make of this?
 alias toerr="perl -n -e 'print STDERR \$_'"
 
+# because sometimes stderred causes bad behavior
+alias nostderred='export LD_PRELOAD= ; '
+alias norederr='nostderred '
+alias tmpnostderred='LD_PRELOAD= '
+alias tmpnorederr='tmpnostderred '
+
 # import/export history (i.e., write history so far, re-read history file)
 alias savehist=histout
 alias histsave=histout
@@ -39,7 +45,7 @@ alias absp=abspath
 alias ignore='grep -v'
 alias ig=ignore
 
-# normal pgrep is not that great
+alias quickpgrep='pgrep -fl'
 alias qpgrep=quickpgrep
 alias qpg=qpgrep
 
@@ -72,6 +78,8 @@ alias cat='cat -v'
 # looks silly.
 # alias cat=qcat
 
+alias lesspage="export PAGER='less -n -Q' "
+alias tmplesspage="PAGER='less -n -Q' "
 alias more="$PAGER"
 alias moer="$PAGER"
 alias mroe="$PAGER"
@@ -157,6 +165,9 @@ alias qc='ic'
 # currently not included in public_config since they may be system-specific.
 alias swin='~/bin/start_synergy'
 alias svnc='~/bin/start_vnc &'
+# The "official" way of doing things...which doesn't work for
+# screen :0 (by design). It also starts a vnc *viewing* session...????
+#alias svnc='start-vnc &'
 # because x0vncserver conflicts with synergy...
 # but for now I'm not using x0vncserver
 alias spause='pkill synergy; echo "press ENTER to resume Synergy."; read cont; swin'
