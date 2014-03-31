@@ -24,7 +24,7 @@ alias heval=histeval
 
 # This is more useful than >&2 when using stderred. (use with | )
 # is there a better use I could make of this?
-alias toerr="perl -n -e 'print STDERR \$_'"
+alias toerr="perl -n -e 'print STDERR \$_'; false"
 
 # because sometimes stderred causes bad behavior
 alias nostderred='export LD_PRELOAD= ; '
@@ -108,12 +108,12 @@ alias gv='gview '
 alias qed=ednew
 
 alias gmake="gmake -s"
-alias lsd='echo "DIR:"; pwd; echo "*    *    *    *"; ls -U '
+alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U '
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
 alias reload='unalias -a ; source ~/.bashrc '
 alias home="go ~"
-alias back='eval go $(dirs +1); popd -n &> /dev/null ; popd -n &> /dev/null'
+alias back="popd 2>&1 >/dev/null | toerr && lsd"
 
 # lock screen
 alias lockscreen='xlock -mode random'

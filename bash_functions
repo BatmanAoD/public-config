@@ -6,7 +6,7 @@
 go() { 
     if [ "$1" != "" ]
     then
-        \cd "$1" && pushd $PWD &> /dev/null
+        pushd $1 &> /dev/null
         if [[ $? -ne 0 ]]; then
             return 1
         fi
@@ -244,7 +244,7 @@ edfunc () {
             mv $tmp_def_file ${tmp_def_file}.type
             # Need to explicitly tell grep to print filename, since some
             # setups might only have one .*functions* file.
-            edline $(grep -H -n -P "$1\s*()" ~/.*functions* |
+            edline $(grep -H -n -P "$1\s*\(\)" ~/.*functions* |
                 awk -F  ":" '{print $2, $1}')
             reload
             return
