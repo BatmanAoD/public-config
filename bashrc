@@ -111,13 +111,16 @@
     DEFAULT_TERMINAL_EDITOR=vim
     DEFAULT_VISUAL_EDITOR="gvim -f"
     DEFAULT_EDITOR_PATTERN="^(vi|$DEFAULT_TERMINAL_EDITOR|$DEFAULT_VISUAL_EDITOR)?\$"
-    if [[ -n $VISUAL && $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
+    DEFAULT_VISUAL_PATTERN="^($DEFAULT_TERMINAL_EDITOR|$DEFAULT_VISUAL_EDITOR)?\$"
+    if [[ ! $VISUAL =~ $DEFAULT_EDITOR_PATTERN && 
+            $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
         echo "Using non-default value for both EDITOR and VISUAL: '$VISUAL'"
         EDITOR=$VISUAL
-    elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN && -z $VISUAL ]]; then
+    elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN && 
+              $VISUAL =~ $DEFAULT_EDITOR_PATTERN ]]; then
         echo "Using non-default value for both EDITOR and VISUAL: '$EDITOR'"
         VISUAL=$EDITOR
-    elif [[ -n $VISUAL ]]; then
+    elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
         echo "Using non-default values for EDITOR and VISUAL:"
         echo "EDITOR='$EDITOR'"
         echo "VISUAL='$VISUAL'"

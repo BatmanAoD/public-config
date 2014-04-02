@@ -24,7 +24,7 @@ alias heval=histeval
 
 # This is more useful than >&2 when using stderred. (use with | )
 # is there a better use I could make of this?
-alias toerr="perl -n -e 'print STDERR \$_'; false"
+alias toerr="perl -n -e 'print STDERR \$_; \$lines = \$.;' -e 'END { exit \$lines }'"
 
 # because sometimes stderred causes bad behavior
 alias nostderred='export LD_PRELOAD= ; '
