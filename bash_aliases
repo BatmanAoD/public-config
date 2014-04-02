@@ -142,9 +142,11 @@ alias edvi="edit ~/.vimrc*"
 alias edcron="crontab -e"
 
 # convenient way to add/edit bash stuff
-alias edrc="$EDITOR ~/.bashrc && reload"
-alias edal="$EDITOR ~/.bash_aliases* && reload"
-alias edfx="$EDITOR ~/.bash_functions* && reload"
+# Note that VISUAL is by default set up to use the -f option,
+# so we don't need to use EDITOR
+alias edrc="$VISUAL ~/.bashrc && reload"
+alias edal="$VISUAL ~/.bash_aliases* && reload"
+alias edfx="$VISUAL ~/.bash_functions* && reload"
 
 # configure i3 setup
 # TODO: when I switch to generating this, edit source instead

@@ -43,3 +43,5 @@ other TODO items
     (e.g. setting primary editor to be Vim, Emacs, or Sublime)
  * bash autocomplete stuff (specifically, caps insensitivity and tab
     completion) doesn't seem to behave identically on laptop and work computer
+ * Refactor .vimrc to give it some organization
+

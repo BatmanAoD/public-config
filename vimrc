@@ -9,6 +9,11 @@ set noerrorbells t_vb=
 set hidden
 " apparently not on by default in 7.4?
 syntax enable
+" fancier % matching
+runtime macros/matchit.vim
+" TODO: consider adding one of these as well:
+" * https://github.com/nelstrom/vim-textobj-rubyblock
+" * https://github.com/rhysd/vim-textobj-ruby
 set hlsearch
 set nocompatible
 set showcmd
@@ -324,6 +329,13 @@ function! RepeatChar(char, count)
 
 " for consistency with D and C
 nnoremap Y y$
+
+" For using visual mode to swap chunks of text:
+" Delete one piece of text (using any kind of 'd' command), then visually
+" select another piece of text, then press Ctrl-x to swap it with the last
+" deleted text
+" Taken from http://vim.wikia.com/wiki/Swapping_characters,_words_and_lines
+vnoremap <C-X> <Esc>`.``gvP``P
 
 " ex mode?? seriously?
 nnoremap Q <nop>

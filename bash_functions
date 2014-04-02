@@ -176,11 +176,11 @@ localize () {
 }
 
 edit () {
-    if [[ -n $DISPLAY ]]; then
+    if [[ $VISUAL =~ "gvim" ]]; then
         # run in background and suppress job details
         ($VISUAL $@ &)
     else
-        # in a terminal, so DON'T run in background!
+        # Don't try to run normal 'vim' in the background!
         $VISUAL $@
     fi
 }

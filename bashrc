@@ -102,17 +102,39 @@
     fi
 
     # Set up options
-#    set -u                  # attempting to expand unset variables is an error
-    set -o monitor             # enable job control
-    set -o vi                    # vi command-line editing
-    if [[ -n $DISPLAY ]]; then
-        # always run in foreground unless '&' is used; useful with bash shortcut
-        # to edit command in editor
-        export VISUAL="gvim -f"
-        export EDITOR="gvim -f"
-    else
-        export VISUAL=vim
-        export EDITOR="vim"
+    # set -u                # attempting to expand unset variables is an error
+    set -o monitor          # enable job control
+    set -o vi               # vi command-line editing
+
+    # If one of EDITOR or VISUAL is set to a non-default value, use that value
+    # to set the value of the other variable as well.
+    DEFAULT_TERMINAL_EDITOR=vim
+    DEFAULT_VISUAL_EDITOR="gvim -f"
+    DEFAULT_EDITOR_PATTERN="^(vi|$DEFAULT_TERMINAL_EDITOR|$DEFAULT_VISUAL_EDITOR)?\$"
+    if [[ -n $VISUAL && $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
+        echo "Using non-default value for both EDITOR and VISUAL: '$VISUAL'"
+        EDITOR=$VISUAL
+    elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN && -z $VISUAL ]]; then
+        echo "Using non-default value for both EDITOR and VISUAL: '$EDITOR'"
+        VISUAL=$EDITOR
+    elif [[ -n $VISUAL ]]; then
+        echo "Using non-default values for EDITOR and VISUAL:"
+        echo "EDITOR='$EDITOR'"
+        echo "VISUAL='$VISUAL'"
+    fi
+    # If VISUAL is still not set, assign my preferred values to both EDITOR and
+    # VISUAL.
+    if [[ -z $VISUAL ]]; then
+        if [[ -n $DISPLAY ]]; then
+            # always run in foreground unless '&' is used; useful with bash shortcut
+            # to edit command in editor
+            # TODO: make this work with cscope??
+            export VISUAL="gvim -f"
+            export EDITOR="gvim -f"
+        else
+            export VISUAL=vim
+            export EDITOR=vim
+        fi
     fi
     export PEDITOR=$EDITOR
     export EDOVER=$VISUAL
