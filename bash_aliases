@@ -23,7 +23,6 @@ alias histeval='history -p'
 alias heval=histeval
 
 # This is more useful than >&2 when using stderred. (use with | )
-# is there a better use I could make of this?
 alias toerr="perl -n -e 'print STDERR \$_; \$lines = \$.;' -e 'END { exit \$lines }'"
 
 # because sometimes stderred causes bad behavior
@@ -113,7 +112,9 @@ alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
 alias reload='unalias -a ; source ~/.bashrc '
 alias home="go ~"
-alias back="popd 2>&1 >/dev/null | toerr && lsd"
+# 'sleep' is to prevent error from being printed after the cmd prompt, which
+# makes it look like the command is hanging.
+alias back="popd > /dev/null 2> >(toerr) && lsd || sleep 0.2"
 
 # lock screen
 alias lockscreen='xlock -mode random'
