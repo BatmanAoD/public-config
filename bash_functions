@@ -133,6 +133,23 @@ alias z*='zeval echo'
 #    ps -ef | grep "[${1:0:1}]${argstr:1}"
 #}
 
+# Somehow this keeps getting unset. TODO: figure out why. For now,
+# I'll just run this check every time I start a new Bash session or
+# do a 'reload', and if Caps_Lock is set, I'll un-set it. This is
+# terribly hacky.
+fixkeys() {
+    if grep -q Caps_Lock <(xmodmap -pm); then
+        # On the off-chance that the gnome-settings-daemon is what's causing
+        # this problem...
+        ps -ef | grep [g]nome-settings
+        if [[ $? -eq 0 ]]; then
+            echo ".....is a potential culprit for resetting the keyboard"
+            echo "mappings."
+        fi
+        xmodmap ~/.Xmodmap
+    fi
+}
+
 swaptwo() {
     local tmpfile
     tmpfile=$(mktemp $TMP/fswapXXXXXXXXX)
@@ -405,6 +422,8 @@ histout ()
 }
 histin () 
 { 
+    # First, save current history in the primary history file.
+    histout
     local ORIG_HISTFILE
     if [[ -n $1 ]]; then
         ORIG_HISTFILE=$HISTFILE

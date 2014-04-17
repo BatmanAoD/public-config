@@ -35,6 +35,7 @@ endfunction
 set virtualedit=all
 " TODO: make 'a' synonymous with 'A' after end-of-line
 nnoremap <silent> <LeftMouse> :call TempNonVirtual()<CR><LeftMouse>:call RestoreVirtual()<CR>
+nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
 " TODO: figure out a way to only enter insert mode if cursor is past
 " end-of-line (something like getpos > col('$')), and to do the standard
 " visual-mode word-highlight otherwise.
@@ -64,10 +65,11 @@ set guifont=DejaVu\ Sans\ Mono\ 10
 " Don't use this; makes file recovery impossible
 " set noswapfile
 
+set ignorecase
 set smartcase
-nnoremap <Leader>c :set smartcase!<cr>
-" turn this back off if I start making accidental replacements
-" (to get a one-off single replacement, use /g option)
+nnoremap <Leader>c :set ignorecase!<cr>
+
+" to get a one-off single replacement, use /g option
 set gdefault
 " I don't use vim splits that much, but in any case...
 set splitbelow
@@ -96,6 +98,8 @@ augroup END
 set lcs=tab:»·,trail:¬
 set backspace=indent,eol,start
 " hopefully this will stop some of the 'Press Enter to continue' stuff.
+" ....sadly, it looks like getting this message fairly frequently is
+" unavoidable with i3.
 set shortmess=at
 let g:jellybeans_overrides = {
 \   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
@@ -113,6 +117,7 @@ else
     set mouse=
 endif
 " Vundle setup, taken from sample .vimrc on Vundle github page
+" TODO: consider using NeoBundle instead: https://github.com/Shougo/neobundle.vim
 filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -120,14 +125,20 @@ Bundle 'gmarik/vundle'
 
 " Put new bundles here
 Bundle 'terryma/vim-multiple-cursors'
-Bundle 'SearchComplete'
+" This remaps '/', which makes it no longer a simple movement, which
+" wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
+" some slow-down when initiating a search. So I'm disabling it.
+" Bundle 'SearchComplete'
 Bundle 'sjl/gundo.vim.git'
 Bundle 'sjl/clam.vim'
 Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
 Bundle 'AndrewRadev/linediff.vim'
-" Get 'rename' in a bundle somehow?
-" https://github.com/DelvarWorld/configs/blob/master/.vim/bundle/Rename/plugin/Rename.vim
+Bundle 'LargeFile'
+" This *apparently* getting the right script (1928), but I don't know why it's
+" not getting 3525. Numerical precedence, maybe? This is a known bug,
+" unfortunately.
+Bundle 'Rename'
 
 filetype plugin indent on     " required!
 "
@@ -377,14 +388,12 @@ nnoremap <C-m> :MultipleCursorsFind
 unmap <CR>
 
 " always make your regex 'very magic'
-"  Actually, this is mostly just annoying, mostly due to the complications of 
-"  seach-history, commands that use // to represent the last search, etc.
-"  This seems like it could be fixed with a plugin, but I don't know of any
-"  that do what I want, which is for manual searches to just behave
-"  'magically' without needing the extra two characters.
-" nnoremap / /\v
-" cnoremap %s/ %s/\v
-" cnoremap >s/ >s/\v
+" TODO: decide whether I'm still frustrated by this mapping's interference with
+" search-history
+nnoremap / /\v
+vnoremap / /\v
+cnoremap %s/ %smagic/
+cnoremap >s/ >smagic/
 
 " quick filewide search and replace; recursive to take advantage of 'magic'
 " remapping

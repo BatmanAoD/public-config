@@ -11,7 +11,10 @@ alias ll="ls -lA"
 alias cp="cp -i"
 alias cpall="cp -av"
 alias mv="mv -i"
+# stderred doesn't work with 'rm' for some reason. Unfortunately, this alias
+# doesn't fix the behavior for uses of 'rm' in scripts.
 alias mkdir="mkdir -p"
+alias rm="tmpnostderred rm"
 alias lsplain="ls --format=single-column --indicator-style=none --color=none"
 alias lf="ls -d "
 alias ldir="ls -d "
@@ -169,7 +172,8 @@ alias qc='ic'
 alias swin='~/bin/start_synergy'
 alias svnc='~/bin/start_vnc &'
 # The "official" way of doing things...which doesn't work for
-# screen :0 (by design). It also starts a vnc *viewing* session...????
+# screen :0 (by design). It also starts a vnc *viewing* session, so that I 
+# can see screen 1 on my Linux box.
 #alias svnc='start-vnc &'
 # because x0vncserver conflicts with synergy...
 # but for now I'm not using x0vncserver

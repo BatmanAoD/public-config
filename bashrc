@@ -15,7 +15,7 @@
     # Print a message
     # TODO include version info?
     echo "-> bashrc"
-
+    
     # Set a path to my personal machine.
     # TODO make this...better.
     # This could probably be done by creating a list of "known" machines, 
@@ -82,6 +82,9 @@
       PAGER="less -n -Q"
     fi
     export PAGER
+
+    # Force man pages to be 80 columns wide.
+    export MANWIDTH=80
 
     # I'd expect there to be a way to do this in my gitconfig, but...maybe not?
     export GIT_ASKPASS=
