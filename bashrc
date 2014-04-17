@@ -30,6 +30,39 @@
         PERSONALMACHINEPATH=
     fi
 
+    # Check that I have the rest of my "public-config" stuff.
+    PUBLIC_CONFIG_DIR=~/public-config
+    if [[ ! -d $PUBLIC_CONFIG_DIR ]]; then
+        echo "WARNING: public config directory not found!" >&2
+        PUBLIC_CONFIG_DIR=
+    elif grep -v -q -i 'batmanaod' \
+      <(git --git-dir $PUBLIC_CONFIG_DIR/.git config --get remote.origin.url \
+      2>/dev/null); then
+        echo "WARNING: this .bashrc file was designed for use in conjunction" >&2
+        echo "with the other config files in the BatmanAoD/public-config" >&2
+        echo "git repository." >&2
+    elif grep -v -q 'up to date' \
+      <(git --git-dir $PUBLIC_CONFIG_DIR/.git fetch -v --dry-run \
+      2>/dev/null); then
+        # Note: this warning will not be triggered if the remotes have been
+        # fetched but a merge has not been performed (i.e. if I forget to do
+        # the equivalent of a 'pull').
+        # TODO: determine whether `git remote update` is actually what I want here.
+        echo "WARNING: local public config repo is not in sync with github" >&2
+    fi
+
+    # Currently using xmodmap instead of xkbmap
+    if [[ ! -f .Xmodmap ]]; then
+        echo "WARNING: ~/.Xmodmap not found!" >&2
+    fi
+    if [[ -f .Xkbmap ]]; then
+        echo "WARNING: Use of ~/.Xkbmap is deprecated!" >&2
+        if [[ -n $PUBLIC_CONFIG_DIR ]]; then
+            echo "Latest keymapping customizations can be found" >&2
+            echo "in $PUBLIC_CONFIG_DIR/.Xmodmap" >&2
+        fi
+    fi
+
     stderred_path=${PERSONALMACHINEPATH}/usr/lib/stderred
 
     if [[ -d ${stderred_path}  && \
