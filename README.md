@@ -13,6 +13,9 @@ config files included directly
  * .inputrc
  * .gdbinit
  * .i3/config -- should eventually be generated
+ * .Xmodmap -- Possibly this should be generated as well.
+ * .Xkbmap -- DEPRECATED, but possibly I should update it to replace .Xmodmap,
+                since apparently it's more portable.
  * Various general-use scripts, which should be linked to in ~/bin; not
         exactly "config" files, but still used to configure a standardized
         working environment
@@ -20,12 +23,6 @@ config files included directly
 config to eventually include directly
 -----------
 
- * .Xkbmap -- currently, my Avago computer's settings are manually maintained
-                using xkeycaps, a graphical keymapping editor; I should switch
-                to using a single, synchronized .Xkbmap file.
-                The one currently in the project is from my home Linux machine,
-                and unfortunately it merely switches caps-lock with Esc rather
-                than mapping Esc to Enter.
  * .zshrc
  * git config file? Or should this be generated?
 

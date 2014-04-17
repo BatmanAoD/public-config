@@ -135,6 +135,9 @@ Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
 Bundle 'AndrewRadev/linediff.vim'
 Bundle 'LargeFile'
+" These should take care of all the 'very magic' nonsense
+ Bundle 'coot/CRDispatcher'
+ Bundle 'coot/EnchantedVim'
 " This *apparently* getting the right script (1928), but I don't know why it's
 " not getting 3525. Numerical precedence, maybe? This is a known bug,
 " unfortunately.
@@ -388,12 +391,15 @@ nnoremap <C-m> :MultipleCursorsFind
 unmap <CR>
 
 " always make your regex 'very magic'
-" TODO: decide whether I'm still frustrated by this mapping's interference with
-" search-history
-nnoremap / /\v
-vnoremap / /\v
-cnoremap %s/ %smagic/
-cnoremap >s/ >smagic/
+" currently using this plugin instead:
+" http://www.vim.org/scripts/script.php?script_id=4849
+" note that these remappings interfere with search-history
+" nnoremap / /\v
+" vnoremap / /\v
+" cnoremap %s/ %smagic/
+" cnoremap >s/ >smagic/
+" nnoremap :g/ :g/\v
+" nnoremap :g// :g//
 
 " quick filewide search and replace; recursive to take advantage of 'magic'
 " remapping

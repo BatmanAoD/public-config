@@ -138,16 +138,16 @@ alias z*='zeval echo'
 # do a 'reload', and if Caps_Lock is set, I'll un-set it. This is
 # terribly hacky.
 fixkeys() {
-    if grep -q Caps_Lock <(xmodmap -pm); then
-        # On the off-chance that the gnome-settings-daemon is what's causing
-        # this problem...
-        ps -ef | grep [g]nome-settings
-        if [[ $? -eq 0 ]]; then
-            echo ".....is a potential culprit for resetting the keyboard"
-            echo "mappings."
-        fi
-        xmodmap ~/.Xmodmap
+    # On the off-chance that the gnome-settings-daemon is what's causing
+    # this problem...
+    ps -ef | grep [g]nome-settings
+    if [[ $? -eq 0 ]]; then
+        echo ".....is a potential culprit for resetting the keyboard"
+        echo "mappings."
     fi
+    # Return to default layout before making changes.
+    setxkbmap -layout us
+    xmodmap ~/.Xmodmap
 }
 
 swaptwo() {
