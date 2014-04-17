@@ -88,9 +88,10 @@ set scrolloff=5
 " on--which, in my setup, it is.
 " Also also, after leaving an insert, 'p' will insert the text one character
 " to the right of what's expected.
-" This must be in a group because otherwise it's cumulative every time this
-" file is reloaded.
+" This must be in a group with 'autocmd!' because otherwise it's cumulative
+" every time this file is reloaded.
 augroup insertleave
+    autocmd!
     au InsertLeave * if (getpos('.')[2] > 1) | call cursor([getpos('.')[1], getpos('.')[2]+1])
 augroup END
 " expand tabs even when chars are shown explicitly; also show trailing spaces
@@ -401,8 +402,22 @@ unmap <CR>
 " nnoremap :g/ :g/\v
 " nnoremap :g// :g//
 
+" 'Fix' the weird \n vs \r discrepancy
+" (credit: http://superuser.com/a/743087/199803 
+" .....but the fancy regex is mine)
+function! TranslateBackslashN()
+    if getcmdtype() ==# ':' && getcmdline() =~#
+      \ '[%>]s\([um]\w*\)\?\(.\).\{-}\(\\\)\@<!\2.*\\$'
+        return getcmdline() . 'r'
+    endif
+    return getcmdline() . 'n'
+endfunction
+cnoremap n <C-\>eTranslateBackslashN()<CR>
+
 " quick filewide search and replace; recursive to take advantage of 'magic'
 " remapping
+" TODO: should I make this non-recursive now that I'm using the 'enchanted'
+" plugin?
 nmap <C-s> :%s/
 " quick selection search and replace
 vmap <C-s> :s/

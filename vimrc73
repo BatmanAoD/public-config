@@ -24,3 +24,13 @@ set undodir=~/.vim/undodir
 set undofile
 set undolevels=1000 "maximum number of changes that can be undone
 set undoreload=10000 "maximum number lines to save for undo on a buffer reload
+
+" Bundles incompatible with older Vim
+" These should take care of all the 'very magic' nonsense
+" ......buuuuuut note that CRDispatcher actually only works with Vim 7.4+, not
+" 7.3+. For now I'm not going to worry about it.
+ Bundle 'coot/CRDispatcher'
+ Bundle 'coot/EnchantedVim'
+function! Disenchant()
+    let g:VeryMagic = 0
+endfunction
