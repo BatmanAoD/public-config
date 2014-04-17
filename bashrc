@@ -31,35 +31,32 @@
     fi
 
     # Check that I have the rest of my "public-config" stuff.
-    PUBLIC_CONFIG_DIR=~/public-config
-    if [[ ! -d $PUBLIC_CONFIG_DIR ]]; then
+    CONFIG_DIR=~/public-config
+    if [[ ! -d $CONFIG_DIR ]]; then
         echo "WARNING: public config directory not found!" >&2
-        PUBLIC_CONFIG_DIR=
+        CONFIG_DIR=
     elif grep -v -q -i 'batmanaod' \
-      <(git --git-dir $PUBLIC_CONFIG_DIR/.git config --get remote.origin.url \
+      <(git --git-dir $CONFIG_DIR/.git config --get remote.origin.url \
       2>/dev/null); then
         echo "WARNING: this .bashrc file was designed for use in conjunction" >&2
         echo "with the other config files in the BatmanAoD/public-config" >&2
         echo "git repository." >&2
-    elif grep -v -q 'up to date' \
-      <(git --git-dir $PUBLIC_CONFIG_DIR/.git fetch -v --dry-run \
-      2>/dev/null); then
-        # Note: this warning will not be triggered if the remotes have been
-        # fetched but a merge has not been performed (i.e. if I forget to do
-        # the equivalent of a 'pull').
-        # TODO: determine whether `ls-remote origin` is actually what I want here.
+    elif [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD
+      2>/dev/null)" != \
+      "$(git --git-dir $CONFIG_DIR/.git ls-remote origin -h refs/heads/master \
+      2>/dev/null | awk '{print $1}')" ]]; then
         echo "WARNING: local public config repo is not in sync with github" >&2
     fi
 
     # Currently using xmodmap instead of xkbmap
-    if [[ ! -f .Xmodmap ]]; then
+    if [[ ! -r ~/.Xmodmap ]]; then
         echo "WARNING: ~/.Xmodmap not found!" >&2
     fi
-    if [[ -f .Xkbmap ]]; then
+    if [[ -f ~/.Xkbmap ]]; then
         echo "WARNING: Use of ~/.Xkbmap is deprecated!" >&2
-        if [[ -n $PUBLIC_CONFIG_DIR ]]; then
+        if [[ -n $CONFIG_DIR ]]; then
             echo "Latest keymapping customizations can be found" >&2
-            echo "in $PUBLIC_CONFIG_DIR/.Xmodmap" >&2
+            echo "in $CONFIG_DIR/.Xmodmap" >&2
         fi
     fi
 
