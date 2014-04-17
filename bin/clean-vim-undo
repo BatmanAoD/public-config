@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+
+# Stolen from https://github.com/doy/conf/blob/master/bin/clean-vim-undo
+# ....not sure why Vim itself doesn't provide some easy way to do this...
+use strict;
+use warnings;
+
+my $undodir = "$ENV{HOME}/.vim/undodir";
+opendir my $undo, $undodir
+    or die "can't open $undodir: $!";
+
+for my $undofile (readdir($undo)) {
+    next unless -f "$undodir/$undofile";
+    (my $file = $undofile) =~ s{%}{/}g;
+    unlink "$undodir/$undofile" unless -e $file && $file =~ m{^/};
+}
