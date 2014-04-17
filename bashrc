@@ -47,7 +47,7 @@
         # Note: this warning will not be triggered if the remotes have been
         # fetched but a merge has not been performed (i.e. if I forget to do
         # the equivalent of a 'pull').
-        # TODO: determine whether `git remote update` is actually what I want here.
+        # TODO: determine whether `ls-remote origin` is actually what I want here.
         echo "WARNING: local public config repo is not in sync with github" >&2
     fi
 
