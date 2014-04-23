@@ -69,8 +69,11 @@ alias unlistify=" tr '\n' ' ' "
 alias blockify=unlistify
 alias unblockify=listify
 
+# The ongoing quest to standardize my quitting procedure for all applications,
+# allowing me to take advantage of all this muscle memory...
 alias quit="exit"
 alias :q="exit"
+alias :bd="exit"
 alias QQQ="exit"
 
 # avoid accidentally messing up shell with control characters when using
