@@ -41,7 +41,7 @@
         echo "WARNING: this .bashrc file was designed for use in conjunction" >&2
         echo "with the other config files in the BatmanAoD/public-config" >&2
         echo "git repository." >&2
-    elif [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD
+    elif [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
       2>/dev/null)" != \
       "$(git --git-dir $CONFIG_DIR/.git ls-remote origin -h refs/heads/master \
       2>/dev/null | awk '{print $1}')" ]]; then

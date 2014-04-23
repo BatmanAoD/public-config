@@ -29,8 +29,9 @@ set undoreload=10000 "maximum number lines to save for undo on a buffer reload
 " These should take care of all the 'very magic' nonsense
 " ......buuuuuut note that CRDispatcher actually only works with Vim 7.4+, not
 " 7.3+. For now I'm not going to worry about it.
- Bundle 'coot/CRDispatcher'
- Bundle 'coot/EnchantedVim'
+Bundle 'coot/CRDispatcher'
+Bundle 'coot/EnchantedVim'
 function! Disenchant()
     let g:VeryMagic = 0
 endfunction
+let g:VeryMagicSubstituteNormalise = 1

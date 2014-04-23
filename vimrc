@@ -1,4 +1,3 @@
-" Functions and commands are defined with '!' to avoid errors when re-sourcing
 "
 " TODO fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
@@ -33,8 +32,9 @@ function! RestoreVirtual()
     let &virtualedit=g:oldvirtualedit
 endfunction
 set virtualedit=all
-" TODO: make 'a' synonymous with 'A' after end-of-line
 nnoremap <silent> <LeftMouse> :call TempNonVirtual()<CR><LeftMouse>:call RestoreVirtual()<CR>
+" This works for most things, but is kind of stupid when the last character in
+" the line is a tab.
 nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
 " TODO: figure out a way to only enter insert mode if cursor is past
 " end-of-line (something like getpos > col('$')), and to do the standard
@@ -90,9 +90,11 @@ set scrolloff=5
 " to the right of what's expected.
 " This must be in a group with 'autocmd!' because otherwise it's cumulative
 " every time this file is reloaded.
+" ....sigh...finally, this doesn't work with vim-multiple-cursors. So, for
+" now, just...don't use it.
 augroup insertleave
     autocmd!
-    au InsertLeave * if (getpos('.')[2] > 1) | call cursor([getpos('.')[1], getpos('.')[2]+1])
+    " au InsertLeave * if (getpos('.')[2] > 1) | call cursor([getpos('.')[1], getpos('.')[2]+1])
 augroup END
 " expand tabs even when chars are shown explicitly; also show trailing spaces
 " and end-of-line with 'set list'
@@ -290,7 +292,8 @@ nnoremap <Leader>u :sort u<cr>
 
 " edit this file without using the edit menu
 nnoremap <Leader>v :e $MYVIMRC<cr>
-" resource start-up file
+" re-source start-up file
+" TODO: make this a clean start somehow?
 nnoremap <Leader>r :so $MYVIMRC<cr>
 
 " '/asdf' works but is kind of stupid and annoying
@@ -315,6 +318,7 @@ cnoremap <C-k> <Up>
 cnoremap <C-l> <Right>
 
 " Easily recover from accidental deletions
+" see http://vim.wikia.com/wiki/Recover_from_accidental_Ctrl-U
 inoremap <c-u> <c-g>u<c-u>
 inoremap <c-w> <c-g>u<c-w>
 
@@ -390,6 +394,7 @@ command! Q :qa
 nnoremap <C-m> :MultipleCursorsFind 
 " not sure why this is necessary...why is this being mapped??
 unmap <CR>
+" TODO: open an issue in the vim-multiple-cursors repository
 
 " always make your regex 'very magic'
 " currently using this plugin instead:
@@ -405,14 +410,15 @@ unmap <CR>
 " 'Fix' the weird \n vs \r discrepancy
 " (credit: http://superuser.com/a/743087/199803 
 " .....but the fancy regex is mine)
-function! TranslateBackslashN()
-    if getcmdtype() ==# ':' && getcmdline() =~#
-      \ '[%>]s\([um]\w*\)\?\(.\).\{-}\(\\\)\@<!\2.*\\$'
-        return getcmdline() . 'r'
-    endif
-    return getcmdline() . 'n'
-endfunction
-cnoremap n <C-\>eTranslateBackslashN()<CR>
+" Replaced by the 'VeryMagicSubstituteNormalise' option in EnchantedVim
+" function! TranslateBackslashN()
+"     if getcmdtype() ==# ':' && getcmdline() =~#
+"       \ '[%>]s\([um]\w*\)\?\(.\).\{-}\(\\\)\@<!\2.*\\$'
+"         return getcmdline() . 'r'
+"     endif
+"     return getcmdline() . 'n'
+" endfunction
+" cnoremap n <C-\>eTranslateBackslashN()<CR>
 
 " quick filewide search and replace; recursive to take advantage of 'magic'
 " remapping
