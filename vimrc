@@ -138,9 +138,6 @@ Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
 Bundle 'AndrewRadev/linediff.vim'
 Bundle 'LargeFile'
-" These should take care of all the 'very magic' nonsense
- Bundle 'coot/CRDispatcher'
- Bundle 'coot/EnchantedVim'
 " This *apparently* getting the right script (1928), but I don't know why it's
 " not getting 3525. Numerical precedence, maybe? This is a known bug,
 " unfortunately.
@@ -399,6 +396,8 @@ unmap <CR>
 " always make your regex 'very magic'
 " currently using this plugin instead:
 " http://www.vim.org/scripts/script.php?script_id=4849
+" TODO: since that plugin only works with 7.4+, enable these mappings for 
+" earlier versions of Vim
 " note that these remappings interfere with search-history
 " nnoremap / /\v
 " vnoremap / /\v
@@ -406,6 +405,9 @@ unmap <CR>
 " cnoremap >s/ >smagic/
 " nnoremap :g/ :g/\v
 " nnoremap :g// :g//
+
+" Vim's VeryMagic patterns treat '=' as a synonym for `?`. This is stupid.
+cnoremap = \=
 
 " 'Fix' the weird \n vs \r discrepancy
 " (credit: http://superuser.com/a/743087/199803 

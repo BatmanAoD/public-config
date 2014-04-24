@@ -33,5 +33,31 @@ Bundle 'coot/CRDispatcher'
 Bundle 'coot/EnchantedVim'
 function! Disenchant()
     let g:VeryMagic = 0
+    let g:VeryMagicSubstituteNormalise = 0
+    let g:VeryMagicSubstitute = 0
+    let g:VeryMagicGlobal = 0
+    let g:VeryMagicVimGrep = 0
+    let g:VeryMagicSearchArg = 0
+    let g:VeryMagicFunction = 0
+    let g:VeryMagicHelpgrep = 0
+    let g:VeryMagicRange = 0
+    let g:VeryMagicEscapeBackslashesInSearchArg = 0
+    let g:SortEditArgs = 0
 endfunction
+
+" Since I use incsearch:
+let g:VeryMagic = 0
+nnoremap / /\v
+nnoremap ? ?\v
+
+" Turn on all other features.
 let g:VeryMagicSubstituteNormalise = 1
+let g:VeryMagicSubstitute = 1
+let g:VeryMagicGlobal = 1
+let g:VeryMagicVimGrep = 1
+let g:VeryMagicSearchArg = 1
+let g:VeryMagicFunction = 1
+let g:VeryMagicHelpgrep = 1
+let g:VeryMagicRange = 1
+let g:VeryMagicEscapeBackslashesInSearchArg = 1
+let g:SortEditArgs = 1
