@@ -138,6 +138,9 @@ Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
 Bundle 'AndrewRadev/linediff.vim'
 Bundle 'LargeFile'
+" TODO figure out why this doesn't seem to work, or figure out a different
+" 'tail-like' configuration
+" Bundle 'Tail-Bundle'
 " This *apparently* getting the right script (1928), but I don't know why it's
 " not getting 3525. Numerical precedence, maybe? This is a known bug,
 " unfortunately.
@@ -407,7 +410,9 @@ unmap <CR>
 " nnoremap :g// :g//
 
 " Vim's VeryMagic patterns treat '=' as a synonym for `?`. This is stupid.
-cnoremap = \=
+" .....however, there's still no way to do a 'pattern-only' remapping...
+" .....so this is too annoying to use.
+" cnoremap = \=
 
 " 'Fix' the weird \n vs \r discrepancy
 " (credit: http://superuser.com/a/743087/199803 
