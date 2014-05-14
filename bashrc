@@ -30,6 +30,18 @@
         PERSONALMACHINEPATH=
     fi
 
+    CYGWIN=false
+    if grep -q Cygwin <(uname -o); then
+        CYGWIN=true
+        # TODO move this to its own function or script
+        if ! pgrep XWin > /dev/null; then
+            startxwin &> $(mktemp /tmp/xwin_stdout_XXXXXX)
+        fi
+        if pgrep XWin > /dev/null; then # Check for success
+            export DISPLAY=localhost:0
+        fi
+    fi
+
     # Check that I have the rest of my "public-config" stuff.
     CONFIG_DIR=~/public-config
     if [[ ! -d $CONFIG_DIR ]]; then
@@ -48,15 +60,17 @@
         echo "WARNING: local public config repo is not in sync with github" >&2
     fi
 
-    # Currently using xmodmap instead of xkbmap
-    if [[ ! -r ~/.Xmodmap ]]; then
-        echo "WARNING: ~/.Xmodmap not found!" >&2
-    fi
-    if [[ -f ~/.Xkbmap ]]; then
-        echo "WARNING: Use of ~/.Xkbmap is deprecated!" >&2
-        if [[ -n $CONFIG_DIR ]]; then
-            echo "Latest keymapping customizations can be found" >&2
-            echo "in $CONFIG_DIR/.Xmodmap" >&2
+    if ! $CYGWIN; then
+        # Currently using xmodmap instead of xkbmap
+        if [[ ! -r ~/.Xmodmap ]]; then
+            echo "WARNING: ~/.Xmodmap not found!" >&2
+        fi
+        if [[ -f ~/.Xkbmap ]]; then
+            echo "WARNING: Use of ~/.Xkbmap is deprecated!" >&2
+            if [[ -n $CONFIG_DIR ]]; then
+                echo "Latest keymapping customizations can be found" >&2
+                echo "in $CONFIG_DIR/.Xmodmap" >&2
+            fi
         fi
     fi
 

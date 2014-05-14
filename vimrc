@@ -59,8 +59,15 @@ autocmd BufEnter * if &filetype == "" | :call GenericFile() | endif
 set incsearch
 " Why is this even limited?
 set undolevels=9999999999
-set guifont=DejaVu\ Sans\ Mono\ 10
-" set guifont=Liberation\ Mono\ 10
+if has('win32')
+    set guifont=Consolas:h8:cANSI
+elseif has('win32unix') " Cygwin
+    " TODO get a better Cygwin font!
+    set guifont=Fixed\ 10
+else
+    set guifont=DejaVu\ Sans\ Mono\ 10
+    " set guifont=Liberation\ Mono\ 10
+endif
 
 " Don't use this; makes file recovery impossible
 " set noswapfile
@@ -104,29 +111,21 @@ set backspace=indent,eol,start
 " ....sadly, it looks like getting this message fairly frequently is
 " unavoidable with i3.
 set shortmess=at
-let g:jellybeans_overrides = {
-\   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
-\   'statement':    { 'guifg': '57D9C7' },
-\   'SpecialKey':   { 'guifg': 'FFFA00' },
-\   'NonText':      { 'guifg': '444499' },
-\   'Todo':         { 'guibg': '772222' },
-\}
-if has('gui_running')
-    colors jellybeans
-    set enc=utf-8
-    set mouse=a
-else
-    colors torte
-    set mouse=
-endif
 " Vundle setup, taken from sample .vimrc on Vundle github page
 " TODO: consider using NeoBundle instead: https://github.com/Shougo/neobundle.vim
 filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+if has('win32')
+    set rtp+=~/vimfiles/bundle/Vundle/
+    let path='~/vimfiles/bundle'
+    call vundle#begin(path)
+else
+    set rtp+=~/.vim/bundle/Vundle.vim/
+    call vundle#rc()
+endif
 Bundle 'gmarik/vundle'
 
 " Put new bundles here
+Bundle 'nanotech/jellybeans.vim'
 Bundle 'terryma/vim-multiple-cursors'
 " This remaps '/', which makes it no longer a simple movement, which
 " wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
@@ -146,6 +145,11 @@ Bundle 'LargeFile'
 " unfortunately.
 Bundle 'Rename'
 
+" I really don't know why this is necessary in the Windows-native vim.
+if has('win32')
+    call vundle#end()
+endif
+
 filetype plugin indent on     " required!
 "
 " Brief help
@@ -159,6 +163,22 @@ filetype plugin indent on     " required!
 
 " source $VIMRUNTIME/mswin.vim
 
+let g:jellybeans_overrides = {
+\   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
+\   'statement':    { 'guifg': '57D9C7' },
+\   'SpecialKey':   { 'guifg': 'FFFA00' },
+\   'NonText':      { 'guifg': '444499' },
+\   'Todo':         { 'guibg': '772222' },
+\}
+if has('gui_running')
+    colors jellybeans
+    set enc=utf-8
+    set mouse=a
+else
+    colors torte
+    set mouse=
+endif
+
 " Mappings for use with plugins:
 nnoremap <silent> <F5> :GundoToggle<CR>
 " do a diff:
@@ -169,14 +189,20 @@ vnoremap <Leader>ls :Linediff<CR>`>
 vnoremap <Leader>lc :LinediffReset<CR>
 nnoremap <Leader>lc :LinediffReset<CR>
 
-cmap <silent> w!! w !sudo tee > /dev/null %
+if ! has('win32')
+    cmap <silent> w!! w !sudo tee > /dev/null %
+endif
 
 set nobackup
 set nowritebackup
 set nu
-let vim73file = expand("~/.vimrc73")
+if has('wind32')
+    let vim73file = expand("~/_vimrc73")
+else
+    let vim73file = expand("~/.vimrc73")
+endif
 if version >= 703 && filereadable(vim73file)
-  source ~/.vimrc73
+  exec ":source " . vim73file
 endif
 
 " Always use 4 columns for indentation.
