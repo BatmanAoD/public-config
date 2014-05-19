@@ -61,9 +61,9 @@ set incsearch
 set undolevels=9999999999
 if has('win32')
     set guifont=Consolas:h8:cANSI
-elseif has('win32unix') " Cygwin
-    " TODO get a better Cygwin font!
-    set guifont=Fixed\ 10
+" elseif has('win32unix') " Cygwin
+"     " TODO get a better Cygwin font!
+"     set guifont=Fixed\ 8
 else
     set guifont=DejaVu\ Sans\ Mono\ 10
     " set guifont=Liberation\ Mono\ 10
@@ -196,7 +196,7 @@ endif
 set nobackup
 set nowritebackup
 set nu
-if has('wind32')
+if has('win32')
     let vim73file = expand("~/_vimrc73")
 else
     let vim73file = expand("~/.vimrc73")
@@ -234,8 +234,6 @@ function! Tabcolors()
         set lcs=tab:»·,trail:¬
     endif
 endfunction
-nnoremap <silent> <Leader>t :call Usetabs()<cr>
-                  \:call Tabcolors()<cr>
 function! Nousetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
@@ -256,10 +254,17 @@ function! Nontabcolors()
         set nolist
     endif
 endfunction
-nnoremap <silent> <Leader>n :call Nousetabs()<cr>
-                  \:call Nontabcolors()<cr>
+function! ToggleTabs()
+    if(&expandtab == 1)
+        call Usetabs()
+        call Tabcolors()
+    else
+        call Nousetabs()
+        call Nontabcolors()
+    endif
+endfunction
 function! Untab()
-  set expandtab
+  call Nousetabs()
   retab
 endfunction
 " Either way, this is convenient

@@ -8,11 +8,12 @@ go() {
     then
         pushd $1 &> /dev/null
         if [[ $? -ne 0 ]]; then
+            echo "go: error! Possibly invalid directory." >&2
             return 1
         fi
     lsd
     else
-        echo "go: no path given!"
+        echo "go: no path given!" >&2
     fi
 }
 
@@ -52,16 +53,22 @@ abspath() {
         targ=$PWD
     fi
     tmp_path=$(readlink -f $targ)
-    # If this is under a home dir, replace with the correct ~usrname
-    # To do this, determine who owns it; presumably, if it's under a
-    # homedir, that user should own it.
-    # NOTE: this will cause an error on nonexistent files.
-    tmp_usr=$(ls -l -d $targ | awk '{print $3}')
-    # Figure out what "readlink" outputs for that user's home dir.
-    home_parent=$(eval readlink -f ~${tmp_usr})
-    # Do the replacement if possible. Otherwise, assume it's not under
-    # a home dir.
-    tmp_path=${tmp_path/#${home_parent}/~${tmp_usr}}
+    # If on Windows, get a Windows path
+    if $CYGWIN; then
+        tmp_path=$(cygpath -w $tmp_path)
+    # Otherwise, try to substitute out `~<usr>`
+    else
+        # If this is under a home dir, replace with the correct ~usrname
+        # To do this, determine who owns it; presumably, if it's under a
+        # homedir, that user should own it.
+        # NOTE: this will cause an error on nonexistent files.
+        tmp_usr=$(ls -l -d $targ | awk '{print $3}')
+        # Figure out what "readlink" outputs for that user's home dir.
+        home_parent=$(eval readlink -f ~${tmp_usr})
+        # Do the replacement if possible. Otherwise, assume it's not under
+        # a home dir.
+        tmp_path=${tmp_path/#${home_parent}/~${tmp_usr}}
+    fi
     echo $tmp_path
 }
 
@@ -195,10 +202,11 @@ localize () {
 edit () {
     if [[ $VISUAL =~ "gvim" ]]; then
         # run in background and suppress job details
-        ($VISUAL $@ &)
+        # `eval` is for zsh compatibility
+        (eval $VISUAL $@ &)
     else
         # Don't try to run normal 'vim' in the background!
-        $VISUAL $@
+        eval $VISUAL $@
     fi
 }
 

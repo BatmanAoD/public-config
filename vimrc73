@@ -13,11 +13,19 @@ function! ToggleRelativeNumbering()
         set relativenumber
     endif
 endfunction
-nnoremap <Leader>l :call ToggleRelativeNumbering()<cr>
+nnoremap <Leader>n :call ToggleRelativeNumbering()<cr>
 
 augroup RelativeFocus
-    au FocusLost * :set norelativenumber
-    au FocusGained * :set relativenumber
+    if has('win32unix') 
+        " With XWin, 'focus lost' apparently only occurs when a *different*
+        " X window gains focus. So here's a lame but hopefully good-enough
+        " alternative.
+        au CursorHold * :set norelativenumber
+        au CursorMoved * :set relativenumber
+    else
+        au FocusLost * :set norelativenumber
+        au FocusGained * :set relativenumber
+    endif
 augroup END
 
 set undodir=~/.vim/undodir

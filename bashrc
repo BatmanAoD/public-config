@@ -33,12 +33,19 @@
     CYGWIN=false
     if grep -q Cygwin <(uname -o); then
         CYGWIN=true
+        CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
         # TODO move this to its own function or script
         if ! pgrep XWin > /dev/null; then
             startxwin &> $(mktemp /tmp/xwin_stdout_XXXXXX)
         fi
         if pgrep XWin > /dev/null; then # Check for success
             export DISPLAY=localhost:0
+        fi
+        # taken from http://superuser.com/a/39995/199803
+        #TODO figure out why thiswas a problem in the first place.
+        HOMEBIN=$HOME/bin
+        if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
+            PATH="${PATH:+"$PATH:"}$HOMEBIN"
         fi
     fi
 
@@ -80,8 +87,10 @@
           -r ${stderred_path}/build/libstderred.so ]]; then
         export LD_PRELOAD="${stderred_path}/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
     else
-        echo "stderred not installed!" >&2
-        echo "Get stderred from https://github.com/sickill/stderred" >&2
+        if ! $CYGWIN; then
+            echo "stderred not installed!" >&2
+            echo "Get stderred from https://github.com/sickill/stderred" >&2
+        fi
     fi
 
     # Do profile if asked.  Used when invoking a shell via remsh, since
@@ -214,6 +223,7 @@
     # Load completion function
     if [[ -r /etc/bash_completion ]]; then
          . /etc/bash_completion
+         set completion-ignore-case on
     fi
 
     # Load aliases
