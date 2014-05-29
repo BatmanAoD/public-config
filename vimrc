@@ -61,11 +61,12 @@ set incsearch
 set undolevels=9999999999
 if has('win32')
     set guifont=Consolas:h8:cANSI
+    " set guifont=Anonymous_Pro:h8:cANSI
 " elseif has('win32unix') " Cygwin
 "     " TODO get a better Cygwin font!
 "     set guifont=Fixed\ 8
 else
-    set guifont=DejaVu\ Sans\ Mono\ 10
+    set guifont=DejaVu\ Sans\ Mono\ 8
     " set guifont=Liberation\ Mono\ 10
 endif
 
