@@ -28,10 +28,21 @@ augroup RelativeFocus
     endif
 augroup END
 
-set undodir=~/.vim/undodir
-set undofile
-set undolevels=1000 "maximum number of changes that can be undone
-set undoreload=10000 "maximum number lines to save for undo on a buffer reload
+" using logic from http://stackoverflow.com/a/9528322/1858225
+if exists("+undofile")
+    set undodir=$VIMFILES/undodir/
+    if isdirectory(expand(&undodir)) == 0
+        if has('win32')
+            :silent !mkdir \%HOMEPATH\%\vimfiles\undodir
+        else
+            " :silent !mkdir -p expand(&undodir)
+            " For now, do nothing, because I don't have time for this garbage.
+        endif
+    endif
+    set undofile
+    set undolevels=1000 "maximum number of changes that can be undone
+    set undoreload=10000 "maximum number lines to save for undo on a buffer reload
+endif
 
 " Bundles incompatible with older Vim
 " These should take care of all the 'very magic' nonsense
@@ -57,6 +68,12 @@ endfunction
 let g:VeryMagic = 0
 nnoremap / /\v
 nnoremap ? ?\v
+vnoremap / /\v
+vnoremap ? ?\v
+" If I type // or ??, I don't EVER want \v, since I'm repeating the previous
+" search.
+noremap // //
+noremap ?? ??
 
 " Turn on all other features.
 let g:VeryMagicSubstituteNormalise = 1

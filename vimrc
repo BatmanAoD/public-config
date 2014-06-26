@@ -4,6 +4,11 @@
 "   directories
 " * in non-gui Vim, help window is apparently unavailable
 
+" make sure runtimepath has default value
+set rtp&
+" create a variable to generically reference the location of vim files
+let $VIMFILES=split(&rtp,",")[0]
+
 set noerrorbells t_vb=
 set hidden
 " apparently not on by default in 7.4?
@@ -46,6 +51,7 @@ set nostartofline
 function! GenericFile()
     " is this what I want?
     setlocal ft=sh
+    " TODO if name is 'README', set ft=markdown
     " Include - as a 'word' character
     set iskeyword+=-
 endfunction
@@ -116,11 +122,11 @@ set shortmess=at
 " TODO: consider using NeoBundle instead: https://github.com/Shougo/neobundle.vim
 filetype off
 if has('win32')
-    set rtp+=~/vimfiles/bundle/Vundle/
-    let path='~/vimfiles/bundle'
+    set rtp+=$VIMFILES/bundle/Vundle/
+    let path=expand($VIMFILES . '/bundle')
     call vundle#begin(path)
 else
-    set rtp+=~/.vim/bundle/Vundle.vim/
+    set rtp+=$VIMFILES/bundle/Vundle.vim/
     call vundle#rc()
 endif
 Bundle 'gmarik/vundle'
@@ -141,10 +147,14 @@ Bundle 'LargeFile'
 " TODO figure out why this doesn't seem to work, or figure out a different
 " 'tail-like' configuration
 " Bundle 'Tail-Bundle'
-" This *apparently* getting the right script (1928), but I don't know why it's
-" not getting 3525. Numerical precedence, maybe? This is a known bug,
-" unfortunately.
+" This *apparently* getting the right script (1928), but only because of
+" numerical precedence. This is a known bug, unfortunately.
 Bundle 'Rename'
+" This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
+" so I'll just treat it as a bundle because I'm that lazy.
+Bundle 'BenBergman/vsearch.vim'
+" TODO: syntax highlighting for different filetypes within the same file:
+" http://www.vim.org/scripts/script.php?script_id=4168
 
 " I really don't know why this is necessary in the Windows-native vim.
 if has('win32')
@@ -164,6 +174,7 @@ filetype plugin indent on     " required!
 
 " source $VIMRUNTIME/mswin.vim
 
+" SpecialKey and NonText are for particular types of whitespace
 let g:jellybeans_overrides = {
 \   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
 \   'statement':    { 'guifg': '57D9C7' },
@@ -264,6 +275,7 @@ function! ToggleTabs()
         call Nontabcolors()
     endif
 endfunction
+nnoremap <leader>t :call ToggleTabs()<cr>
 function! Untab()
   call Nousetabs()
   retab
@@ -340,6 +352,7 @@ inoremap <C-Del> <C-O>dw
 nnoremap <C-BS> <C-W>
 nnoremap <C-Del> <C-O>dw
 
+" In insert or command mode, move normally by using Ctrl
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
@@ -348,6 +361,55 @@ cnoremap <C-h> <Left>
 cnoremap <C-j> <Down>
 cnoremap <C-k> <Up>
 cnoremap <C-l> <Right>
+
+" In visual and normal mode, Ctrl+up/down moves to prev/next line with same
+" indentation (see
+" http://vim.wikia.com/wiki/Move_to_next/previous_line_with_same_indentation)
+"
+" Jump to the next or previous line that has the same level or a lower
+" level of indentation than the current line.
+" exclusive (bool): true: Motion is exclusive
+" false: Motion is inclusive
+" fwd (bool): true: Go to next line
+" false: Go to previous line
+" lowerlevel (bool): true: Go to line with lower indentation level
+" false: Go to line with the same indentation level
+" skipblanks (bool): true: Skip blank lines
+" false: Don't skip blank lines
+function! NextIndent(exclusive, fwd, lowerlevel, skipblanks)
+  let line = line('.')
+  let column = col('.')
+  let lastline = line('$')
+  let indent = indent(line)
+  let stepvalue = a:fwd ? 1 : -1
+  while (line > 0 && line <= lastline)
+    let line = line + stepvalue
+    if ( ! a:lowerlevel && indent(line) == indent ||
+          \ a:lowerlevel && indent(line) < indent)
+      if (! a:skipblanks || strlen(getline(line)) > 0)
+        if (a:exclusive)
+          let line = line - stepvalue
+        endif
+        exe line
+        exe "normal " column . "|"
+        return
+      endif
+    endif
+  endwhile
+endfunction
+" Moving back and forth between lines of same or lower indentation.
+nnoremap <silent> [l :call NextIndent(0, 0, 0, 1)<CR>
+nnoremap <silent> ]l :call NextIndent(0, 1, 0, 1)<CR>
+nnoremap <silent> [L :call NextIndent(0, 0, 1, 1)<CR>
+nnoremap <silent> ]L :call NextIndent(0, 1, 1, 1)<CR>
+vnoremap <silent> [l <Esc>:call NextIndent(0, 0, 0, 1)<CR>m'gv''
+vnoremap <silent> ]l <Esc>:call NextIndent(0, 1, 0, 1)<CR>m'gv''
+vnoremap <silent> [L <Esc>:call NextIndent(0, 0, 1, 1)<CR>m'gv''
+vnoremap <silent> ]L <Esc>:call NextIndent(0, 1, 1, 1)<CR>m'gv''
+onoremap <silent> [l :call NextIndent(0, 0, 0, 1)<CR>
+onoremap <silent> ]l :call NextIndent(0, 1, 0, 1)<CR>
+onoremap <silent> [L :call NextIndent(1, 0, 1, 1)<CR>
+onoremap <silent> ]L :call NextIndent(1, 1, 1, 1)<CR>
 
 " Easily recover from accidental deletions
 " see http://vim.wikia.com/wiki/Recover_from_accidental_Ctrl-U
@@ -446,6 +508,12 @@ unmap <CR>
 " .....so this is too annoying to use.
 " cnoremap = \=
 
+" Visually select search result
+" TODO: consider using https://github.com/Raimondi/vim_search_objects,
+" which was recommended by http://superuser.com/a/370522/199803
+nnoremap g/ //e<cr>v??<cr>
+nnoremap g? ??b<cr>v//e<cr>
+
 " 'Fix' the weird \n vs \r discrepancy
 " (credit: http://superuser.com/a/743087/199803 
 " .....but the fancy regex is mine)
@@ -520,9 +588,3 @@ augroup matchperms
                 \| silent echo system("chmod --reference=".b:oldfile." ".b:newfile) 
                 \| endif |endif
 augroup END
-
-" Avago-specific config.
-let avagovimfile = expand("~/.vimrc_avago")
-if filereadable(avagovimfile)
-    exec ":source " . avagovimfile
-endif
