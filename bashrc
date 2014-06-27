@@ -67,7 +67,8 @@
         echo "WARNING: local public config repo is not in sync with github" >&2
     fi
 
-    if ! $CYGWIN; then
+    # Not Cygwin and not remote
+    if ! $CYGWIN && ! grep -q SSH <(env); then
         # Currently using xmodmap instead of xkbmap
         if [[ ! -r ~/.Xmodmap ]]; then
             echo "WARNING: ~/.Xmodmap not found!" >&2
