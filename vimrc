@@ -187,7 +187,7 @@ if has('gui_running')
     set enc=utf-8
     set mouse=a
 else
-    colors torte
+    colors desert
     set mouse=
 endif
 
