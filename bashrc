@@ -33,6 +33,9 @@
     CYGWIN=false
     if grep -q Cygwin <(uname -o); then
         CYGWIN=true
+        # Don't get fooled by the carriage-return character.
+        export SHELLOPTS
+        set -o igncr
         CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
         # TODO move this to its own function or script
         if ! pgrep XWin > /dev/null; then

@@ -153,8 +153,11 @@ Bundle 'Rename'
 " This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
 " so I'll just treat it as a bundle because I'm that lazy.
 Bundle 'BenBergman/vsearch.vim'
-" TODO: syntax highlighting for different filetypes within the same file:
+" TODO syntax highlighting for different filetypes within the same file:
 " http://www.vim.org/scripts/script.php?script_id=4168
+" TODO figure out how to use this
+" pymode
+Bundle 'klen/python-mode'
 
 " I really don't know why this is necessary in the Windows-native vim.
 if has('win32')
@@ -191,6 +194,14 @@ else
     set mouse=
 endif
 
+" Plugin settings:
+" I don't really like folds
+let g:pymode_folding = 0
+" prevent Pymode and Gundo from messing with the window size
+set winfixwidth
+set winfixheight
+set guioptions-=L
+
 " Mappings for use with plugins:
 nnoremap <silent> <F5> :GundoToggle<CR>
 " do a diff:
@@ -225,7 +236,7 @@ function! Usetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
   " set shiftwidth=8
-  " Ensure that tabstop is 8, which shoudl be true already anyway.
+  " Ensure that tabstop is 8, which should be true already anyway.
   set tabstop=8
   set noexpandtab
   " if I'm using tabs, LOOK AT THEM.
@@ -338,7 +349,7 @@ nnoremap <Leader>u :sort u<cr>
 nnoremap <Leader>v :e $MYVIMRC<cr>
 " re-source start-up file
 " TODO: make this a clean start somehow?
-nnoremap <Leader>r :so $MYVIMRC<cr>
+nnoremap <Leader>re :so $MYVIMRC<cr>
 
 " '/asdf' works but is kind of stupid and annoying
 nnoremap <Leader>h :noh<cr>
