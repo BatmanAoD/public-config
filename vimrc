@@ -55,7 +55,24 @@ function! GenericFile()
     " Include - as a 'word' character
     set iskeyword+=-
 endfunction
-autocmd BufEnter * if &filetype == "" | :call GenericFile() | endif
+" why doesn't this work? Is there something similar that might?
+" autocmd FileType "" | :call GenericFile() | endif
+augroup filetypes
+    " Use `sh` syntax highlighting for unknown filetypes
+    autocmd FileType * if &filetype == ""
+                        \| :call GenericFile()
+                    \| endif
+    " The number of indentation columns depends on the language, not on
+    " tab usage
+    au FileType * if &filetype == "cpp"
+                   \| set shiftwidth=2
+                   \| set softtabstop=2
+               \| else
+                   \| set shiftwidth=4
+                   \| set softtabstop=4
+               \| endif
+augroup END
+
 
 " Single ~ acts like g~ by allowing motion commands
 "   (so ~l acts like ~ does with notildeop)
@@ -158,6 +175,9 @@ Bundle 'BenBergman/vsearch.vim'
 " TODO figure out how to use this
 " pymode
 Bundle 'klen/python-mode'
+" TODO apparently this is tricky to get working on Windows, unfortunately.
+" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
+" Bundle 'Valloric/YouCompleteMe'
 
 " I really don't know why this is necessary in the Windows-native vim.
 if has('win32')
@@ -228,10 +248,8 @@ if version >= 703 && filereadable(vim73file)
   exec ":source " . vim73file
 endif
 
-" Always use 4 columns for indentation.
-set shiftwidth=4
-
 " Don't get caught off-guard by tabs
+" Note that shiftwidth and softtabstop are set separately
 function! Usetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
@@ -260,10 +278,8 @@ endfunction
 function! Nousetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
-  " set shiftwidth=4
   " If there are already tabs in the file, I should probably keep
   " whatever tabstop I already have. If not, then it shouldn't matter.
-  " set tabstop=4
   set expandtab
   " still might want to see trailing spaces.
   " set nolist
@@ -291,8 +307,6 @@ function! Untab()
   call Nousetabs()
   retab
 endfunction
-" Either way, this is convenient
-set softtabstop=4
 
 " exit vim when exiting last buffer
 " stolen from
@@ -336,8 +350,7 @@ nnoremap <Space> :
 
 " every time I change buffers or reload file, check if I need to use tabs
 augroup autotabs
-    autocmd BufEnter * :call PickTabUsage()
-    autocmd BufRead * :call PickTabUsage()
+    autocmd BufEnter,BufRead * :call PickTabUsage()
 augroup END
 
 nnoremap <Leader>w :set wrap!<cr>
