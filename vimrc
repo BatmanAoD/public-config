@@ -266,6 +266,8 @@ endfunction
 " However, the eol character is still annoying, so don't bother.
 " TODO: can I make the syntax color category for trailing spaces be something
 " else, instead?
+" TODO: is there a generic way to do this, so that I don't need to assume that
+" I'm using jellybeans?
 function! Tabcolors()
     if has('gui_running')
         let g:jellybeans_overrides.SpecialKey = {'guifg':'444444'}
