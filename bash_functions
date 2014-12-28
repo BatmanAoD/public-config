@@ -6,7 +6,7 @@
 go() { 
     if [ "$1" != "" ]
     then
-        pushd $1 &> /dev/null
+        pushd "$1" &> /dev/null
         if [[ $? -ne 0 ]]; then
             echo "go: error! Possibly invalid directory." >&2
             return 1
@@ -199,8 +199,30 @@ localize () {
     done
 }
 
+if $CYGWIN; then
+    # adapted from http://stackoverflow.com/a/12661288/1858225
+    gvim () 
+    { 
+        opt='';
+        if [ `expr "$*" : '.*tex\>'` -gt 0 ]; then
+            opt='--servername LATEX ';
+        fi;
+        # TODO add support for "--nofork" as synonym for "-f"
+        if [ `expr "$*" : '.*-f\>'` -gt 0 ]  ; then
+            forknum=0
+        else
+            forknum=2
+        fi
+        cyg-wrapper.sh "C:/Progra~2/Vim/vim74/gvim.exe" --binary-opt=-c,--cmd,-T,-t,--servername,--remote-send,--remote-expr --cyg-verbose --fork=$forknum $opt "$@"
+    }
+fi
+
 edit () {
-    if [[ $VISUAL =~ "gvim" ]]; then
+    if $CYGWIN; then
+        # XXX TODO figure out how to make `-f` work
+        # ...maybe do something with the `--fork=2` stuff?
+        gvim "$@"
+    elif [[ $VISUAL =~ "gvim" ]]; then
         # run in background and suppress job details
         # `eval` is for zsh compatibility
         (eval $VISUAL $@ &)
@@ -237,6 +259,8 @@ edex () {
 
 # edit a bash function in the current session
 # TODO: apparently this doesn't work on home machine...why?
+# TODO: on Cygwin, this apparently doesn't catch the case where the function
+# is from an RC file
 edfunc () {
     mkdir -p $TMP/shellfuncs;
     # Use proc num to decrease (but not elminate) the chance of name
@@ -440,6 +464,21 @@ histin ()
     history -r
     if [[ -n $ORIG_HISTFILE ]]; then
         export HISTFILE=$ORIG_HISTFILE
+    fi
+}
+
+# Cygwin specific:
+start_xwin ()
+{
+    if ! $CYGWIN; then
+        echo "ERROR: Not running Cygwin! Xwin not started."
+        return 1
+    fi
+    if ! pgrep XWin > /dev/null; then
+        startxwin &> $(mktemp /tmp/xwin_stdout_XXXXXX)
+    fi
+    if pgrep XWin > /dev/null; then # Check for success
+        export DISPLAY=localhost:0
     fi
 }
 

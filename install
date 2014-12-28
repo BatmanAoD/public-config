@@ -1,0 +1,28 @@
+#!/bin/bash
+
+cd ~
+
+for prog in bash input gdb irb vim zsh; do
+    echo prog is ${prog}
+    for file in ~/public-config/${prog}*; do
+        if [[ -d ${file} ]]; then continue; fi
+        basename=$(basename ${file})
+        if [[ -e ${basename} ]]; then rm ${basename}; fi
+        ln -s ${file}
+        mv {,.}${basename}
+    done
+done
+
+.bashrc
+
+# TODO: install OS_specific
+# TODO: install bin
+# TODO: install vim plugins
+# TODO: install stderred, but NOT on Cygwin
+
+# TODO: test this
+vundle_bundle=~/.vim/bundle/Vundle.vim
+if [[ ! -a ${vundle_bundle} ]]; then
+    git clone https://github.com/gmarik/Vundle.vim.git ${vundle_bundle}
+    vim "+BundleInstall" "+qa"
+fi

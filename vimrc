@@ -4,6 +4,11 @@
 "   directories
 " * in non-gui Vim, help window is apparently unavailable
 
+" make sure runtimepath has default value
+set rtp&
+" create a variable to generically reference the location of vim files
+let $VIMFILES=split(&rtp,",")[0]
+
 set noerrorbells t_vb=
 set hidden
 " apparently not on by default in 7.4?
@@ -46,10 +51,28 @@ set nostartofline
 function! GenericFile()
     " is this what I want?
     setlocal ft=sh
+    " TODO if name is 'README', set ft=markdown
     " Include - as a 'word' character
     set iskeyword+=-
 endfunction
-autocmd BufEnter * if &filetype == "" | :call GenericFile() | endif
+" why doesn't this work? Is there something similar that might?
+" autocmd FileType "" | :call GenericFile() | endif
+augroup filetypes
+    " Use `sh` syntax highlighting for unknown filetypes
+    autocmd FileType * if &filetype == ""
+                        \| :call GenericFile()
+                    \| endif
+    " The number of indentation columns depends on the language, not on
+    " tab usage
+    au FileType * if &filetype == "cpp"
+                   \| set shiftwidth=2
+                   \| set softtabstop=2
+               \| else
+                   \| set shiftwidth=4
+                   \| set softtabstop=4
+               \| endif
+augroup END
+
 
 " Single ~ acts like g~ by allowing motion commands
 "   (so ~l acts like ~ does with notildeop)
@@ -116,11 +139,11 @@ set shortmess=at
 " TODO: consider using NeoBundle instead: https://github.com/Shougo/neobundle.vim
 filetype off
 if has('win32')
-    set rtp+=~/vimfiles/bundle/Vundle/
-    let path='~/vimfiles/bundle'
+    set rtp+=$VIMFILES/bundle/Vundle/
+    let path=expand($VIMFILES . '/bundle')
     call vundle#begin(path)
 else
-    set rtp+=~/.vim/bundle/Vundle.vim/
+    set rtp+=$VIMFILES/bundle/Vundle.vim/
     call vundle#rc()
 endif
 Bundle 'gmarik/vundle'
@@ -141,10 +164,20 @@ Bundle 'LargeFile'
 " TODO figure out why this doesn't seem to work, or figure out a different
 " 'tail-like' configuration
 " Bundle 'Tail-Bundle'
-" This *apparently* getting the right script (1928), but I don't know why it's
-" not getting 3525. Numerical precedence, maybe? This is a known bug,
-" unfortunately.
+" This *apparently* getting the right script (1928), but only because of
+" numerical precedence. This is a known bug, unfortunately.
 Bundle 'Rename'
+" This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
+" so I'll just treat it as a bundle because I'm that lazy.
+Bundle 'BenBergman/vsearch.vim'
+" TODO syntax highlighting for different filetypes within the same file:
+" http://www.vim.org/scripts/script.php?script_id=4168
+" TODO figure out how to use this
+" pymode
+Bundle 'klen/python-mode'
+" TODO apparently this is tricky to get working on Windows, unfortunately.
+" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
+" Bundle 'Valloric/YouCompleteMe'
 
 " I really don't know why this is necessary in the Windows-native vim.
 if has('win32')
@@ -164,6 +197,7 @@ filetype plugin indent on     " required!
 
 " source $VIMRUNTIME/mswin.vim
 
+" SpecialKey and NonText are for particular types of whitespace
 let g:jellybeans_overrides = {
 \   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
 \   'statement':    { 'guifg': '57D9C7' },
@@ -176,9 +210,17 @@ if has('gui_running')
     set enc=utf-8
     set mouse=a
 else
-    colors torte
+    colors desert
     set mouse=
 endif
+
+" Plugin settings:
+" I don't really like folds
+let g:pymode_folding = 0
+" prevent Pymode and Gundo from messing with the window size
+set winfixwidth
+set winfixheight
+set guioptions-=L
 
 " Mappings for use with plugins:
 nnoremap <silent> <F5> :GundoToggle<CR>
@@ -206,15 +248,13 @@ if version >= 703 && filereadable(vim73file)
   exec ":source " . vim73file
 endif
 
-" Always use 4 columns for indentation.
-set shiftwidth=4
-
 " Don't get caught off-guard by tabs
+" Note that shiftwidth and softtabstop are set separately
 function! Usetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
   " set shiftwidth=8
-  " Ensure that tabstop is 8, which shoudl be true already anyway.
+  " Ensure that tabstop is 8, which should be true already anyway.
   set tabstop=8
   set noexpandtab
   " if I'm using tabs, LOOK AT THEM.
@@ -226,6 +266,8 @@ endfunction
 " However, the eol character is still annoying, so don't bother.
 " TODO: can I make the syntax color category for trailing spaces be something
 " else, instead?
+" TODO: is there a generic way to do this, so that I don't need to assume that
+" I'm using jellybeans?
 function! Tabcolors()
     if has('gui_running')
         let g:jellybeans_overrides.SpecialKey = {'guifg':'444444'}
@@ -238,10 +280,8 @@ endfunction
 function! Nousetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
-  " set shiftwidth=4
   " If there are already tabs in the file, I should probably keep
   " whatever tabstop I already have. If not, then it shouldn't matter.
-  " set tabstop=4
   set expandtab
   " still might want to see trailing spaces.
   " set nolist
@@ -264,12 +304,11 @@ function! ToggleTabs()
         call Nontabcolors()
     endif
 endfunction
+nnoremap <leader>t :call ToggleTabs()<cr>
 function! Untab()
   call Nousetabs()
   retab
 endfunction
-" Either way, this is convenient
-set softtabstop=4
 
 " exit vim when exiting last buffer
 " stolen from
@@ -313,8 +352,7 @@ nnoremap <Space> :
 
 " every time I change buffers or reload file, check if I need to use tabs
 augroup autotabs
-    autocmd BufEnter * :call PickTabUsage()
-    autocmd BufRead * :call PickTabUsage()
+    autocmd BufEnter,BufRead * :call PickTabUsage()
 augroup END
 
 nnoremap <Leader>w :set wrap!<cr>
@@ -326,7 +364,7 @@ nnoremap <Leader>u :sort u<cr>
 nnoremap <Leader>v :e $MYVIMRC<cr>
 " re-source start-up file
 " TODO: make this a clean start somehow?
-nnoremap <Leader>r :so $MYVIMRC<cr>
+nnoremap <Leader>re :so $MYVIMRC<cr>
 
 " '/asdf' works but is kind of stupid and annoying
 nnoremap <Leader>h :noh<cr>
@@ -340,6 +378,7 @@ inoremap <C-Del> <C-O>dw
 nnoremap <C-BS> <C-W>
 nnoremap <C-Del> <C-O>dw
 
+" In insert or command mode, move normally by using Ctrl
 inoremap <C-h> <Left>
 inoremap <C-j> <Down>
 inoremap <C-k> <Up>
@@ -348,6 +387,55 @@ cnoremap <C-h> <Left>
 cnoremap <C-j> <Down>
 cnoremap <C-k> <Up>
 cnoremap <C-l> <Right>
+
+" In visual and normal mode, Ctrl+up/down moves to prev/next line with same
+" indentation (see
+" http://vim.wikia.com/wiki/Move_to_next/previous_line_with_same_indentation)
+"
+" Jump to the next or previous line that has the same level or a lower
+" level of indentation than the current line.
+" exclusive (bool): true: Motion is exclusive
+" false: Motion is inclusive
+" fwd (bool): true: Go to next line
+" false: Go to previous line
+" lowerlevel (bool): true: Go to line with lower indentation level
+" false: Go to line with the same indentation level
+" skipblanks (bool): true: Skip blank lines
+" false: Don't skip blank lines
+function! NextIndent(exclusive, fwd, lowerlevel, skipblanks)
+  let line = line('.')
+  let column = col('.')
+  let lastline = line('$')
+  let indent = indent(line)
+  let stepvalue = a:fwd ? 1 : -1
+  while (line > 0 && line <= lastline)
+    let line = line + stepvalue
+    if ( ! a:lowerlevel && indent(line) == indent ||
+          \ a:lowerlevel && indent(line) < indent)
+      if (! a:skipblanks || strlen(getline(line)) > 0)
+        if (a:exclusive)
+          let line = line - stepvalue
+        endif
+        exe line
+        exe "normal " column . "|"
+        return
+      endif
+    endif
+  endwhile
+endfunction
+" Moving back and forth between lines of same or lower indentation.
+nnoremap <silent> [l :call NextIndent(0, 0, 0, 1)<CR>
+nnoremap <silent> ]l :call NextIndent(0, 1, 0, 1)<CR>
+nnoremap <silent> [L :call NextIndent(0, 0, 1, 1)<CR>
+nnoremap <silent> ]L :call NextIndent(0, 1, 1, 1)<CR>
+vnoremap <silent> [l <Esc>:call NextIndent(0, 0, 0, 1)<CR>m'gv''
+vnoremap <silent> ]l <Esc>:call NextIndent(0, 1, 0, 1)<CR>m'gv''
+vnoremap <silent> [L <Esc>:call NextIndent(0, 0, 1, 1)<CR>m'gv''
+vnoremap <silent> ]L <Esc>:call NextIndent(0, 1, 1, 1)<CR>m'gv''
+onoremap <silent> [l :call NextIndent(0, 0, 0, 1)<CR>
+onoremap <silent> ]l :call NextIndent(0, 1, 0, 1)<CR>
+onoremap <silent> [L :call NextIndent(1, 0, 1, 1)<CR>
+onoremap <silent> ]L :call NextIndent(1, 1, 1, 1)<CR>
 
 " Easily recover from accidental deletions
 " see http://vim.wikia.com/wiki/Recover_from_accidental_Ctrl-U
@@ -446,6 +534,12 @@ unmap <CR>
 " .....so this is too annoying to use.
 " cnoremap = \=
 
+" Visually select search result
+" TODO: consider using https://github.com/Raimondi/vim_search_objects,
+" which was recommended by http://superuser.com/a/370522/199803
+nnoremap g/ //e<cr>v??<cr>
+nnoremap g? ??b<cr>v//e<cr>
+
 " 'Fix' the weird \n vs \r discrepancy
 " (credit: http://superuser.com/a/743087/199803 
 " .....but the fancy regex is mine)
@@ -534,9 +628,3 @@ augroup BWCCreateDir
     autocmd!
     autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
 augroup END
-
-" Avago-specific config.
-let avagovimfile = expand("~/.vimrc_avago")
-if filereadable(avagovimfile)
-    exec ":source " . avagovimfile
-endif
