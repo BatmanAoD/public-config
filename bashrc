@@ -42,7 +42,7 @@
             export DISPLAY=localhost:0
         fi
         # taken from http://superuser.com/a/39995/199803
-        #TODO figure out why thiswas a problem in the first place.
+        #TODO figure out why this was a problem in the first place.
         HOMEBIN=$HOME/bin
         if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
             PATH="${PATH:+"$PATH:"}$HOMEBIN"
@@ -71,6 +71,10 @@
         # Currently using xmodmap instead of xkbmap
         if [[ ! -r ~/.Xmodmap ]]; then
             echo "WARNING: ~/.Xmodmap not found!" >&2
+        else
+            # TODO there may be a way to query whether the proper settings are
+            # already loaded and, if not, load them here.
+            xmodmap ~/.Xmodmap
         fi
         if [[ -f ~/.Xkbmap ]]; then
             echo "WARNING: Use of ~/.Xkbmap is deprecated!" >&2
