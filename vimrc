@@ -619,11 +619,25 @@ augroup guiopts
     autocmd GUIEnter * set nomousehide
 augroup END
 
-" the following is from http://superuser.com/a/657733/199803
+" from http://superuser.com/a/657733/199803
 augroup matchperms
     au BufRead * let b:oldfile = expand("<afile>")
     au BufWritePost * if exists("b:oldfile") | let b:newfile = expand("<afile>") 
                 \| if b:newfile != b:oldfile 
                 \| silent echo system("chmod --reference=".b:oldfile." ".b:newfile) 
                 \| endif |endif
+augroup END
+
+" from http://stackoverflow.com/a/4294176/1858225
+function s:MkNonExDir(file, buf)
+    if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
+        let dir=fnamemodify(a:file, ':h')
+        if !isdirectory(dir)
+            call mkdir(dir, 'p')
+        endif
+    endif
+endfunction
+augroup BWCCreateDir
+    autocmd!
+    autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
 augroup END

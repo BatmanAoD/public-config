@@ -43,7 +43,7 @@ if grep -q Cygwin <(uname -o); then
     set -o igncr
     CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
     # taken from http://superuser.com/a/39995/199803
-    #TODO figure out why thiswas a problem in the first place.
+    #TODO figure out why this was a problem in the first place.
     HOMEBIN=$HOME/bin
     if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
         PATH="${PATH:+"$PATH:"}$HOMEBIN"
@@ -74,6 +74,8 @@ if ! $CYGWIN && ! grep -q SSH <(env); then
     if [[ ! -r ~/.Xmodmap ]]; then
         echo "WARNING: ~/.Xmodmap not found!" >&2
     fi
+    # TODO check if CAPS is configured, and if so, manually load Xmodmap? (Bug
+    # in some WMs...)
     if [[ -f ~/.Xkbmap ]]; then
         echo "WARNING: Use of ~/.Xkbmap is deprecated!" >&2
         if [[ -n $CONFIG_DIR ]]; then
