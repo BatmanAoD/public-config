@@ -116,6 +116,7 @@ export HISTFILESIZE=${HISTSIZE}
 HISTCONTROL=ignoredups:erasedups
 shopt -s histappend
 shopt -s checkhash
+shopt -s extglob
 if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then
     shopt -s globstar
     shopt -s autocd
@@ -230,21 +231,10 @@ if [[ -r /etc/bash_completion ]]; then
      set completion-ignore-case on
 fi
 
-# Load aliases
-if [[ -f ${HOME}/.bash_aliases ]]; then
-    . ${HOME}/.bash_aliases
-fi
-
-# Load functions
-if [[ -f ${HOME}/.bash_functions ]]
-then
-    . ${HOME}/.bash_functions
-fi
-
-# Avago-specific
-if [[ -r ${HOME}/.bash_avago ]]; then
-    . ${HOME}/.bash_avago
-fi
+# Aliases, functions, and site-specific config files
+for bashfile in ${HOME}/.bash_!(profile|history); do
+    . ${bashfile}
+done
 
 # Print a message
 echo "<- bashrc"
