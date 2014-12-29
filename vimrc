@@ -82,8 +82,11 @@ augroup END
 set incsearch
 " Why is this even limited?
 set undolevels=9999999999
+" TODO use a more general strategy here
+" ...and figure out why different fonts appear different on different
+" machines...?????
 if has('win32')
-    set guifont=Consolas:h8:cANSI
+    silent! set guifont=Consolas:h8:cANSI
     " set guifont=Anonymous_Pro:h8:cANSI
 " elseif has('win32unix') " Cygwin
 "     " TODO get a better Cygwin font!
@@ -217,6 +220,8 @@ endif
 " Plugin settings:
 " I don't really like folds
 let g:pymode_folding = 0
+" This is causing problems
+let g:pymode_rope = 0
 " prevent Pymode and Gundo from messing with the window size
 set winfixwidth
 set winfixheight
@@ -355,6 +360,10 @@ augroup autotabs
     autocmd BufEnter,BufRead * :call PickTabUsage()
 augroup END
 
+" map ctrl-Y to copy into system register
+nnoremap  "+y
+vnoremap  "+y
+
 nnoremap <Leader>w :set wrap!<cr>
 
 " quick uniquification
@@ -370,8 +379,12 @@ nnoremap <Leader>re :so $MYVIMRC<cr>
 nnoremap <Leader>h :noh<cr>
 
 " Quickly font bigger/smaller
+" TODO: this currently only works on Linux w/ DejaVu Sans Mono installed.
 nnoremap <Leader>= :set guifont=DejaVu\ Sans\ Mono\ 18<cr>
 nnoremap <Leader>- :set guifont=DejaVu\ Sans\ Mono\ 10<cr>
+
+" TODO: add a quick way to show carriage returns;
+" see http://stackoverflow.com/a/27259548/1858225
 
 inoremap <C-BS> <C-W>
 inoremap <C-Del> <C-O>dw
