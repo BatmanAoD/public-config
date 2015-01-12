@@ -1,0 +1,43 @@
+" Bundles incompatible with older Vim
+" These should take care of all the 'very magic' nonsense
+" ......buuuuuut note that CRDispatcher actually only works with Vim 7.4+, not
+" 7.3+. For now I'm not going to worry about it.
+Bundle 'coot/CRDispatcher'
+Bundle 'coot/EnchantedVim'
+function! Disenchant()
+    let g:VeryMagic = 0
+    let g:VeryMagicSubstituteNormalise = 0
+    let g:VeryMagicSubstitute = 0
+    let g:VeryMagicGlobal = 0
+    let g:VeryMagicVimGrep = 0
+    let g:VeryMagicSearchArg = 0
+    let g:VeryMagicFunction = 0
+    let g:VeryMagicHelpgrep = 0
+    let g:VeryMagicRange = 0
+    let g:VeryMagicEscapeBackslashesInSearchArg = 0
+    let g:SortEditArgs = 0
+endfunction
+
+" Since I use incsearch:
+let g:VeryMagic = 0
+nnoremap / /\v
+nnoremap ? ?\v
+vnoremap / /\v
+vnoremap ? ?\v
+" If I type // or ??, I don't EVER want \v, since I'm repeating the previous
+" search.
+noremap // //
+noremap ?? ??
+
+" Turn on all other features.
+let g:VeryMagicSubstituteNormalise = 1
+let g:VeryMagicSubstitute = 1
+let g:VeryMagicGlobal = 1
+let g:VeryMagicVimGrep = 1
+let g:VeryMagicSearchArg = 1
+let g:VeryMagicFunction = 1
+let g:VeryMagicHelpgrep = 1
+let g:VeryMagicRange = 1
+let g:VeryMagicEscapeBackslashesInSearchArg = 1
+let g:SortEditArgs = 1
+

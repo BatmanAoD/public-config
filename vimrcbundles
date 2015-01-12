@@ -1,0 +1,95 @@
+" Vundle setup, taken from sample .vimrc on Vundle github page
+" TODO: consider using NeoBundle instead: https://github.com/Shougo/neobundle.vim
+"
+filetype off
+if has('win32')
+    set rtp+=$VIMFILES/bundle/Vundle/
+    let path=expand($VIMFILES . '/bundle')
+    call vundle#begin(path)
+else
+    set rtp+=$VIMFILES/bundle/Vundle.vim/
+    call vundle#rc()
+endif
+Bundle 'gmarik/vundle'
+
+" Put new bundles here
+Bundle 'nanotech/jellybeans.vim'
+Bundle 'terryma/vim-multiple-cursors'
+" This remaps '/', which makes it no longer a simple movement, which
+" wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
+" some slow-down when initiating a search. So I'm disabling it.
+" Bundle 'SearchComplete'
+Bundle 'sjl/gundo.vim.git'
+Bundle 'sjl/clam.vim'
+Bundle 'rkitover/vimpager'
+Bundle 'tpope/vim-surround'
+Bundle 'AndrewRadev/linediff.vim'
+Bundle 'LargeFile'
+" TODO figure out why this doesn't seem to work, or figure out a different
+" 'tail-like' configuration
+" Bundle 'Tail-Bundle'
+" This *apparently* getting the right script (1928), but only because of
+" numerical precedence. This is a known bug, unfortunately.
+Bundle 'Rename'
+" This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
+" so I'll just treat it as a bundle because I'm that lazy.
+Bundle 'BenBergman/vsearch.vim'
+" TODO syntax highlighting for different filetypes within the same file:
+" http://www.vim.org/scripts/script.php?script_id=4168
+" TODO figure out how to use this
+" pymode
+Bundle 'klen/python-mode'
+" TODO apparently this is tricky to get working on Windows, unfortunately.
+" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
+if !has('win32')
+    Bundle 'Valloric/YouCompleteMe'
+endif
+
+" I really don't know why this is necessary in the Windows-native vim.
+if has('win32')
+    call vundle#end()
+endif
+
+filetype plugin indent on     " required!
+"
+" Brief help
+" :BundleList          - list configured bundles
+" :BundleInstall(!)    - install(update) bundles
+" :BundleSearch(!) foo - search(or refresh cache first) for foo
+" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
+"
+" see :h vundle for more details or wiki for FAQ
+" NOTE: comments after Bundle command are not allowed..
+
+" source $VIMRUNTIME/mswin.vim
+
+" Jellybeans settings:
+" TODO check first if jellybeans was successfully turned on?
+" SpecialKey and NonText are for particular types of whitespace
+let g:jellybeans_overrides = {
+\   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
+\   'statement':    { 'guifg': '57D9C7' },
+\   'SpecialKey':   { 'guifg': 'FFFA00' },
+\   'NonText':      { 'guifg': '444499' },
+\   'Todo':         { 'guibg': '772222' },
+\}
+
+" Other plugin settings:
+" I don't really like folds
+let g:pymode_folding = 0
+" This is causing problems
+let g:pymode_rope = 0
+" prevent Pymode and Gundo from messing with the window size
+set winfixwidth
+set winfixheight
+set guioptions-=L
+
+" Mappings for use with plugins:
+nnoremap <silent> <F5> :GundoToggle<CR>
+" do a diff:
+vnoremap <Leader>ld :Linediff<CR>
+" start a diff and go to end of diff section:
+vnoremap <Leader>ls :Linediff<CR>`>
+" clear diff:
+vnoremap <Leader>lc :LinediffReset<CR>
+nnoremap <Leader>lc :LinediffReset<CR>

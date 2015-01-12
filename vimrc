@@ -9,6 +9,34 @@ set rtp&
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
 
+" Setup plugin manager and load plugins ONCE.
+if has('win32')
+    let pluginfile = expand("~/_vimrcbundles")
+else
+    let pluginfile = expand("~/.vimrcbundles")
+endif
+if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
+  exec ":source " . pluginfile
+  let g:pluginmgr_setup="done"
+endif
+
+" Colors and mouse settings (use jellybeans only if it's loaded as plugin)
+if has('gui_running')
+    if exists("g:jellybeans_overrides")
+        colors jellybeans
+    else
+        colors desert
+    endif
+        set enc=utf-8
+        set mouse=a
+else
+    colors desert
+    set mouse=
+endif
+
+" Get rid of any existing mappings.
+mapclear
+
 set noerrorbells t_vb=
 set hidden
 " apparently not on by default in 7.4?
@@ -138,105 +166,6 @@ set backspace=indent,eol,start
 " ....sadly, it looks like getting this message fairly frequently is
 " unavoidable with i3.
 set shortmess=at
-" Vundle setup, taken from sample .vimrc on Vundle github page
-" TODO: consider using NeoBundle instead: https://github.com/Shougo/neobundle.vim
-filetype off
-if has('win32')
-    set rtp+=$VIMFILES/bundle/Vundle/
-    let path=expand($VIMFILES . '/bundle')
-    call vundle#begin(path)
-else
-    set rtp+=$VIMFILES/bundle/Vundle.vim/
-    call vundle#rc()
-endif
-Bundle 'gmarik/vundle'
-
-" Put new bundles here
-Bundle 'nanotech/jellybeans.vim'
-Bundle 'terryma/vim-multiple-cursors'
-" This remaps '/', which makes it no longer a simple movement, which
-" wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
-" some slow-down when initiating a search. So I'm disabling it.
-" Bundle 'SearchComplete'
-Bundle 'sjl/gundo.vim.git'
-Bundle 'sjl/clam.vim'
-Bundle 'rkitover/vimpager'
-Bundle 'tpope/vim-surround'
-Bundle 'AndrewRadev/linediff.vim'
-Bundle 'LargeFile'
-" TODO figure out why this doesn't seem to work, or figure out a different
-" 'tail-like' configuration
-" Bundle 'Tail-Bundle'
-" This *apparently* getting the right script (1928), but only because of
-" numerical precedence. This is a known bug, unfortunately.
-Bundle 'Rename'
-" This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
-" so I'll just treat it as a bundle because I'm that lazy.
-Bundle 'BenBergman/vsearch.vim'
-" TODO syntax highlighting for different filetypes within the same file:
-" http://www.vim.org/scripts/script.php?script_id=4168
-" TODO figure out how to use this
-" pymode
-Bundle 'klen/python-mode'
-" TODO apparently this is tricky to get working on Windows, unfortunately.
-" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
-" Bundle 'Valloric/YouCompleteMe'
-
-" I really don't know why this is necessary in the Windows-native vim.
-if has('win32')
-    call vundle#end()
-endif
-
-filetype plugin indent on     " required!
-"
-" Brief help
-" :BundleList          - list configured bundles
-" :BundleInstall(!)    - install(update) bundles
-" :BundleSearch(!) foo - search(or refresh cache first) for foo
-" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-"
-" see :h vundle for more details or wiki for FAQ
-" NOTE: comments after Bundle command are not allowed..
-
-" source $VIMRUNTIME/mswin.vim
-
-" SpecialKey and NonText are for particular types of whitespace
-let g:jellybeans_overrides = {
-\   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
-\   'statement':    { 'guifg': '57D9C7' },
-\   'SpecialKey':   { 'guifg': 'FFFA00' },
-\   'NonText':      { 'guifg': '444499' },
-\   'Todo':         { 'guibg': '772222' },
-\}
-if has('gui_running')
-    colors jellybeans
-    set enc=utf-8
-    set mouse=a
-else
-    colors desert
-    set mouse=
-endif
-
-" Plugin settings:
-" I don't really like folds
-let g:pymode_folding = 0
-" This is causing problems
-let g:pymode_rope = 0
-" prevent Pymode and Gundo from messing with the window size
-set winfixwidth
-set winfixheight
-set guioptions-=L
-
-" Mappings for use with plugins:
-nnoremap <silent> <F5> :GundoToggle<CR>
-" do a diff:
-vnoremap <Leader>ld :Linediff<CR>
-" start a diff and go to end of diff section:
-vnoremap <Leader>ls :Linediff<CR>`>
-" clear diff:
-vnoremap <Leader>lc :LinediffReset<CR>
-nnoremap <Leader>lc :LinediffReset<CR>
-
 if ! has('win32')
     cmap <silent> w!! w !sudo tee > /dev/null %
 endif
@@ -271,10 +200,8 @@ endfunction
 " However, the eol character is still annoying, so don't bother.
 " TODO: can I make the syntax color category for trailing spaces be something
 " else, instead?
-" TODO: is there a generic way to do this, so that I don't need to assume that
-" I'm using jellybeans?
 function! Tabcolors()
-    if has('gui_running')
+    if has('gui_running') && exists("g:jellybeans_overrides")
         let g:jellybeans_overrides.SpecialKey = {'guifg':'444444'}
         let g:jellybeans_overrides.NonText    = {'guifg':'7777CC'}
         colors jellybeans
@@ -292,7 +219,7 @@ function! Nousetabs()
   " set nolist
 endfunction
 function! Nontabcolors()
-    if has('gui_running')
+    if has('gui_running') && exists("g:jellybeans_overrides")
         let g:jellybeans_overrides.SpecialKey = {'guifg':'FFFA00'}
         let g:jellybeans_overrides.NonText    = {'guifg':'444499'}
         colors jellybeans
@@ -361,8 +288,11 @@ augroup autotabs
 augroup END
 
 " map ctrl-Y to copy into system register
-nnoremap  "+y
-vnoremap  "+y
+nnoremap <C-Y> "+y
+vnoremap <C-Y> "+y
+" map ctrl-P to paste from system register
+nnoremap <C-P> "+p
+vnoremap <C-P> "+p
 
 nnoremap <Leader>w :set wrap!<cr>
 
@@ -629,7 +559,7 @@ augroup matchperms
 augroup END
 
 " from http://stackoverflow.com/a/4294176/1858225
-function s:MkNonExDir(file, buf)
+function! s:MkNonExDir(file, buf)
     if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
         let dir=fnamemodify(a:file, ':h')
         if !isdirectory(dir)
@@ -641,3 +571,6 @@ augroup BWCCreateDir
     autocmd!
     autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
 augroup END
+
+" If multiple buffers, vsplit them all
+"vert sba
