@@ -3,7 +3,7 @@
 cd ~
 
 for prog in bash input gdb irb vim zsh; do
-    echo prog is ${prog}
+    echo Installing rc files for ${prog}
     for file in ~/public-config/${prog}*; do
         if [[ -d ${file} ]]; then continue; fi
         basename=$(basename ${file})
@@ -13,9 +13,15 @@ for prog in bash input gdb irb vim zsh; do
     done
 done
 
-.bashrc
+. .bashrc
 
-# TODO: install OS_specific
+# Install .i3 config
+mkdir -p ~/.i3
+cd ~/.i3
+ln -s ~/public-config/OS_specific/Linux/i3_config
+mv i3_config config
+
+# TODO: install other OS_specific
 # TODO: install bin
 # TODO: install vim plugins
 # TODO: install stderred, but NOT on Cygwin

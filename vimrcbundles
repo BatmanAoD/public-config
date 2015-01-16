@@ -39,11 +39,7 @@ Bundle 'BenBergman/vsearch.vim'
 " TODO figure out how to use this
 " pymode
 Bundle 'klen/python-mode'
-" TODO apparently this is tricky to get working on Windows, unfortunately.
-" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
-if !has('win32')
-    Bundle 'Valloric/YouCompleteMe'
-endif
+Bundle 'Raimondi/delimitMate'
 
 " I really don't know why this is necessary in the Windows-native vim.
 if has('win32')
