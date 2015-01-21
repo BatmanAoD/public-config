@@ -1,4 +1,11 @@
 " Bundles incompatible with older Vim
+
+" TODO apparently this is tricky to get working on Windows, unfortunately.
+" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
+if !has('win32')
+    Bundle 'Valloric/YouCompleteMe'
+endif
+
 " These should take care of all the 'very magic' nonsense
 " ......buuuuuut note that CRDispatcher actually only works with Vim 7.4+, not
 " 7.3+. For now I'm not going to worry about it.

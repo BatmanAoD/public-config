@@ -15,7 +15,9 @@
 # exec xmodmap -e 'keycode 0xff67 = Caps_Lock'
 
 set $mod Mod4
-set $TERMINAL /usr/bin/konsole
+# TODO figure out a way to auto-select a terminal.
+set $TERMINAL /usr/bin/gnome-terminal
+# set $TERMINAL /usr/bin/konsole
 
 # font for window titles. ISO 10646 = Unicode
 # ....not sure why I can't use it...
