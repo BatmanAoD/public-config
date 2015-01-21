@@ -540,7 +540,9 @@ function! ScrollLarge()
 endfunction
 
 augroup guiopts
-    autocmd BufEnter * :call ScrollLarge()
+    " (hopefully) temporarily disabled, because this causes undesired
+    " window-resizing sometimes
+    " autocmd BufEnter * :call ScrollLarge()
     autocmd GUIEnter * nnoremap <Leader>s :call ToggleGuiScroll()<cr>
     autocmd GUIEnter * set guioptions-=m
     autocmd GUIEnter * nnoremap <Leader>m :call ToggleGuiMenu()<cr>
