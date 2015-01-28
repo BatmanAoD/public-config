@@ -5,6 +5,18 @@ Various config files I want to keep synchronized between working environments. S
 
 Also contains various general-use scripts.
 
+Installation instructions
+-----------
+You may get more out of these scripts if you "cherry-pick" them for individual features you want, especially if you already have your own set of config files that you typically use.
+
+However, if you do not already have your own config files you'd like to preserve, you should be able to get essentially the same setup used by BatmanAoD by issuing the following commands on a Linux box (though this procedure is untested):
+```
+git clone https://github.com/BatmanAoD/public-config ~/public-config
+~/public-config/install
+```
+Note that the `install` script does **not** automatically replace existing `rc` scripts, so you may need to delete them (e.g. `rm -f ~/.bashrc`) first.
+Also note that this does **not** install `stderred`. The `bashrc` file here assumes that `stderred` is installed in `/usr/lib/stderred`, which is a **shared** location (and therefore requires root permission, e.g. through `sudo`, for installation). Every time the `bashrc` file is loaded, if `stderred` is not found in the expected location, it will issue a warning that cites the URL of the `stderred` GitHub repo.
+
 config files included directly
 -----------
  * most rc files of the form ~/.<type> are included in this directory simply
