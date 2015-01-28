@@ -9,7 +9,7 @@ Installation instructions
 -----------
 You may get more out of these scripts if you "cherry-pick" them for individual features you want, especially if you already have your own set of config files that you typically use.
 
-However, if you do not already have your own config files you'd like to preserve, you should be able to get essentially the same setup used by BatmanAoD by issuing the following commands on a Linux box (though this procedure is untested):
+However, if you do not already have your own config files you'd like to preserve, you should be able to get essentially the same setup used by BatmanAoD by issuing the following commands on a Linux box. (Note: this is basically untested; the one time I've tried it, it mostly worked but seemed to hang while attempting to install one of the Vim plugins I use. This may be because I forgot to give myself `sudo` permissions before installing, though.)
 ```
 git clone https://github.com/BatmanAoD/public-config ~/public-config
 ~/public-config/install
