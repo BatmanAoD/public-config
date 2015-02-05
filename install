@@ -13,22 +13,38 @@ for prog in bash input gdb irb vim zsh; do
     done
 done
 
-. .bashrc
+mkdir -p ~/bin
+cd ~/bin
+for prog in ~/public-config/bin/*; do
+    basename=$(basename ${prog})
+    if [[ ! -e ${basename} ]]; then
+        echo Installing ~/bin/${basename}
+        ln -s ${prog}
+    else
+        echo ${basename} already installed
+    fi
+done
 
 # Install .i3 config
 mkdir -p ~/.i3
 cd ~/.i3
-ln -s ~/public-config/OS_specific/Linux/i3_config
-mv i3_config config
+if [[ ! -e config ]]; then
+    echo Installing i3 config
+    ln -s ~/public-config/OS_specific/Linux/i3_config
+    mv i3_config config
+else
+    echo i3 config already installed
+fi
 
 # TODO: install other OS_specific
-# TODO: install bin
-# TODO: install vim plugins
-# TODO: install stderred, but NOT on Cygwin
+# TODO: install stderred, but NOT on Cygwin (source bashrc and check
+# Cygwin variable)
+# . .bashrc
 
 # TODO: test this
 vundle_bundle=~/.vim/bundle/Vundle.vim
 if [[ ! -a ${vundle_bundle} ]]; then
+    echo Installing Vundle plugins
     git clone https://github.com/gmarik/Vundle.vim.git ${vundle_bundle}
     vim "+BundleInstall" "+qa"
 fi

@@ -3,7 +3,9 @@
 " TODO apparently this is tricky to get working on Windows, unfortunately.
 " See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
 if !has('win32')
-    Bundle 'Valloric/YouCompleteMe'
+    " XXX TODO For now, disable completely. Setup for this plugin is
+    " unexpectedly complicated.
+    " Bundle 'Valloric/YouCompleteMe'
 endif
 
 " These should take care of all the 'very magic' nonsense

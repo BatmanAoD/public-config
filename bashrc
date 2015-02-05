@@ -35,6 +35,12 @@ else
     PERSONALMACHINEPATH=
 fi
 
+# Ensure my personal $HOME/bin dir is on $PATH.
+HOMEBIN=$HOME/bin
+if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
+    export PATH="${PATH:+"$PATH:"}$HOMEBIN"
+fi
+
 CYGWIN=false
 if grep -q Cygwin <(uname -o); then
     CYGWIN=true
@@ -43,11 +49,6 @@ if grep -q Cygwin <(uname -o); then
     set -o igncr
     CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
     # taken from http://superuser.com/a/39995/199803
-    #TODO figure out why this was a problem in the first place.
-    HOMEBIN=$HOME/bin
-    if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
-        PATH="${PATH:+"$PATH:"}$HOMEBIN"
-    fi
 fi
 
 # Check that I have the rest of my "public-config" stuff.
