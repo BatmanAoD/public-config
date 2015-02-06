@@ -10,7 +10,9 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 #
 # Get correct monitor resolution (use defaults in script for now)
-exec ~/bin/vbox-setscr
+exec ~/bin/vbox4kauto
+# XXX not working yet...
+#exec ~/bin/vbox-setscr
 #
 # 'Return' remapping has odd side-effect of disabling $mod+Enter shortcut.
 # exec xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape' -e 'keycode 0x09 = Return'
@@ -42,8 +44,6 @@ bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
-# for Windows VNC compatibility...
-bindsym $mod+o focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left

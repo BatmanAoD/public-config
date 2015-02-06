@@ -2,7 +2,7 @@
 
 cd ~
 
-for prog in bash input gdb irb vim zsh; do
+for prog in bash input gdb irb vim zsh git; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/${prog}*; do
         if [[ -d ${file} ]]; then continue; fi
@@ -12,6 +12,9 @@ for prog in bash input gdb irb vim zsh; do
         mv {,.}${basename}
     done
 done
+
+# Use .gitignore globally
+git config --global core.excludesfile ~/.gitignore
 
 mkdir -p ~/bin
 cd ~/bin

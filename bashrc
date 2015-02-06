@@ -216,13 +216,7 @@ PS1="\[\e[0;36m\]${PS1}\[\e[m\]"
 export PS1
 
 # Uncomment the following line to share history in all windows.
-# Presumably this is pretty slow....
-# ...also I should probably make sure it doesn't overwrite anything
 # PROMPT_COMMAND="history -a;history -c;history -r"
-
-# unset LANG so that some commands may run faster
-# .....?
-# unset LANG
 
 # Make `less` display colors and not clear the screen
 # ....not reeeeeally sure what this does...
@@ -236,6 +230,8 @@ fi
 
 # Aliases, functions, and site-specific config files
 for bashfile in ${HOME}/.bash_!(profile|history); do
+    # We could skip `.swp` files, but in theory these are technically all
+    # symlinks anyway, so the `.swp` files will be elsewhere.
     . ${bashfile}
 done
 

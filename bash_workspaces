@@ -1,0 +1,28 @@
+#!/bin/bash
+# The shebang is just to ensure that Vim knows how to highlight this file.
+
+# Set up aliases, etc for workspaces.
+
+WORKSPACEDIR=~/workspaces
+wkslist=""
+
+searchproj () {
+    # $1 is project "type"
+    # $2 is project "dir marker" (e.g. .git for Git)
+    echo Generating aliases for $1 projects:
+    # Stolen from http://stackoverflow.com/a/11998951/1858225
+    # Follow symbolic links
+    for wksdir in $(find -L $WORKSPACEDIR -name $2 -type d -prune); do
+        fullpath=$(dirname $wksdir)
+        projname=$(basename $fullpath)
+        if [[ $wkslist =~ $projname ]]; then
+            echo "Warning: duplicate project name ${projname}!" >&2
+            echo "No aliases for ${fullpath} will be generated." >&2
+        else
+            echo " - ${projname} at ${fullpath}"
+            alias go${projname}="go ${fullpath}"
+        fi
+    done
+}
+
+searchproj Git .git
