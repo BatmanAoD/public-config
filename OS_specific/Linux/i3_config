@@ -9,6 +9,11 @@
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 #
+# Get correct monitor resolution (use defaults in script for now)
+exec ~/bin/vbox4kauto
+# XXX not working yet...
+#exec ~/bin/vbox-setscr
+#
 # 'Return' remapping has odd side-effect of disabling $mod+Enter shortcut.
 # exec xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape' -e 'keycode 0x09 = Return'
 # ...this one doesn't work?? even with 'clear', 'remove', 'add', etc...
@@ -20,8 +25,7 @@ set $TERMINAL /usr/bin/gnome-terminal
 # set $TERMINAL /usr/bin/konsole
 
 # font for window titles. ISO 10646 = Unicode
-# ....not sure why I can't use it...
-#font -misc-liberation mono-medium-r-normal-13-120-75-75-C-70-iso10646-1
+font -misc-liberation mono-medium-r-normal-13-120-75-75-C-70-iso10646-1
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -40,8 +44,6 @@ bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
-# for Windows VNC compatibility...
-bindsym $mod+o focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -88,16 +90,16 @@ bindsym $mod+a focus parent
 #bindcode $mod+d focus child
 
 # workspace -> screen assignment
-workspace 2 output DP-0
-workspace 4 output DP-0
-workspace 6 output DP-0
-workspace 8 output DP-0
-workspace 10 output DP-0
-workspace 1 output DVI-I-1
-workspace 3 output DVI-I-1
-workspace 5 output DVI-I-1
-workspace 7 output DVI-I-1
-workspace 9 output DVI-I-1
+workspace 2 output VBOX0
+workspace 4 output VBOX0
+workspace 6 output VBOX0
+workspace 8 output VBOX0
+workspace 10 output VBOX0
+workspace 1 output VBOX1
+workspace 3 output VBOX1
+workspace 5 output VBOX1
+workspace 7 output VBOX1
+workspace 9 output VBOX1
 
 # switch to workspace
 bindsym $mod+1 workspace 1
@@ -211,38 +213,13 @@ new_window normal
 # error, possibly b/c incompatible w/ this i3 version
 # for_window [window_role="pop-up"] floating enable
 
-# I think globbing only works in later versions of i3.
-# for_window [title="VUE*"] floating enable
-#
-# this stuff is mostly Avago-specific, but not sensitive IP.
-
 for_window [title="Yakuake"] floating enable
 for_window [class="xmessage"] floating enable
 
-for_window [title="arttx"] floating enable
-for_window [title="art.main"] floating enable
-for_window [title="art.main1"] floating enable
-for_window [title="art.main2"] floating enable
-for_window [title="art.main3"] floating enable
-for_window [title="art.main4"] floating enable
-for_window [title="art.status"] floating enable
-for_window [title="art.pmenu"] floating enable
-for_window [title="schtx"] floating enable
-for_window [title="sch.main"] floating enable
-for_window [title="sch.main2"] floating enable
-for_window [title="sch.status"] floating enable
-for_window [title="sch.pmenu"] floating enable
-for_window [title="PCO Creation Tool"] floating enable
-for_window [title="Open an import file"] floating enable
+# i3 status bar
+bar {
+    status_command i3status
+}
 
-# annoying b/c of tab-dragging...
-# assign Chrome 2
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
-exec i3status | i3bar -d
-
-# Start other stuff
-exec ~/bin/start_vnc
-exec ~/bin/start_synergy
-exec ~/bin/start-chrome
+assign [class="chrome"] 2
