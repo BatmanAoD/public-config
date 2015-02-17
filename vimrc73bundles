@@ -1,11 +1,35 @@
 " Bundles incompatible with older Vim
 
+let g:using_ycm = 0
 " TODO apparently this is tricky to get working on Windows, unfortunately.
 " See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
 if !has('win32')
-    " XXX TODO For now, disable completely. Setup for this plugin is
-    " unexpectedly complicated.
-    " Bundle 'Valloric/YouCompleteMe'
+    " TODO this only works if it's been correctly compiled, which Vundle can't
+    " do on its own. So it should be conditionally enabled, and unfortunately
+    " I'm not sure exactly what the condition should be.
+    Bundle 'Valloric/YouCompleteMe'
+    let g:ycm_confirm_extra_conf = 0
+    let g:using_ycm = 1
+endif
+
+if !g:using_ycm
+    " YCM attempts to do everything Syntastic would do, so there should be no
+    " reason to use Syntastic.
+    Bundle 'scrooloose/syntastic'
+    " TODO figure out a way to generically figure out the 'best' compiler to use
+    let g:syntastic_cpp_compile = "/opt/gcc/4.9.2/bin/g++4.9"
+    " TODO figure out a way to define flags per-project, e.g. by reading CMake
+    " files
+    let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++ -Wl,-rpath,/opt/gcc/4.9.2"
+    " TODO re-evaluate these after reading the syntastic manual
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 1
 endif
 
 " These should take care of all the 'very magic' nonsense

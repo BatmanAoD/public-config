@@ -149,7 +149,7 @@ export MANWIDTH=80
 export GIT_ASKPASS=
 
 # create a personal-use tmp dir
-export TMP="${PERSONALMACHINEPATH}/tmp/personal_tmp"
+export TMP="$HOME/tmp"
 mkdir -p $TMP
 
 # Create the needed history directories

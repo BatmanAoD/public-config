@@ -77,13 +77,13 @@ else
 fi
 
 # Ensure the total screen size is correct
-logexec xrandr --fb $(($hres0 + $hres1))x$(($vres0 + $vres1))
+logexec xrandr --fb $(($hres0 + $hres1))x$(($vres0 > $vres1 ? $vres0 : $vres1))
 
 # Get the modeline information we want for the following resolutions:
 # Left
-RES1="$hres1 $vres1 60"
+RES1="$hres1 $vres1 30"
 # Right
-RES0="$hres0 $vres0 60"
+RES0="$hres0 $vres0 30"
 logwrite Left  res: $RES1
 logwrite Right res: $RES0
 
@@ -91,34 +91,38 @@ logwrite Right res: $RES0
 MAP0="VBOX0"
 MAP1="VBOX1"
 
-# Create names with RANDOMIZED tags.
-NAME0=mode0-${hres0}x${vres0}-$RANDOM
-NAME1=mode1-${hres1}x${vres1}-$RANDOM
+# Create names
+NAME0=m0-${hres0}x${vres0}
+NAME1=m1-${hres1}x${vres1}
 
-# Function for getting a viable modeline from `gtf`
+# Function for getting a viable modeline from `cvt`
 fixmodeline () {
-    # Explicitly specify 100.00; gtf gives inconsistent numbers that
-    # appear to cause problems
-    echo "100.00 $(echo $* | sed 's/\s+/ /' | cut -d ' ' -f4-11)"
+    # # Explicitly specify first term; cvt gives inconsistent numbers that appear
+    # # to cause problems
+    # echo "93.73 $(echo $* | sed 's/\s+/ /' | cut -d ' ' -f4-11)"
+    echo "$(echo $* | sed 's/\s+/ /' | cut -d ' ' -f3-11)"
 }
 
 # Generate settings
-SETTINGS0="$NAME0 $(fixmodeline $( gtf $RES0 | grep Modeline))"
-SETTINGS1="$NAME1 $(fixmodeline $( gtf $RES1 | grep Modeline))"
+SETTINGS0="$NAME0 $(fixmodeline $( cvt $RES0 | grep Modeline))"
+SETTINGS1="$NAME1 $(fixmodeline $( cvt $RES1 | grep Modeline))"
 logwrite Left  settings: $SETTINGS1
 logwrite Right settings: $SETTINGS0
 
-# Create the new modelines via xrandr
-logexec xrandr --newmode $SETTINGS0
+# Delete the existing mode, if any (do not exit on error)
+logexec xrandr --rmmode $NAME1 || true
+# Create the new modeline via xrandr
 logexec xrandr --newmode $SETTINGS1
-
-# Add the newly created modelines to devices
-logexec xrandr --addmode $MAP0 $NAME0
+# Add the newly created modeline to device
 logexec xrandr --addmode $MAP1 $NAME1
-
-# Finally, enable the new modes
-logexec xrandr --output $MAP0 --mode $NAME0
+# Finally, enable the new mode
 logexec xrandr --output $MAP1 --mode $NAME1
+
+# Repeat for MAP0
+logexec xrandr --rmmode $NAME0 || true
+logexec xrandr --newmode $SETTINGS0
+logexec xrandr --addmode $MAP0 $NAME0
+logexec xrandr --output $MAP0 --mode $NAME0 --right-of $MAP1
 
 # Clear EXIT trap
 trap - EXIT

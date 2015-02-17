@@ -169,22 +169,7 @@ alias iwks=qwks
 alias ic='qi workspace'
 alias qc='ic'
 
-
-# Won't work without "start_synergy" and "start_vnc" scripts, which are
-# currently not included in public_config since they may be system-specific.
-alias swin='~/bin/start_synergy'
-alias svnc='~/bin/start_vnc &'
-# The "official" way of doing things...which doesn't work for
-# screen :0 (by design). It also starts a vnc *viewing* session, so that I 
-# can see screen 1 on my Linux box.
-#alias svnc='start-vnc &'
-# because x0vncserver conflicts with synergy...
-# but for now I'm not using x0vncserver
-alias spause='pkill synergy; echo "press ENTER to resume Synergy."; read cont; swin'
-# while using VNC, turn monitors on/off
-alias xon='xset dpms force on'
-alias xoff='xset dpms force off'
-
+# Requires google docs commandline tools to be installed
 alias gdoc='google docs edit --editor="$EDITOR"'
 
 # some funcs and aliases aren't immediately loaded. Define these.
@@ -195,6 +180,12 @@ alias defallfuncs='eval ${functions_with_defs}'
 alias tmppath="export PATH=\$TMP/ex:\$PATH"
 # one-time only
 alias tmpex="PATH=\$TMP/ex:\$PATH "
+
+# For compiling C++
+# XXX info regarding paths for different compilers should be kept somewhere
+# else, so I can use it here, in zsh setup, in YouCompleteMe, etc.
+alias qg++='clear && /opt/gcc/4.9.2/bin/g++4.9 -Wall -Wextra -Wpedantic -std=c++14 -static-libstdc++ -Wl,-rpath,/opt/gcc/4.9.2'
+alias qclang++='/opt/llvm/3.5.1/build/Release+Asserts/bin/clang++ -std=c++14 -Wall -Wextra -Wpedantic'
 
 # make some aliases for "doge"-style git.
 function dogegit() {

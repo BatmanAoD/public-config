@@ -28,7 +28,7 @@ Bundle 'LargeFile'
 " TODO figure out why this doesn't seem to work, or figure out a different
 " 'tail-like' configuration
 " Bundle 'Tail-Bundle'
-" This *apparently* getting the right script (1928), but only because of
+" This is *apparently* getting the right script (1928), but only because of
 " numerical precedence. This is a known bug, unfortunately.
 Bundle 'Rename'
 " This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
@@ -40,6 +40,8 @@ Bundle 'BenBergman/vsearch.vim'
 " pymode
 Bundle 'klen/python-mode'
 Bundle 'Raimondi/delimitMate'
+" For attempting to debug syntax issues
+Bundle 'SyntaxAttr.vim'
 
 " I really don't know why this is necessary in the Windows-native vim.
 if has('win32')
