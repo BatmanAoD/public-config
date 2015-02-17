@@ -35,8 +35,7 @@ if exists("+undofile")
         if has('win32')
             :silent !mkdir \%HOMEPATH\%\vimfiles\undodir
         else
-            " :silent !mkdir -p expand(&undodir)
-            " For now, do nothing, because I don't have time for this garbage.
+            :silent call system('mkdir -p ' . &undodir)
         endif
     endif
     set undofile
