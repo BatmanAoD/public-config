@@ -70,7 +70,11 @@ let g:jellybeans_overrides = {
 \   'SpecialKey':   { 'guifg': 'FFFA00' },
 \   'NonText':      { 'guifg': '444499' },
 \   'Todo':         { 'guibg': '772222' },
+\   'YcmWarningSign'    : { 'guibg': '774444' },
+\   'YcmWarningSection' : { 'guibg': '774444' },
 \}
+" The ycm groups define YCM warning highlighting; default is 'todo'.
+" Errors match 'error', which....is possibly the same as 'todo'.
 
 " Other plugin settings:
 " I don't really like folds
