@@ -89,7 +89,8 @@ fi
 stderred_path=${PERSONALMACHINEPATH}/usr/lib/stderred
 
 if [[ -d ${stderred_path}  && \
-      -r ${stderred_path}/build/libstderred.so ]]; then
+      -r ${stderred_path}/build/libstderred.so && \
+      ":$LD_PRELOAD:" != *":${stderred_path}:"* ]]; then
     export LD_PRELOAD="${stderred_path}/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
 else
     if ! $CYGWIN; then

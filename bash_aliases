@@ -209,3 +209,5 @@ alias savealias=save_alias
 alias savalias=save_alias
 alias salias=save_alias
 # Aliases added by the "save_alias" function
+alias reninja='assert-pwd-is-obj && rm -rf * && cmake -G Ninja ../src/ && ninja'
+alias rebuild='build -C'

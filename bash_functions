@@ -239,7 +239,7 @@ edline () {
     # I don't know how to get wc to suppress the file name, so I use awk.
     # Note that this only works with the single-bracket conditional.
     if [ $1 -le $(wc -l $2 | awk '{print $1}') ] 2>/dev/null ; then
-        $EDITOR +$1 $2
+        edit +$1 $2
     else
         echo "first arg must be an integer <= the number of lines in" >&2
         echo "the file specified by the second arg" >&2
@@ -307,7 +307,7 @@ edfunc () {
         return
     fi
     cp $tmp_def_file{,.bak}
-    $EDITOR $tmp_def_file
+    edit $tmp_def_file
     diff $tmp_def_file{,.bak} >/dev/null 2>&1 
     if [[ $? -eq 1 ]]; then
         . $tmp_def_file
@@ -316,7 +316,7 @@ edfunc () {
 
 edvar() {
     eval echo \$$1 > $TMP/editvar_$1
-    $EDITOR $TMP/editvar_$1
+    edit $TMP/editvar_$1
     eval export $1=\"`cat $TMP/editvar_$1`\"
     rm $TMP/editvar_$1
 }
@@ -517,3 +517,12 @@ save_function ()
     declare -f $tosave >> ~/.bash_functions$suffix
 }
 # Functions defined by 'save_function'
+assert-pwd-is-obj () 
+{ 
+    if [[ $(basename $(pwd)) == obj ]] && [[ ! -e ./.git ]]; then
+        return 0;
+    else
+        echo "NOT IN OBJ DIRECTORY! No action taken." 1>&2;
+        return 1;
+    fi
+}

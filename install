@@ -2,7 +2,7 @@
 
 cd ~
 
-for prog in bash input gdb irb vim zsh git; do
+for prog in bash input gdb irb vim zsh git ycm; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/${prog}*; do
         if [[ -d ${file} ]]; then continue; fi

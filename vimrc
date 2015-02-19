@@ -4,18 +4,24 @@
 "   directories
 " * in non-gui Vim, help window is apparently unavailable
 
+" Get rid of any existing mappings. (Must happen BEFORE trying to apply plugin
+" mappings!!!!)
+mapclear
+
 " make sure runtimepath has default value
 set rtp&
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
 
-" Setup plugin manager and load plugins ONCE.
+" Setup plugin manager and load plugins
 if has('win32')
     let pluginfile = expand("~/_vimrcbundles")
 else
     let pluginfile = expand("~/.vimrcbundles")
 endif
-if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
+if filereadable(pluginfile)
+" Should plugins only be loaded once?
+" if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
   exec ":source " . pluginfile
   let g:pluginmgr_setup="done"
 endif
@@ -25,17 +31,14 @@ if has('gui_running')
     if exists("g:jellybeans_overrides")
         colors jellybeans
     else
-        colors desert
+        colors torte
     endif
         set enc=utf-8
         set mouse=a
 else
-    colors desert
+    colors torte
     set mouse=
 endif
-
-" Get rid of any existing mappings.
-mapclear
 
 set noerrorbells t_vb=
 set hidden

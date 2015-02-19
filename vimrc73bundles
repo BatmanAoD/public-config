@@ -9,6 +9,7 @@ if !has('win32')
     " I'm not sure exactly what the condition should be.
     Bundle 'Valloric/YouCompleteMe'
     let g:ycm_confirm_extra_conf = 0
+    let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
     let g:using_ycm = 1
 endif
 
