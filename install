@@ -7,9 +7,13 @@ for prog in bash input gdb irb vim zsh git ycm; do
     for file in ~/public-config/${prog}*; do
         if [[ -d ${file} ]]; then continue; fi
         basename=$(basename ${file})
-        if [[ -e ${basename} ]]; then rm ${basename}; fi
-        ln -s ${file}
-        mv {,.}${basename}
+        if [[ -h ${basename} ]]; then rm ${basename}; fi
+        if [[ -e ${basename} ]]; then
+            echo "ERROR: Can't overwrite non-symlink file: ${basename}" >&2
+        else
+            ln -s ${file}
+            mv {,.}${basename}
+        fi
     done
 done
 
