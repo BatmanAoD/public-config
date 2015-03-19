@@ -10,9 +10,10 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 #
 # Get correct monitor resolution (use defaults in script for now)
-exec ~/bin/vbox4kauto
 # XXX not working yet...
-#exec ~/bin/vbox-setscr
+exec ~/bin/vbox-setscr
+# ...so try with this one, too....
+exec ~/bin/vbox4kauto
 #
 # 'Return' remapping has odd side-effect of disabling $mod+Enter shortcut.
 # exec xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape' -e 'keycode 0x09 = Return'

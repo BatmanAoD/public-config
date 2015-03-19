@@ -144,16 +144,14 @@ alias sudoinstall=sinstall
 alias edvi="edit ~/.vimrc*"
 
 # crontab uses VISUAL, but this only works in batch mode.
-# Currently, VISUAL implies batch mode.
-# alias edcron="VISUAL=\"$EDITOR\" crontab -e"
-alias edcron="crontab -e"
+alias edcron="VISUAL=\"$EDITOR\" crontab -e"
 
 # convenient way to add/edit bash stuff
 # Note that VISUAL is by default set up to use the -f option,
 # so we don't need to use EDITOR
-alias edrc="$VISUAL ~/.bashrc && reload"
-alias edal="$VISUAL ~/.bash_aliases* && reload"
-alias edfx="$VISUAL ~/.bash_functions* && reload"
+alias edrc="$EDITOR ~/.bashrc && reload"
+alias edal="$EDITOR ~/.bash_aliases* && reload"
+alias edfx="$EDITOR ~/.bash_functions* && reload"
 
 # configure i3 setup
 # TODO: when I switch to generating this, edit source instead
@@ -181,12 +179,6 @@ alias tmppath="export PATH=\$TMP/ex:\$PATH"
 # one-time only
 alias tmpex="PATH=\$TMP/ex:\$PATH "
 
-# For compiling C++
-# XXX info regarding paths for different compilers should be kept somewhere
-# else, so I can use it here, in zsh setup, in YouCompleteMe, etc.
-alias qg++='clear && /opt/gcc/4.9.2/bin/g++4.9 -Wall -Wextra -Wpedantic -std=c++14 -static-libstdc++ -Wl,-rpath,/opt/gcc/4.9.2'
-alias qclang++='/opt/llvm/3.5.1/build/Release+Asserts/bin/clang++ -std=c++14 -Wall -Wextra -Wpedantic'
-
 # make some aliases for "doge"-style git.
 function dogegit() {
     alias much=git
@@ -209,5 +201,3 @@ alias savealias=save_alias
 alias savalias=save_alias
 alias salias=save_alias
 # Aliases added by the "save_alias" function
-alias reninja='assert-pwd-is-obj && rm -rf * && cmake -G Ninja ../src/ && ninja'
-alias rebuild='build -C'

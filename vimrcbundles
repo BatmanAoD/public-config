@@ -21,7 +21,6 @@ Bundle 'terryma/vim-multiple-cursors'
 " wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
 " some slow-down when initiating a search. So I'm disabling it.
 " Bundle 'SearchComplete'
-Bundle 'sjl/gundo.vim.git'
 Bundle 'sjl/clam.vim'
 Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
@@ -41,9 +40,17 @@ Bundle 'BenBergman/vsearch.vim'
 " TODO figure out how to use this
 " pymode
 Bundle 'klen/python-mode'
-Bundle 'Raimondi/delimitMate'
+" Er, NVM, I hate this.
+" Bundle 'Raimondi/delimitMate'
 " For attempting to debug syntax issues
 Bundle 'SyntaxAttr.vim'
+" For comments. Could switch to tpope/vim-commentary
+" See discussion here: http://www.reddit.com/r/vim/comments/26mszm/what_is_everyones_favorite_commenting_plugin_and/
+Bundle 'tomtom/tcomment_vim'
+" Git stuff
+Bundle 'tpope/vim-fugitive'
+" Asynchronous commands (TODO: learn to use this)
+Bundle 'tpope/vim-dispatch'
 
 call vundle#end()
 filetype plugin indent on     " required!
@@ -83,6 +90,21 @@ let g:pymode_rope = 0
 set winfixwidth
 set winfixheight
 set guioptions-=L
+function! SetCppDispatchCmd()
+    " Check if my BC infrastructure suite is available and that I'm in a directory
+    " that can use it....
+    silent call system('findpdirs')
+    if ! v:shell_error
+        let b:dispatch = 'build'
+    " Otherwise, use my generic 
+    else
+        let b:dispatch = 'qg++'
+    endif
+endfunction
+
+augroup CppDispatch
+    autocmd BufEnter *.cpp :call SetCppDispatchCmd()
+augroup END
 
 " Mappings for use with plugins:
 nnoremap <silent> <F5> :GundoToggle<CR>

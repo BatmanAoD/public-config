@@ -169,39 +169,68 @@ fi
 set -o monitor          # enable job control
 set -o vi               # vi command-line editing
 
-# If one of EDITOR or VISUAL is set to a non-default value, use that value
-# to set the value of the other variable as well.
-DEFAULT_TERMINAL_EDITOR=vim
-DEFAULT_VISUAL_EDITOR="gvim -f"
-DEFAULT_EDITOR_PATTERN="^(vi|$DEFAULT_TERMINAL_EDITOR|$DEFAULT_VISUAL_EDITOR)?\$"
-DEFAULT_VISUAL_PATTERN="^($DEFAULT_TERMINAL_EDITOR|$DEFAULT_VISUAL_EDITOR)?\$"
-if [[ ! $VISUAL =~ $DEFAULT_EDITOR_PATTERN && 
-        $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
-    echo "Using non-default value for both EDITOR and VISUAL: '$VISUAL'"
-    EDITOR=$VISUAL
-elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN && 
-          $VISUAL =~ $DEFAULT_EDITOR_PATTERN ]]; then
-    echo "Using non-default value for both EDITOR and VISUAL: '$EDITOR'"
-    VISUAL=$EDITOR
-elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
-    echo "Using non-default values for EDITOR and VISUAL:"
-    echo "EDITOR='$EDITOR'"
-    echo "VISUAL='$VISUAL'"
-fi
-# If VISUAL is still not set, assign my preferred values to both EDITOR and
-# VISUAL.
-if [[ -z $VISUAL ]]; then
-    if [[ -n $DISPLAY ]]; then
-        # always run in foreground unless '&' is used; useful with bash shortcut
-        # to edit command in editor
-        # TODO: make this work with cscope??
-        export VISUAL="gvim -f"
-        export EDITOR="gvim -f"
+# This is a nice idea, but kind of overly complicated.
+# # If one of EDITOR or VISUAL is set to a non-default value, use that value
+# # to set the value of the other variable as well.
+# DEFAULT_TERMINAL_EDITOR=vim
+# DEFAULT_VISUAL_EDITOR="gvim -f"
+# DEFAULT_EDITOR_PATTERN="^(vi|$DEFAULT_TERMINAL_EDITOR|$DEFAULT_VISUAL_EDITOR)?\$"
+# DEFAULT_VISUAL_PATTERN="^($DEFAULT_TERMINAL_EDITOR|$DEFAULT_VISUAL_EDITOR)?\$"
+# if [[ ! $VISUAL =~ $DEFAULT_EDITOR_PATTERN && 
+#         $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
+#     echo "Using non-default value for both EDITOR and VISUAL: '$VISUAL'"
+#     EDITOR=$VISUAL
+# elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN && 
+#           $VISUAL =~ $DEFAULT_EDITOR_PATTERN ]]; then
+#     echo "Using non-default value for both EDITOR and VISUAL: '$EDITOR'"
+#     VISUAL=$EDITOR
+# elif [[ ! $EDITOR =~ $DEFAULT_EDITOR_PATTERN ]]; then
+#     echo "Using non-default values for EDITOR and VISUAL:"
+#     echo "EDITOR='$EDITOR'"
+#     echo "VISUAL='$VISUAL'"
+# fi
+# # If VISUAL is still not set, assign my preferred values to both EDITOR and
+# # VISUAL.
+# if [[ -z $VISUAL ]]; then
+#     if [[ -n $DISPLAY ]]; then
+#         # always run in foreground unless '&' is used; useful with bash shortcut
+#         # to edit command in editor
+#         # TODO: make this work with cscope??
+#         export VISUAL="gvim -f"
+#         export EDITOR="gvim -f"
+#     else
+#         export VISUAL=vim
+#         export EDITOR=vim
+#     fi
+# fi
+
+which nvim &>/dev/null
+if [[ $? -eq 0 ]]; then
+    export EDITOR=nvim
+    # Custom script for launcing nvim in a new gnome terminal
+    # TODO the native GUI interface for nvim will make this unnecessary
+    which NewNvimWindow &>/dev/null
+    if [[ $? -eq 0 && -n $DISPLAY ]]; then
+        export NEWWINDOW_EDIT_CMD=NewNvimWindow
+        # TODO use "-f" with native GUI once support is available
+        export VISUAL=nvim
     else
-        export VISUAL=vim
+        export NEWWINDOW_EDIT_CMD=nvim
+        export VISUAL=nvim
+    fi
+else
+    if [[ -n $DISPLAY ]]; then
+        export NEWWINDOW_EDIT_CMD=gvim
+        export EDITOR="gvim -f"
+        export VISUAL="gvim -f"
+    else
+        export NEWWINDOW_EDIT_CMD=vim
         export EDITOR=vim
+        export VISUAL=vim
     fi
 fi
+
+
 export PEDITOR=$EDITOR
 export EDOVER=$VISUAL
 set -o ignoreeof          # do not let CNTL-D exit the shell

@@ -15,6 +15,8 @@ flags = [
     '/opt/llvm/3.5.1/tools/clang/include/',
     '-isystem',
     '/opt/gcc/4.9.2/include/',
+    '-isystem',
+    '/opt/Qt5.4.0/5.4/gcc/include/QtCore'
     '-I',
     '.',
     '-std=c++14'
@@ -27,7 +29,7 @@ def GetCompilationDBase(filename):
     working_dir = os.path.dirname(filename)
     try:
         compilation_database_folder = subprocess.check_output(
-            ['build', '-o'], cwd=working_dir).strip()
+            ['findpdirs', '-p'], cwd=working_dir).strip()
     except subprocess.CalledProcessError:
         return None
 
@@ -90,11 +92,7 @@ def GetCompilationInfoForFile(database, filename):
         return None
     return database.GetCompilationInfoForFile(filename)
 
-
-def FlagsForFile(filename, **kwargs):
-    """
-    To set kwargs['client_data'], use the g:ycm_extra_conf_vim_data option
-    """
+def FlagsFromDBase(filename):
     database = GetCompilationDBase(filename)
     if database:
         # Bear in mind that compilation_info.compiler_flags_ does NOT return a
@@ -103,13 +101,19 @@ def FlagsForFile(filename, **kwargs):
         if not compilation_info:
             return None
 
-        final_flags = MakeRelativePathsInFlagsAbsolute(
+        return MakeRelativePathsInFlagsAbsolute(
             compilation_info.compiler_flags_,
             compilation_info.compiler_working_dir_)
 
-        # DO NOT remove `stdlib=libc++`
+def FlagsForFile(filename, **kwargs):
+    """
+    To set kwargs['client_data'], use the g:ycm_extra_conf_vim_data option
+    """
+    final_flags = FlagsFromDBase(filename)
 
-    else:
+    # DO NOT remove `stdlib=libc++`
+
+    if not final_flags:
         relative_to = DirectoryOfThisScript()
         final_flags = MakeRelativePathsInFlagsAbsolute(flags, relative_to)
 

@@ -26,8 +26,10 @@ if filereadable(pluginfile)
   let g:pluginmgr_setup="done"
 endif
 
-" Colors and mouse settings (use jellybeans only if it's loaded as plugin)
-if has('gui_running')
+" Colors and mouse settings (use jellybeans only if it's loaded as plugin;
+" jellybeans only looks good when rich colors are available, which is true for
+" gvim and nvim but not console-vim)
+if has('gui_running') || has('nvim')
     if exists("g:jellybeans_overrides")
         colors jellybeans
     else
@@ -42,8 +44,10 @@ endif
 
 set noerrorbells t_vb=
 set hidden
-" apparently not on by default in 7.4?
 syntax enable
+" TEMPORARY fix for marco highlighting issue; see
+" http://chat.stackexchange.com/rooms/21448/discussion-between-kyle-strand-and-josh-petrie
+hi link cCppOut2 PreProc
 " fancier % matching
 runtime macros/matchit.vim
 " TODO: consider adding one of these as well:
@@ -55,6 +59,10 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
+" Automatically change do directory of current file
+set autochdir
+" All indentation levels should be rounded to a multiple of shiftwidth
+set shiftround
 " switch back to 'block' if this is too open-ended.
 " alternatively, only set to 'all' if I'm editing a file with tabs.
 " This would be easy since I already have the 'PickTabUsage' function.
@@ -88,6 +96,15 @@ function! GenericFile()
     " Include - as a 'word' character
     set iskeyword+=-
 endfunction
+
+" My Cpp settings
+function! CppFile()
+    set shiftwidth=2
+    set softtabstop=2
+    set tw=80
+    set fo=tcroqnlj
+endfunction
+
 " why doesn't this work? Is there something similar that might?
 " autocmd FileType "" | :call GenericFile() | endif
 augroup filetypes
@@ -98,8 +115,7 @@ augroup filetypes
     " The number of indentation columns depends on the language, not on
     " tab usage
     au FileType * if &filetype == "cpp"
-                   \| set shiftwidth=2
-                   \| set softtabstop=2
+                   \| :call CppFile()
                \| else
                    \| set shiftwidth=4
                    \| set softtabstop=4
@@ -141,9 +157,11 @@ set gdefault
 " I don't use vim splits that much, but in any case...
 set splitbelow
 set splitright
-" Figure out what the right behavior is...don't want unintended linebreaks, e.g.
-" when editing a long path in a bash script.
+" Disabled for most files; see below for cpp.
 " set tw=80
+" Delete comment leader when joining lines
+" Other `fo` options for Cpp are set by CppFile
+set fo+=j
 set ww=h,l,<,>
 " start scrolling 5 lines from edge of screen
 set scrolloff=5
@@ -482,12 +500,6 @@ unmap <CR>
 " .....so this is too annoying to use.
 " cnoremap = \=
 
-" Visually select search result
-" TODO: consider using https://github.com/Raimondi/vim_search_objects,
-" which was recommended by http://superuser.com/a/370522/199803
-nnoremap g/ //e<cr>v??<cr>
-nnoremap g? ??b<cr>v//e<cr>
-
 " 'Fix' the weird \n vs \r discrepancy
 " (credit: http://superuser.com/a/743087/199803 
 " .....but the fancy regex is mine)
@@ -510,7 +522,7 @@ nmap <C-s> :%s/
 vmap <C-s> :s/
 " quick word count
 nnoremap <C-c> :%s///n<cr>
-inoremap <C-c> :%s///n<cr>
+vnoremap <C-c> :%s///n<cr>
 
 function! ToggleGuiMenu()
     if(&guioptions =~# 'm')
@@ -581,3 +593,25 @@ augroup END
 
 " If multiple buffers, vsplit them all
 "vert sba
+
+" From https://github.com/joeytwiddle/rc_files/blob/c8264794527c6be685829f08f63fd8dfa2903528/.vim/plugin/joeycommands.vim#L112-131
+" Runs the given Ex command and pipes the output to the given shell command.
+" For example: :PipeToShell syn | grep 'Declaration'
+" I considered other names: CmdOut, PipeToShell
+command! -nargs=+ -complete=command PipeCmd call s:PassVimCommandOutputToShellCommand(<q-args>)
+
+function! s:PassVimCommandOutputToShellCommand(line)
+        let vim_cmd = substitute(a:line, '\s*|.*', '', '')
+        let shell_cmd = substitute(a:line, '^[^|]*|\s*', '', '')
+        " TODO: We could redir to a local variable, to avoid clobbering the 'l' register.
+        redir @l
+                silent exe vim_cmd
+        redir END
+        " To pipe to a shell, the only way I thought of was to put the data into a fresh buffer, and then do :w !...
+        new
+        normal "lP
+        exe 'w !'.shell_cmd
+        " Undo the paste so bwipeout can drop the buffer without complaint
+        normal u
+        exe "bwipeout"
+endfunction

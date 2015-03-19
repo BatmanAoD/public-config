@@ -1,5 +1,8 @@
 " Bundles incompatible with older Vim
 
+" Fork of Gundo with extra features
+Bundle 'dsummersl/gundo.vim'
+
 let g:using_ycm = 0
 " TODO apparently this is tricky to get working on Windows, unfortunately.
 " See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
@@ -62,6 +65,9 @@ vnoremap ? ?\v
 " search.
 noremap // //
 noremap ?? ??
+" no-magic searching
+noremap /v/ /\V
+noremap ?V? ?\V
 
 " Turn on all other features.
 let g:VeryMagicSubstituteNormalise = 1
@@ -75,3 +81,6 @@ let g:VeryMagicRange = 1
 let g:VeryMagicEscapeBackslashesInSearchArg = 1
 let g:SortEditArgs = 1
 
+
+" Additional plugins to try eventually:
+" Lokaltog/vim-easymotion
