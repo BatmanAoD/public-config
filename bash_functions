@@ -220,21 +220,6 @@ fi
 edit () {
     $NEWWINDOW_EDIT_CMD $@
 }
-# ...I can't remember why I set up `edit` to be so complicated.
-# edit () {
-#     if $CYGWIN; then
-#         # XXX TODO figure out how to make `-f` work
-#         # ...maybe do something with the `--fork=2` stuff?
-#         gvim "$@"
-#     elif [[ $VISUAL =~ "gvim" ]]; then
-#         # run in background and suppress job details
-#         # `eval` is for zsh compatibility
-#         (eval $VISUAL $@ &)
-#     else
-#         # Don't try to run normal 'vim' in the background!
-#         eval $VISUAL $@
-#     fi
-# }
 
 # This must change if I switch my editor to Emacs or something.
 edline () {
