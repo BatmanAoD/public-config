@@ -45,7 +45,7 @@ else
         if [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
                 2>/dev/null)" != \
               "$(echo ${git_remote_head} | awk '{print $1}')" ]]; then
-            echo "WARNING: local public config repo is not in sync with github" >&2
+            echo "WARNING: local public config repo is not in sync with github!!" >&2
         fi
     fi
 fi
