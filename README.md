@@ -46,6 +46,8 @@ other TODO items
     easy to change without digging through code and adjusting multiple things 
     (e.g. setting primary editor to be Vim, Emacs, or Sublime)
  * Refactor .vimrc to give it some organization
+ * Better way to set up tools from public git repos, such as stderred
+   (currently handled--sort of--in bashrc) and https://github.com/Russell91/sshrc
 
 setup notes (delete once this is automated)
 -----------

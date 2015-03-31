@@ -29,7 +29,7 @@ def GetCompilationDBase(filename):
     working_dir = os.path.dirname(filename)
     try:
         compilation_database_folder = subprocess.check_output(
-            ['findpdirs', '-p'], cwd=working_dir).strip()
+            ['findpdirs', '-o'], cwd=working_dir).strip()
     except subprocess.CalledProcessError:
         return None
 
@@ -116,6 +116,9 @@ def FlagsForFile(filename, **kwargs):
     if not final_flags:
         relative_to = DirectoryOfThisScript()
         final_flags = MakeRelativePathsInFlagsAbsolute(flags, relative_to)
+
+    # Clang includes are system includes
+    final_flags.append('-isystem-prefix clang_includes/')
 
     return {
         'flags': final_flags,

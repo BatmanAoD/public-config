@@ -87,7 +87,8 @@ nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
 " nnoremap <silent> <2-LeftMouse> <LeftMouse>i
 set nostartofline
 " XTerm clipboard setting
-set clipboard^=unnamedplus
+" set clipboard^=unnamedplus
+set clipboard=unnamed
 
 function! GenericFile()
     " is this what I want?
@@ -102,7 +103,7 @@ function! CppFile()
     set shiftwidth=2
     set softtabstop=2
     set tw=80
-    set fo=tcroqnlj
+    set fo=tcrqnlj
 endfunction
 
 " why doesn't this work? Is there something similar that might?

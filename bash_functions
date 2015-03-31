@@ -506,12 +506,3 @@ save_function ()
     declare -f $tosave >> ~/.bash_functions$suffix
 }
 # Functions defined by 'save_function'
-assert-pwd-is-obj () 
-{ 
-    if [[ $(basename $(pwd)) == obj ]] && [[ ! -e ./.git ]]; then
-        return 0;
-    else
-        echo "NOT IN OBJ DIRECTORY! No action taken." 1>&2;
-        return 1;
-    fi
-}

@@ -14,6 +14,12 @@ if !has('win32')
     let g:ycm_confirm_extra_conf = 0
     let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
     let g:using_ycm = 1
+    " Use YouCompleteMe instead of ctags-style taglist
+    " (Note: YouCompleteMe can also be configured to read the tagslist generated
+    " by 'Exuberant Ctags', but that will slow it down.)
+    nnoremap <C-]> :YcmCompleter GoTo<CR>
+    " Open definition in new window
+    nnoremap <C-W><C-]> :vsplit<CR>:YcmCompleter GoTo<CR>
 endif
 
 if !g:using_ycm

@@ -1,4 +1,6 @@
-# echo aliases
+#!/bin/bash
+# The shebang is just to ensure that Vim knows how to highlight this file.
+
 alias expand='echo '
 
 if [[ "$(uname)" = "Linux" ]]
@@ -101,11 +103,9 @@ alias ehco=echo
 alias goog=google
 alias gsearch=google
 
-# Now that 'edit' uses the '&' syntax, it's a function.
 alias ed=edit
 alias e=edit
 alias v=vim
-alias editall="xargs $VISUAL"
 alias subed='sublime_text'
 # gview won't work remotely without xauth
 alias gv='gview '
@@ -116,7 +116,6 @@ alias gmake="gmake -s"
 alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U '
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
-alias reload='unalias -a ; source ~/.bashrc '
 alias home="go ~"
 # 'sleep' is to prevent error from being printed after the cmd prompt, which
 # makes it look like the command is hanging.
@@ -149,7 +148,7 @@ alias edcron="VISUAL=\"$EDITOR\" crontab -e"
 # convenient way to add/edit bash stuff
 # Note that VISUAL is by default set up to use the -f option,
 # so we don't need to use EDITOR
-alias edrc="$EDITOR ~/.bashrc && reload"
+alias edrc="$EDITOR ~/.bash_rcbase && reload"
 alias edal="$EDITOR ~/.bash_aliases* && reload"
 alias edfx="$EDITOR ~/.bash_functions* && reload"
 
@@ -171,6 +170,8 @@ alias qc='ic'
 alias gdoc='google docs edit --editor="$EDITOR"'
 
 # some funcs and aliases aren't immediately loaded. Define these.
+# (Every function that defines new functions should be added to the
+# functions_with_defs variable; these should be separated with semicolons.)
 alias defallfuncs='eval ${functions_with_defs}'
 
 # add $TMP/ex to path, which is where temporary executables are
@@ -187,9 +188,17 @@ function dogegit() {
     alias very=git
     alias such=git
     alias wow='git status'
-    alias amaze='git status'
-    alias excite='git status'
+    # These are (currently) BC-specific aliases.
+    alias amaze='git lg'
+    alias excite='git wfb'
 }
+
+# If sshrc is installed, use generated rc file for ssh shell.
+# TODO this got real ugly real fast. It should be a function.
+which sshrc &>/dev/null
+if [[ $? -eq 0 ]]; then
+    alias ssh="echo 'echo \"-> sshrc\"' > ${HOME}/.sshrc; cat $bash_addl_rcfiles >> ${HOME}/.sshrc; echo 'echo \"<- sshrc\"' >> ${HOME}/.sshrc; sshrc"
+fi
 
 alias save_func=save_function
 alias savefunction=save_function
