@@ -6,7 +6,7 @@
 WORKSPACEDIR=~/workspaces
 
 alias goHiddenDragon-tmp="go /home/kstrand/workspaces/HiddenDragon-tmp"
-alias goDurango="go /home/kstrand/workspaces/AUC/Durango; projc++"
+alias goDurango="go /home/kstrand/workspaces/AUC/Durango; projc++; projbci"
 alias goHiddenDragon-sym="go /home/kstrand/workspaces/HiddenDragon-sym"
 
 # TODO: turn searchproj into its own script for generating a file mapping

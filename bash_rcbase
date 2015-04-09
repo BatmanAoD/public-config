@@ -168,6 +168,8 @@ set -o vi               # vi command-line editing
 # fi
 
 which nvim &>/dev/null
+# Comment this out to use nvim
+false
 if [[ $? -eq 0 ]]; then
     export EDITOR=nvim
     # Custom script for launcing nvim in a new gnome terminal

@@ -24,6 +24,10 @@ flags = [
 
 SOURCE_EXTENSIONS = ['.cpp', '.cxx', '.cc', '.c', '.m', '.mm']
 
+# Use for debugging
+def log(msg):
+    with open('/tmp/ycm_extra_conf_log', 'a') as f:
+        f.write(msg + '\n')
 
 def GetCompilationDBase(filename):
     working_dir = os.path.dirname(filename)
@@ -31,9 +35,11 @@ def GetCompilationDBase(filename):
         compilation_database_folder = subprocess.check_output(
             ['findpdirs', '-o'], cwd=working_dir).strip()
     except subprocess.CalledProcessError:
+        log("`findpdirs` error")
         return None
 
     if os.path.exists(compilation_database_folder):
+        log("Found compilation database folder: "+compilation_database_folder)
         return ycm_core.CompilationDatabase(compilation_database_folder)
 
 
@@ -95,6 +101,7 @@ def GetCompilationInfoForFile(database, filename):
 def FlagsFromDBase(filename):
     database = GetCompilationDBase(filename)
     if database:
+        log("Found database.")
         # Bear in mind that compilation_info.compiler_flags_ does NOT return a
         # python list, but a "list-like" StringVec object
         compilation_info = GetCompilationInfoForFile(database, filename)
@@ -104,6 +111,8 @@ def FlagsFromDBase(filename):
         return MakeRelativePathsInFlagsAbsolute(
             compilation_info.compiler_flags_,
             compilation_info.compiler_working_dir_)
+    else:
+        log("Database NOT found!")
 
 def FlagsForFile(filename, **kwargs):
     """

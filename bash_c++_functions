@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Functions and aliases for C++ development
+
+# Call this to customize environment for C++ dev work
+projc++ () {
+
+    # Start work on a new class
+    newclass () {
+        header="${1}.hpp"
+        defs="${1}.cpp"
+        classname="$(basename "${1}")"
+        if [[ ! -e "$header" ]]; then
+            printf "// Defines $classname\n#pragma once\n\nclass $classname\n{\n};" > "$header"
+        fi
+        if [[ ! -e "$defs" ]]; then
+            printf "#include \"$(basename "$header")\"" > "$defs"
+        fi
+        edit $header $defs
+    }
+
+    # Global search & replace
+    acksub () {
+        if [[ $# -lt 2 ]]; then
+            echo "Usage: acksub <pattern> <replacement>" >&2
+        fi
+        pattern="$1"
+        replacement="$2"
+        ack -l "$pattern" | xargs perl -pi -E "s/$pattern/$replacement/g"
+    }
+
+}
+# Used by defallfuncs
+functions_with_defs="projc++; $functions_with_defs"

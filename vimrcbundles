@@ -50,6 +50,7 @@ Bundle 'tomtom/tcomment_vim'
 " Git stuff
 Bundle 'tpope/vim-fugitive'
 " Asynchronous commands (TODO: learn to use this)
+" TODO: for NeoVim, switch to https://github.com/benekastah/neomake
 Bundle 'tpope/vim-dispatch'
 
 call vundle#end()
