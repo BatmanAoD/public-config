@@ -238,7 +238,9 @@ edline () {
     # is actually a number and the second arg is actually a file.
     # I don't know how to get wc to suppress the file name, so I use awk.
     # Note that this only works with the single-bracket conditional.
-    if [ $1 -le $(wc -l $2 | awk '{print $1}') ] 2>/dev/null ; then
+    if [[ -z $2 ]]; then
+        echo "Must give two args! Usage: edline <lineno> <file>" >&2
+    elif [ $1 -le $(wc -l $2 | awk '{print $1}') ] 2>/dev/null ; then
         $EDITOR +$1 $2
     else
         echo "first arg must be an integer <= the number of lines in" >&2

@@ -61,6 +61,9 @@ elif grep -v -q -i 'batmanaod' \
     echo "WARNING: this .bashrc file was designed for use in conjunction" >&2
     echo "with the other config files in the BatmanAoD/public-config" >&2
     echo "git repository." >&2
+# XXX TODO the `ls-remote` command hangs if there is no web connectivity;
+# this entire check should be skipped (and possibly a notice such as "not
+# connected to the internet" should be issued) if this is the case.
 elif [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
   2>/dev/null)" != \
   "$(git --git-dir $CONFIG_DIR/.git ls-remote origin -h refs/heads/master \
