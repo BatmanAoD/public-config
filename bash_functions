@@ -107,7 +107,7 @@ qcat() {
 zeval () {
     echo $@ | zsh
 }
-alias z*='zeval echo'
+alias 'z*'='zeval echo'
 
 # TODO write a function that will watch the timestamp of an exe and wait until
 # it changes.
@@ -404,6 +404,7 @@ usebad() {
 mkc() { mkdir "$@" ; cd "$@";}
 
 # Easy extract
+# I think this is from http://stackoverflow.com/a/27433887/1858225
 extract () {
   if [ -f $1 ] ; then
       case $1 in
@@ -454,6 +455,27 @@ histin ()
     if [[ -n $ORIG_HISTFILE ]]; then
         export HISTFILE=$ORIG_HISTFILE
     fi
+}
+
+# Find matching lines among first `n` lines in some set of files
+hdr_match ()
+{
+    if [[ -n "$2" ]]; then
+        numlines=$2
+    else
+        numlines=1
+    fi
+
+    for t in $(find . -type f -name "$1"); do
+        head -$numlines $t
+    done | \
+        grep -v '^\s*\\\\\s*$' | \
+        grep -v '^\s*#\s*$' | \
+        sort |uniq -c | \
+        awk '{if ($1 > 1) print; }' | \
+        sed 's/^\s*//' | \
+        cut -f 2- -d ' ' | \
+        xargs -I{} ack -Q "{}"
 }
 
 # Cygwin specific:

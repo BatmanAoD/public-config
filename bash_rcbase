@@ -94,6 +94,9 @@ export HISTFILESIZE=${HISTSIZE}
 HISTCONTROL=ignoredups:erasedups
 shopt -s histappend
 shopt -s checkhash
+# Apparently this disables tab-completion for paths. Haha! Uuuuurgh.
+# http://stackoverflow.com/q/29907892/1858225
+# shopt -s nullglob
 # Intentionally duplicated from bashrc
 shopt -s extglob
 if [[ ${BASH_VERSINFO[0]} -ge 4 ]]; then

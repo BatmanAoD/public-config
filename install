@@ -2,6 +2,8 @@
 
 cd ~
 
+shopt -s nullglob
+
 for prog in bash input gdb irb vim zsh git ack ycm; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/${prog}* ~/private-config/${prog}*; do

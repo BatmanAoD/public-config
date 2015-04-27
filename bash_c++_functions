@@ -19,6 +19,46 @@ projc++ () {
         edit $header $defs
     }
 
+    # Start work on a catch test for a new class
+    catchtest () {
+        classname="$(basename $1)"
+        existing_tests=$(find . -name "test*${classname}.cpp")
+        if [[ -n "$existing_tests" ]]; then
+            edit $existing_tests
+        else
+            newcatch $@
+        fi
+    }
+
+    newcatch () {
+        libdir="$(readlink -f $(dirname $1))"
+        testdir="$libdir/Test"
+        mkdir -p "$testdir"
+        if [[ -n "$2" ]]; then
+            testlevel="$2"
+        else
+            testlevel=0g
+        fi
+        if [[ -n "$3" ]]; then
+            projname="$3"
+        else
+            projname="$(basename $libdir)"
+        fi
+        catchname=$testdir/test${testlevel}_${projname}_${classname}.cpp
+        cat > $catchname <<CATCHTEMPLATE
+// Tests $classname class
+//
+//-----------------
+#define CATCH_CONFIG_MAIN  // Catch should provide main()
+#include "catch.hpp"
+//-----------------
+
+#include "${classname}.hpp"
+
+CATCHTEMPLATE
+        edit $catchname
+    }
+
     # Global search & replace
     acksub () {
         if [[ $# -lt 2 ]]; then

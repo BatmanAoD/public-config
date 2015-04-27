@@ -16,7 +16,7 @@ flags = [
     '-isystem',
     '/opt/gcc/4.9.2/include/',
     '-isystem',
-    '/opt/Qt5.4.0/5.4/gcc/include/QtCore'
+    '/opt/Qt5.4.0/5.4/gcc/include/QtCore',
     '-I',
     '.',
     '-std=c++14'

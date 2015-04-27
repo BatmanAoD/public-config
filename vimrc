@@ -337,6 +337,9 @@ nnoremap <Leader>h :noh<cr>
 nnoremap <Leader>= :set guifont=DejaVu\ Sans\ Mono\ 18<cr>
 nnoremap <Leader>- :set guifont=DejaVu\ Sans\ Mono\ 10<cr>
 
+" Quickly underline the current line
+nmap <Leader>l yypV<C-s>./-/<CR>k<Leader>h
+
 " TODO: add a quick way to show carriage returns;
 " see http://stackoverflow.com/a/27259548/1858225
 
@@ -344,6 +347,9 @@ inoremap <C-BS> <C-W>
 inoremap <C-Del> <C-O>dw
 nnoremap <C-BS> <C-W>
 nnoremap <C-Del> <C-O>dw
+
+" Change one letter using 'x'
+nnoremap cx cl
 
 " In insert or command mode, move normally by using Ctrl
 inoremap <C-h> <Left>
