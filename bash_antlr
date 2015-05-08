@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+ANTLRPATH=/usr/local/lib/antlr-4.5-complete.jar
+if [[ -e $ANTLRPATH ]]; then
+    export CLASSPATH=".:$ANTLRPATH:$CLASSPATH"
+    # TODO determine whether generating useable Python output is feasible.
+    # `-Dlanguage=Python2` will generate a Python parser, but I had some
+    # trouble getting the "hello world" example to work.
+    alias antlr4='java -Xmx500M -cp "/usr/local/lib/antlr-4.5-complete.jar:$CLASSPATH" org.antlr.v4.Tool'
+    alias grun='java org.antlr.v4.runtime.misc.TestRig'
+fi
