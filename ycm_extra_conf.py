@@ -33,7 +33,7 @@ def GetCompilationDBase(filename):
     working_dir = os.path.dirname(filename)
     try:
         compilation_database_folder = subprocess.check_output(
-            ['findpdirs', '-o'], cwd=working_dir).strip()
+            ['findpdirs', '-p'], cwd=working_dir).strip()
     except subprocess.CalledProcessError:
         log("`findpdirs` error")
         return None

@@ -26,6 +26,11 @@ Bundle 'rkitover/vimpager'
 Bundle 'tpope/vim-surround'
 Bundle 'AndrewRadev/linediff.vim'
 Bundle 'LargeFile'
+" QML syntax highlighting
+Bundle 'peterhoeg/vim-qml'
+" Rust syntax highlighting and autocompletion
+Bundle 'rust-lang/rust.vim'
+Bundle 'phildawes/racer'
 " TODO figure out why this doesn't seem to work, or figure out a different
 " 'tail-like' configuration
 " Bundle 'Tail-Bundle'
@@ -83,6 +88,10 @@ let g:jellybeans_overrides = {
 " Errors match 'error', which....is possibly the same as 'todo'.
 
 " Other plugin settings:
+" TODO how to set Racer/Rust paths properly?
+let g:racer_cmd = expand("~/ToolsBld/racer/target/release/racer")
+let $RUST_SRC_PATH = expand("~/sandbox/rust")
+
 " I don't really like folds
 let g:pymode_folding = 0
 " This is causing problems
