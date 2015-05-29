@@ -100,6 +100,8 @@ endfunction
 
 " My Cpp settings
 function! CppFile()
+    " I don't use tabs, but other people do.
+    set tabstop=2
     set shiftwidth=2
     set softtabstop=2
     set tw=80
@@ -211,9 +213,7 @@ endif
 function! Usetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
-  " set shiftwidth=8
-  " Ensure that tabstop is 8, which should be true already anyway.
-  set tabstop=8
+  " Do NOT change tabstop.
   set noexpandtab
   " if I'm using tabs, LOOK AT THEM.
   set list
@@ -442,6 +442,13 @@ function! RepeatChar(char, count)
 " for consistency with D and C
 nnoremap Y y$
 
+" When `put`ing text, automatically auto-indent it
+" TODO: verify that this consistently works 'well enough.' In particular, I
+" never want tabs to mysteriously appear in files that previously had no tabs.
+" See http://vi.stackexchange.com/q/3452/1060
+nnoremap p pV`]=
+nnoremap P PV`]=
+
 " For using visual mode to swap chunks of text:
 " Delete one piece of text (using any kind of 'd' command), then visually
 " select another piece of text, then press Ctrl-x to swap it with the last
@@ -622,3 +629,11 @@ function! s:PassVimCommandOutputToShellCommand(line)
         normal u
         exe "bwipeout"
 endfunction
+
+" Leave insert mode to the *right* of the final location of the insertion
+" pointer
+" From http://vim.wikia.com/wiki/Prevent_escape_from_moving_the_cursor_one_character_to_the_left
+let CursorColumnI = 0 "the cursor column position in INSERT
+autocmd InsertEnter * let CursorColumnI = col('.')
+autocmd CursorMovedI * let CursorColumnI = col('.')
+autocmd InsertLeave * if col('.') != CursorColumnI | call cursor(0, col('.')+1) | endif

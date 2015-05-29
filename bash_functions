@@ -478,6 +478,22 @@ hdr_match ()
         xargs -I{} ack -Q "{}"
 }
 
+# Search-and-replace in multiple files
+global_repl ()
+{
+    if [[ "$1" == "-d" ]]; then
+        dirname="$2"
+        shift 2
+    else
+        dirname="."
+    fi
+    if [[ $# -ne 2 ]]; then
+        echo "USAGE: global_repl [-d <dir>] pattern repl" >&2
+        return
+    fi
+    ack -l "$1" "$dirname" | xargs perl -pi -e "s/$1/$2/g"
+}
+
 # Cygwin specific:
 start_xwin ()
 {

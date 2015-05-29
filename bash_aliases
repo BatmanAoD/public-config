@@ -5,7 +5,7 @@ alias expand='echo '
 
 if [[ "$(uname)" = "Linux" ]]
 then
-   alias ls="ls -F --color"
+   alias ls="ls -F --color --dereference-command-line-symlink-to-dir"
 else
    alias ls="ls -F"
 fi
