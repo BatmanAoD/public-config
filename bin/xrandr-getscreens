@@ -3,4 +3,4 @@
 # Used to print the names of the screens currently connected and seen by
 # `xrandr`
 
-xrandr -q | grep connected | awk '{print $1}'
+xrandr -q | grep -w connected | awk '{print $1}'

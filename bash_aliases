@@ -193,6 +193,15 @@ function dogegit() {
     alias excite='git wfb'
 }
 
+# If 'ack-grep' is installed, invoke it using `ack`.
+type ack &>/dev/null
+if [[ $? -ne 0 ]]; then
+    type ack-grep &>/dev/null
+    if [[ $? -eq 0 ]]; then
+        alias ack=ack-grep
+    fi
+fi
+
 # If sshrc is installed, use generated rc file for ssh shell.
 # TODO this got real ugly real fast. It should be a function.
 which sshrc &>/dev/null

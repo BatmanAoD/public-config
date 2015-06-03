@@ -11,16 +11,17 @@
 #
 # Get correct monitor resolution (use defaults in script for now)
 # XXX not working yet...
-exec ~/bin/vbox-setscr
+#exec ~/bin/vbox-setscr
 # ...so try with this one, too....
-exec ~/bin/vbox4kauto
+#exec ~/bin/vbox4kauto
 #
 # 'Return' remapping has odd side-effect of disabling $mod+Enter shortcut.
 # exec xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape' -e 'keycode 0x09 = Return'
 # ...this one doesn't work?? even with 'clear', 'remove', 'add', etc...
 # exec xmodmap -e 'keycode 0xff67 = Caps_Lock'
 
-set $mod Mod4
+# Finally switching, for compatibility with VNC...sigh.
+set $mod Mod1
 # TODO figure out a way to auto-select a terminal.
 set $TERMINAL /usr/bin/gnome-terminal
 # set $TERMINAL /usr/bin/konsole
@@ -91,16 +92,17 @@ bindsym $mod+a focus parent
 #bindcode $mod+d focus child
 
 # workspace -> screen assignment
-workspace 2 output VBOX0
-workspace 4 output VBOX0
-workspace 6 output VBOX0
-workspace 8 output VBOX0
-workspace 10 output VBOX0
-workspace 1 output VBOX1
-workspace 3 output VBOX1
-workspace 5 output VBOX1
-workspace 7 output VBOX1
-workspace 9 output VBOX1
+# XXX TODO this must be generated...
+# workspace 2 output VBOX0
+# workspace 4 output VBOX0
+# workspace 6 output VBOX0
+# workspace 8 output VBOX0
+# workspace 10 output VBOX0
+# workspace 1 output VBOX1
+# workspace 3 output VBOX1
+# workspace 5 output VBOX1
+# workspace 7 output VBOX1
+# workspace 9 output VBOX1
 
 # switch to workspace
 bindsym $mod+1 workspace 1

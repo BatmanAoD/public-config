@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Configure a single screen to use a certain resolution.
+
+if [[ $1 == '-n' ]]; then
+    alias do_or_say="echo"
+    shift
+else
+    alias do_or_say=""
+fi
+
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $0 [-n] <hres> <vres>"
+    exit 1
+fi
+
+# TODO allow an argument for the particular screen we want to configure
+if [[ $(xrandr-getscreens | wc -l) -ne 1 ]]; then
+    echo "More than one screen is attached! Cannot configure." >&2
+    exit 2
+fi
+
+screen=$(xrandr-getscreens)
+
+#TODO what if mode name already exists?
+modename=newmode-${1}x${2}-${RANDOM}
+
+shopt -s expand_aliases
+
+do_or_say xrandr --newmode $modename $(xrandr-getmodeline $1 $2)
+do_or_say xrandr --addmode $screen $modename
+do_or_say xrandr --output $screen --mode $modename
