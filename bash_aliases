@@ -156,6 +156,14 @@ alias edfx="$EDITOR ~/.bash_functions* && reload"
 # TODO: when I switch to generating this, edit source instead
 alias edi3='edit ~/.i3/config'
 
+# Other config-related aliases
+if [[ -n "$CONFIG_DIR" ]]; then
+    alias gocfg="go $CONFIG_DIR/.git"
+    alias pullcfg="(cd $CONFIG_DIR; git pull)"
+    alias pushcfg="(cd $CONFIG_DIR; git commit -a; git push)"
+fi
+# TODO consider doing the same for private config
+
 # generic i3 commands
 alias qi=i3-msg
 
