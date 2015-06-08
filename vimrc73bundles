@@ -6,10 +6,7 @@ Bundle 'dsummersl/gundo.vim'
 let g:using_ycm = 0
 " TODO apparently this is tricky to get working on Windows, unfortunately.
 " See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
-if !has('win32')
-    " TODO this only works if it's been correctly compiled, which Vundle can't
-    " do on its own. So it should be conditionally enabled, and unfortunately
-    " I'm not sure exactly what the condition should be.
+if !has('win32') && executable('clang++')
     Bundle 'Valloric/YouCompleteMe'
     let g:ycm_confirm_extra_conf = 0
     let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
@@ -22,15 +19,15 @@ if !has('win32')
     nnoremap <C-W><C-]> :vsplit<CR>:YcmCompleter GoTo<CR>
 endif
 
-if !g:using_ycm
+if !g:using_ycm && executable('g++')
     " YCM attempts to do everything Syntastic would do, so there should be no
     " reason to use Syntastic.
     Bundle 'scrooloose/syntastic'
     " TODO figure out a way to generically figure out the 'best' compiler to use
-    let g:syntastic_cpp_compile = "/opt/gcc/4.9.2/bin/g++4.9"
+    let g:syntastic_cpp_compile = "g++"
     " TODO figure out a way to define flags per-project, e.g. by reading CMake
     " files
-    let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++ -Wl,-rpath,/opt/gcc/4.9.2"
+    let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++"
     " TODO re-evaluate these after reading the syntastic manual
     set statusline+=%#warningmsg#
     set statusline+=%{SyntasticStatuslineFlag()}

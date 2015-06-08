@@ -459,13 +459,8 @@ vnoremap <C-X> <Esc>`.``gvP``P
 " ex mode?? seriously?
 nnoremap Q <nop>
 
-" it's what all the cool people are doing...sort of.
-" (not jj because repetition is hard)
-" (not jk because that means 'just kidding' and
-" because it's easier to roll from right to left)
-" If this becomes a problem because of my initials,
-" just remove or remap it.
-inoremap kj <Esc>
+" No `jk` or `kj` mapping for `Esc`, because remapping to CapsLock is more
+" convenient anyway.
 
 " Easily write and exit buffers
 function! WriteAndDelete()
