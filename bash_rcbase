@@ -29,6 +29,7 @@ fi
 
 # Check that I have the rest of my "public-config" stuff.
 CONFIG_DIR=~/public-config
+# TODO consider looking for private-config, too
 if [[ ! -d $CONFIG_DIR ]]; then
     echo "WARNING: public config directory not found!" >&2
     CONFIG_DIR=
