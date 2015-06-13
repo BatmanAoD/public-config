@@ -40,7 +40,7 @@ elif grep -v -q -i 'batmanaod' \
     echo "git repository." >&2
 else
     git_remote_head="$(timeout 1s git --git-dir $CONFIG_DIR/.git \
-        ls-remote origin -h refs/heads/master 2>/dev/null)"
+        ls-NATIVE_LINUX origin -h refs/heads/master 2>/dev/null)"
     if [[ -n "$git_remote_head" ]]; then
         if [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
                 2>/dev/null)" != \
@@ -50,8 +50,24 @@ else
     fi
 fi
 
-# Not Cygwin and not remote
-if ! $CYGWIN && ! grep -q SSH <(env); then
+# Not Cygwin, not remote, not virtual
+check_if_native_linux()
+{
+    NATIVE_LINUX=true;
+    # Are we on Cygwin?
+    $CYGWIN && NATIVE_LINUX=false && return;
+    # Are we SSH-ing in?
+    grep -q SSH <(env) && NATIVE_LINUX=false && return;
+    # Is this a VirtualBox session?
+    grep -q VBOX0 <(xrandr) && NATIVE_LINUX=false && return;
+    # ...or a VMWare session?
+    # (Other ways to check: http://serverfault.com/q/65718/207703)
+    grep -q -i vmware <(lspci) && NATIVE_LINUX=false && return;
+    # Is Xmodmap usage explicitly disabled? (True for TightVNC connection)
+    test -n "$XKL_XMODMAP_DISABLE" && NATIVE_LINUX=false && return;
+}
+    
+if $NATIVE_LINUX; then
     # Currently using xmodmap instead of xkbmap
     if [[ ! -r ~/.Xmodmap ]]; then
         echo "WARNING: ~/.Xmodmap not found!" >&2
