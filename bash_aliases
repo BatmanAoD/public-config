@@ -3,6 +3,9 @@
 
 alias expand='echo '
 
+# Allow aliases with `sudo`
+alias sudo='sudo '
+
 if [[ "$(uname)" = "Linux" ]]
 then
    alias ls="ls -F --color --dereference-command-line-symlink-to-dir"
@@ -103,6 +106,7 @@ alias ehco=echo
 alias goog=google
 alias gsearch=google
 
+alias edit='$NEWWINDOW_EDIT_CMD'
 alias ed=edit
 alias e=edit
 alias v=vim

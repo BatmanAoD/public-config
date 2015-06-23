@@ -14,9 +14,6 @@
 # Set the default umask
 umask 002
 
-# Only execute if interactive
-test "${-#*i}" != "$-" || return 0
-
 # Print a message
 # TODO include version info?
 echo "-> bashrc"

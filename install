@@ -44,15 +44,103 @@ else
     echo i3 config already installed
 fi
 
-# TODO: install other OS_specific
-# TODO: install stderred, but NOT on Cygwin (source bashrc and check
-# Cygwin variable)
-# . .bashrc
+##############################################################################
+##############################################################################
+# INSTALL 3RD-PARTY TOOLS
+##############################################################################
+##############################################################################
 
-# TODO: test this
+if [[ $1 != "--tools" ]]; then
+    exit
+fi
+
+. ~/.bashrc
+
+##############################################################################
+# Install Vundle
 vundle_bundle=~/.vim/bundle/Vundle.vim
 if [[ ! -a ${vundle_bundle} ]]; then
     echo Installing Vundle plugins
     git clone https://github.com/gmarik/Vundle.vim.git ${vundle_bundle}
     vim "+BundleInstall" "+qa"
+fi
+
+# Install dev tools (Debian-based only)
+which apt-get >/dev/null
+if [[ $? -eq 0 ]]; then
+    installusingapt=true
+else
+    installusingapt=false
+fi
+
+havetoolchain=false
+which g++ >/dev/null
+if [[ $? -eq 0 ]]; then
+    havetoolchain=true;
+else
+    which clang++ >/dev/null
+    if [[ $? -eq 0 ]]; then
+        havetoolchain=true;
+    else
+        if $installusingapt; then
+            echo Installing build-essential using apt
+            sudo apt-get install build-essential
+            if [[ $? -eq 0 ]]; then
+                havetoolchain=true
+            fi
+        fi
+    fi
+fi
+
+havecmake=false
+which cmake >/dev/null
+if [[ $? -eq 0 ]]; then
+    havecmake=true;
+else
+    if installusingapt; then
+        echo Installing cmake using apt
+        sudo apt-get install cmake
+        if [[ $? -eq 0 ]]; then
+            havecmake=true
+        fi
+    fi
+fi
+
+# Install sshrc
+which sshrc >/dev/null
+if [[ $? -ne 0 ]]; then
+    echo Installing sshrc
+    wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc &&
+        chmod +x sshrc &&
+        sudo mv sshrc ${HOME}/bin
+fi
+
+# TODO: install rust & racer? complications:
+# * From source: /opt vs ${toolsbld}
+# * If Rust is NOT installed from src, Racer won't work
+
+# Install stderred
+skipstderred=false
+if ${CYGWIN}; then
+    echo "Cygwin var is ${CYGWIN}"
+    echo "On Cygwin; not installing stderred."
+    skipstderred=true
+fi
+if ! $havetoolchain; then
+    echo "No toolchain installed; not installing stderred."
+    skipstderred=true
+fi
+if ! $havecmake; then
+    echo "No cmake installed; not installing stderred."
+    skipstderred=true
+fi
+
+if ! $skipstderred; then
+    if [[ ! -d ${stderred_path} ]]; then
+        echo Installing stderred
+        cd $(dirname ${stderred_path})
+        git clone git://github.com/sickill/stderred.git
+        cd stderred
+        make
+    fi
 fi

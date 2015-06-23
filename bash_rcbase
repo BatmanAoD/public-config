@@ -67,7 +67,9 @@ check_if_native_linux()
     # Is Xmodmap usage explicitly disabled? (True for TightVNC connection)
     test -n "$XKL_XMODMAP_DISABLE" && NATIVE_LINUX=false && return;
 }
-    
+
+check_if_native_linux
+
 if $NATIVE_LINUX; then
     # Currently using xmodmap instead of xkbmap
     if [[ ! -r ~/.Xmodmap ]]; then
@@ -84,17 +86,15 @@ if $NATIVE_LINUX; then
     fi
 fi
 
-stderred_path=${PERSONALMACHINEPATH}/usr/lib/stderred
+toolsbld_path=${HOME}/ToolsBld
+mkdir -p ${toolsbld_path}
+
+stderred_path=${toolsbld_path}/stderred
 
 if [[ -d ${stderred_path}  && \
       -r ${stderred_path}/build/libstderred.so && \
       ":$LD_PRELOAD:" != *":${stderred_path}:"* ]]; then
     export LD_PRELOAD="${stderred_path}/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
-else
-    if ! $CYGWIN; then
-        echo "stderred not installed!" >&2
-        echo "Get stderred from https://github.com/sickill/stderred" >&2
-    fi
 fi
 
 # Do profile if asked.  Used when invoking a shell via remsh, since

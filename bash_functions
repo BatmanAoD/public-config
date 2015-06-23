@@ -217,10 +217,6 @@ if $CYGWIN; then
     }
 fi
 
-edit () {
-    $NEWWINDOW_EDIT_CMD $@
-}
-
 # This must change if I switch my editor to Emacs or something.
 edline () {
     # This check is actually mostly just to ensure that our first arg

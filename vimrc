@@ -532,6 +532,8 @@ vmap <C-s> :s/
 " quick word count
 nnoremap <C-c> :%s///n<cr>
 vnoremap <C-c> :%s///n<cr>
+" Quick section-wide 'global'
+vmap <C-g> :g/
 
 function! ToggleGuiMenu()
     if(&guioptions =~# 'm')
