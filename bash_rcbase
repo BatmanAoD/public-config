@@ -187,15 +187,13 @@ set -o vi               # vi command-line editing
 #     fi
 # fi
 
-which nvim &>/dev/null
-# Comment this out to use nvim
-false
-if [[ $? -eq 0 ]]; then
+# Switch these to use nvim.
+# if hash nvim 2>/dev/null; then
+if false; then
     export EDITOR=nvim
     # Custom script for launcing nvim in a new gnome terminal
     # TODO the native GUI interface for nvim will make this unnecessary
-    which NewNvimWindow &>/dev/null
-    if [[ $? -eq 0 && -n $DISPLAY ]]; then
+    if hash NewNvimWindow 2>/dev/null && test -n $DISPLAY; then
         export NEWWINDOW_EDIT_CMD=NewNvimWindow
         # TODO use "-f" with native GUI once support is available
         export VISUAL=nvim
@@ -203,7 +201,7 @@ if [[ $? -eq 0 ]]; then
         export NEWWINDOW_EDIT_CMD=nvim
         export VISUAL=nvim
     fi
-else
+elif hash gvim 2>/dev/null; then
     if [[ -n $DISPLAY ]]; then
         export NEWWINDOW_EDIT_CMD=gvim
         export EDITOR="gvim -f"
@@ -213,6 +211,11 @@ else
         export EDITOR=vim
         export VISUAL=vim
     fi
+else
+    # `vi` is universal.
+    export NEWWINDOW_EDIT_CMD=vi
+    export EDITOR=vi
+    export VISUAL=vi
 fi
 
 

@@ -2,6 +2,7 @@
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
 alias expand='echo '
+alias expand='xargs '
 
 # Allow aliases with `sudo`
 alias sudo='sudo '
@@ -216,8 +217,7 @@ fi
 
 # If sshrc is installed, use generated rc file for ssh shell.
 # TODO this got real ugly real fast. It should be a function.
-which sshrc &>/dev/null
-if [[ $? -eq 0 ]]; then
+if hash sshrc 2>/dev/null; then
     alias ssh="echo 'echo \"-> sshrc\"' > ${HOME}/.sshrc; cat $bash_addl_rcfiles >> ${HOME}/.sshrc; echo 'echo \"<- sshrc\"' >> ${HOME}/.sshrc; sshrc"
 fi
 

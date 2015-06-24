@@ -58,6 +58,8 @@ Bundle 'tpope/vim-fugitive'
 " Asynchronous commands (TODO: learn to use this)
 " TODO: for NeoVim, switch to https://github.com/benekastah/neomake
 Bundle 'tpope/vim-dispatch'
+" Allow opening files at a particular line number using 'file:line' format
+Bundle 'bogado/file-line'
 
 call vundle#end()
 filetype plugin indent on     " required!

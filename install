@@ -66,20 +66,17 @@ if [[ ! -a ${vundle_bundle} ]]; then
 fi
 
 # Install dev tools (Debian-based only)
-which apt-get >/dev/null
-if [[ $? -eq 0 ]]; then
+if hash apt-get 2>/dev/null; then
     installusingapt=true
 else
     installusingapt=false
 fi
 
 havetoolchain=false
-which g++ >/dev/null
-if [[ $? -eq 0 ]]; then
+if hash g++ 2>/dev/null; then
     havetoolchain=true;
 else
-    which clang++ >/dev/null
-    if [[ $? -eq 0 ]]; then
+    if hash clang++ 2>/dev/null; then
         havetoolchain=true;
     else
         if $installusingapt; then
@@ -93,8 +90,7 @@ else
 fi
 
 havecmake=false
-which cmake >/dev/null
-if [[ $? -eq 0 ]]; then
+if hash cmake 2>/dev/null; then
     havecmake=true;
 else
     if installusingapt; then
@@ -107,8 +103,7 @@ else
 fi
 
 # Install sshrc
-which sshrc >/dev/null
-if [[ $? -ne 0 ]]; then
+if hash sshrc 2>/dev/null; then
     echo Installing sshrc
     wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc &&
         chmod +x sshrc &&
