@@ -59,7 +59,10 @@ Bundle 'tpope/vim-fugitive'
 " TODO: for NeoVim, switch to https://github.com/benekastah/neomake
 Bundle 'tpope/vim-dispatch'
 " Allow opening files at a particular line number using 'file:line' format
-Bundle 'bogado/file-line'
+" For some reason this causes an extra 'press ENTER' message when the arg is
+" NOT in `file:line` format. Disabled for now.
+" TODO find a different solution.
+" Bundle 'bogado/file-line'
 
 call vundle#end()
 filetype plugin indent on     " required!

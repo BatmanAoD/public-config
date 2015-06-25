@@ -249,3 +249,5 @@ if [[ -r /etc/bash_completion ]]; then
      set completion-ignore-case on
 fi
 
+# Default args for compiling C++ programs
+CXX_ARGS="-std=c++14 -Wall -Wextra -Wpedantic -isystem"

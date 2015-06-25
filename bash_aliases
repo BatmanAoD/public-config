@@ -156,6 +156,7 @@ alias edcron="VISUAL=\"$EDITOR\" crontab -e"
 alias edrc="$EDITOR ~/.bash_rcbase && reload"
 alias edal="$EDITOR ~/.bash_aliases* && reload"
 alias edfx="$EDITOR ~/.bash_functions* && reload"
+alias edpriv="$EDITOR ~/private-config/bash* && reload"
 
 # configure i3 setup
 # TODO: when I switch to generating this, edit source instead
