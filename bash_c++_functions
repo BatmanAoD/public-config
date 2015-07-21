@@ -7,18 +7,36 @@ projc++ () {
 
     # Start work on a new class
     newclass () {
-        header="${1}.hpp"
-        defs="${1}.cpp"
-        classname="$(basename "${1}")"
+        path_noext=${1%.*}
+        header="${path_noext}.hpp"
+        defs="${path_noext}.cpp"
+        classname="$(basename "${path_noext}")"
         if [[ ! -e "$header" ]]; then
             printf "// Defines $classname\n#pragma once\n\nclass $classname\n{\n};" > "$header"
         fi
         if [[ ! -e "$defs" ]]; then
             printf "#include \"$(basename "$header")\"" > "$defs"
         fi
+        if git rev-parse 2>/dev/null; then
+            git add $header $defs
+        fi
         edit $header $defs
     }
-
+    
+    addhxx () {
+        path_noext=${1%.*}
+        header_path="${path_noext}.hpp"
+        impl_path="${path_noext}.hxx"
+        header=$(basename ${header_path})
+        impl=$(basename ${impl_path})
+        echo "#include \"${impl}\"" >> $header_path
+        printf "#pragma once\n#include \"${header}\"" > $impl_path
+        edit $impl_path
+        git add $impl_path
+    }
+        
+   # to handle inclusion, pragma, git add
+    
     # Start work on a catch test for a new class
     catchtest () {
         classname="$(basename $1)"
@@ -63,11 +81,24 @@ CATCHTEMPLATE
     acksub () {
         if [[ $# -lt 2 ]]; then
             echo "Usage: acksub <pattern> <replacement>" >&2
+            exit 1
         fi
         pattern="$1"
         replacement="$2"
-        ack -l "$pattern" | xargs perl -pi -E "s/$pattern/$replacement/g"
+        # TODO implement some sort of 'undo' making use of the `.bak` files
+        ack -l "$pattern" | xargs perl -pi.bak -E "s/$pattern/$replacement/g"
     }
+    
+    # Find source files
+    alias findsrc='ack -f --cpp'
+    alias findcpp='findsrc | ack -v "\.h"'
+    # Assume tests are in a 'Test' dir
+    alias findnontest="findcpp | ack -v '(^|\/)Test\/'"
+    
+    # Run clang's static-analysis tool recursively
+    if hash clang-check 2>/dev/null; then
+        alias cxxcheck='clang-check -analyze $(findnontest)'
+    fi
 
 }
 # Used by defallfuncs

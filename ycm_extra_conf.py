@@ -39,7 +39,6 @@ def GetCompilationDBase(filename):
         return None
 
     if os.path.exists(compilation_database_folder):
-        log("Found compilation database folder: "+compilation_database_folder)
         return ycm_core.CompilationDatabase(compilation_database_folder)
 
 
@@ -86,22 +85,32 @@ def GetCompilationInfoForFile(database, filename):
     # entries for header files. So we do our best by asking the db for flags for
     # a corresponding source file, if any. If one exists, the flags for that
     # file should be good enough.
+    # TODO consider just picking an arbitrary .cpp from the same source dir.
     if IsHeaderFile(filename):
-        basename = os.path.splitext(filename)[0]
-        for extension in SOURCE_EXTENSIONS:
-            replacement_file = basename + extension
-            if os.path.exists(replacement_file):
-                compilation_info = database.GetCompilationInfoForFile(
-                    replacement_file)
-                if compilation_info.compiler_flags_:
-                    return compilation_info
+        basename, orig_ext = os.path.splitext(filename)
+        while basename:
+            for extension in SOURCE_EXTENSIONS:
+                replacement_file = basename + extension
+                if os.path.exists(replacement_file):
+                    compilation_info = database.GetCompilationInfoForFile(
+                        replacement_file)
+                    if compilation_info.compiler_flags_:
+                        return compilation_info
+            if orig_ext == '.hxx':
+                # Sometimes 'header-impl' files are given descriptive postfixes
+                # starting with `_`. Try removing these.
+                log("No 'primary' match for " + basename)
+                basename = '_'.join(basename.split('_')[0:-1])
+                log("Looking for... " + basename)
+            else:
+                # Give up.
+                basename = ''
         return None
     return database.GetCompilationInfoForFile(filename)
 
 def FlagsFromDBase(filename):
     database = GetCompilationDBase(filename)
     if database:
-        log("Found database.")
         # Bear in mind that compilation_info.compiler_flags_ does NOT return a
         # python list, but a "list-like" StringVec object
         compilation_info = GetCompilationInfoForFile(database, filename)
@@ -111,8 +120,6 @@ def FlagsFromDBase(filename):
         return MakeRelativePathsInFlagsAbsolute(
             compilation_info.compiler_flags_,
             compilation_info.compiler_working_dir_)
-    else:
-        log("Database NOT found!")
 
 def FlagsForFile(filename, **kwargs):
     """
@@ -128,6 +135,9 @@ def FlagsForFile(filename, **kwargs):
 
     # Clang includes are system includes
     final_flags.append('-isystem-prefix clang_includes/')
+
+    # ALWAYS warn about implicit fallthrough
+    final_flags.append('-Wimplicit-fallthrough')
 
     return {
         'flags': final_flags,
