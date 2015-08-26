@@ -5,6 +5,8 @@
 # Call this to customize environment for C++ dev work
 projc++ () {
 
+    extraconfigcmds="$extraconfigcmds projc++ ; "
+
     # Start work on a new class
     newclass () {
         path_noext=${1%.*}
@@ -89,6 +91,15 @@ CATCHTEMPLATE
         ack -l "$pattern" | xargs perl -pi.bak -E "s/$pattern/$replacement/g"
     }
     
+    # Remove backups created by 'acksub'
+    rmbak_acksub () {
+        topdir='.'
+        if [[ $# -eq 1 ]]; then
+            topdir="$1"
+        fi
+        rm $(find "$topdir" -name '*.bak')
+    }
+    
     # Find source files
     alias findsrc='ack -f --cpp'
     alias findcpp='findsrc | ack -v "\.h"'
@@ -101,5 +112,6 @@ CATCHTEMPLATE
     fi
 
 }
+
 # Used by defallfuncs
 functions_with_defs="projc++; $functions_with_defs"

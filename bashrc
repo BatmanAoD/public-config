@@ -32,9 +32,12 @@ for bashfile in ${bash_addl_rcfiles}; do
     . ${bashfile}
 done
 
-# This is here, rather than in .bash_aliases, because it explicitly refers to
-# the bashrc file by name.
-alias reload='unalias -a ; source ~/.bashrc'
+# This is here, rather than in .bash_aliases, due to how it determines the
+# bashrc path.
+# `extraconfigcmds` is a set of commands used to restore any "additional" setup
+# that was in place before the reload. I'm not sure why the `eval` is
+# necessary.
+alias reload="unalias -a ; source $(readlink -f "${BASH_SOURCE[0]}") ; eval \${extraconfigcmds}"
 
 # Print a message
 echo "<- bashrc"
