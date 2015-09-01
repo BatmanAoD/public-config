@@ -115,3 +115,7 @@ CATCHTEMPLATE
 
 # Used by defallfuncs
 functions_with_defs="projc++; $functions_with_defs"
+
+# When sourcing this file, if `projbci` had already been called, call it again
+# to redefine the functions
+eval $extraconfigcmds
