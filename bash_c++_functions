@@ -80,7 +80,9 @@ CATCHTEMPLATE
     }
 
     # Global search & replace
+    # TODO this isn't C++ specific; move somewhere else
     acksub () {
+        rmbak_acksub
         if [[ $# -lt 2 ]]; then
             echo "Usage: acksub <pattern> <replacement>" >&2
             exit 1
