@@ -51,6 +51,12 @@ else
     fi
 fi
 
+# If '~/Public' is empty, delete it. I NEVER use it, and it's mostly just
+# annoying.
+if [[ -n $CONFIG_DIR && -d ${HOME}/Public && -z $(ls -A ${HOME}/Public) ]]; then
+    rmdir ${HOME}/Public
+fi
+
 # Not Cygwin, not remote, not virtual
 check_if_native_linux()
 {
