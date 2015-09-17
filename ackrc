@@ -1,2 +1,4 @@
 --type-add=cmake=.cmake,.txt
+--type-add=hxx=.hxx
+--type-add=header=.h,.hpp,.hxx
 --ignore-dir=.idea
