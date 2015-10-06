@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Functions and aliases for C++ development
+# TODO some of these (e.g. acksub) are not C++ specific. Consider moving them
+# elsewhere.
 
 # Call this to customize environment for C++ dev work
 projc++ () {
@@ -17,7 +19,7 @@ projc++ () {
             printf "// Defines $classname\n#pragma once\n\nclass $classname\n{\n};" > "$header"
         fi
         if [[ ! -e "$defs" ]]; then
-            printf "#include \"$(basename "$header")\"" > "$defs"
+            printf "#include \"$(basename "$header")\"\n" > "$defs"
         fi
         if git rev-parse 2>/dev/null; then
             git add $header $defs
@@ -32,7 +34,7 @@ projc++ () {
         header=$(basename ${header_path})
         impl=$(basename ${impl_path})
         echo "#include \"${impl}\"" >> $header_path
-        printf "#pragma once\n#include \"${header}\"" > $impl_path
+        printf "#pragma once\n#include \"${header}\"\n" > $impl_path
         edit $impl_path
         git add $impl_path
     }
@@ -112,6 +114,9 @@ CATCHTEMPLATE
     if hash clang-check 2>/dev/null; then
         alias cxxcheck='clang-check -analyze $(findnontest)'
     fi
+    
+    # Find leftover git conflict markers
+    alias findconflicts="ack '^<<<<<<|^=======$|^>>>>>>>'"
 
 }
 
