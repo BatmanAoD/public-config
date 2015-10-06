@@ -1,0 +1,16 @@
+#!/bin/bash
+args=
+while [[ $# -ne 0 ]]; do
+    if [[ -f "$1" ]]; then
+        if [[ "$1" == /* ]]; then
+            args="$args \"$1\""
+        else
+            args="$args \"$PWD/$1\""
+        fi
+    else
+        args="$args $1"
+    fi
+    shift
+done
+gnome-terminal -e "nvim ${args}"
+

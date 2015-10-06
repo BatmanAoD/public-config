@@ -107,7 +107,7 @@ qcat() {
 zeval () {
     echo $@ | zsh
 }
-alias z*='zeval echo'
+alias 'z*'='zeval echo'
 
 # TODO write a function that will watch the timestamp of an exe and wait until
 # it changes.
@@ -217,21 +217,6 @@ if $CYGWIN; then
     }
 fi
 
-edit () {
-    if $CYGWIN; then
-        # XXX TODO figure out how to make `-f` work
-        # ...maybe do something with the `--fork=2` stuff?
-        gvim "$@"
-    elif [[ $VISUAL =~ "gvim" ]]; then
-        # run in background and suppress job details
-        # `eval` is for zsh compatibility
-        (eval $VISUAL $@ &)
-    else
-        # Don't try to run normal 'vim' in the background!
-        eval $VISUAL $@
-    fi
-}
-
 # This must change if I switch my editor to Emacs or something.
 edline () {
     # This check is actually mostly just to ensure that our first arg
@@ -241,7 +226,7 @@ edline () {
     if [[ -z $2 ]]; then
         echo "Must give two args! Usage: edline <lineno> <file>" >&2
     elif [ $1 -le $(wc -l $2 | awk '{print $1}') ] 2>/dev/null ; then
-        $EDITOR +$1 $2
+        edit +$1 $2
     else
         echo "first arg must be an integer <= the number of lines in" >&2
         echo "the file specified by the second arg" >&2
@@ -309,7 +294,7 @@ edfunc () {
         return
     fi
     cp $tmp_def_file{,.bak}
-    $EDITOR $tmp_def_file
+    edit $tmp_def_file
     diff $tmp_def_file{,.bak} >/dev/null 2>&1 
     if [[ $? -eq 1 ]]; then
         . $tmp_def_file
@@ -318,7 +303,7 @@ edfunc () {
 
 edvar() {
     eval echo \$$1 > $TMP/editvar_$1
-    $EDITOR $TMP/editvar_$1
+    edit $TMP/editvar_$1
     eval export $1=\"`cat $TMP/editvar_$1`\"
     rm $TMP/editvar_$1
 }
@@ -417,6 +402,7 @@ usebad() {
 mkc() { mkdir "$@" ; cd "$@";}
 
 # Easy extract
+# I think this is from http://stackoverflow.com/a/27433887/1858225
 extract () {
   if [ -f $1 ] ; then
       case $1 in
@@ -467,6 +453,43 @@ histin ()
     if [[ -n $ORIG_HISTFILE ]]; then
         export HISTFILE=$ORIG_HISTFILE
     fi
+}
+
+# Find matching lines among first `n` lines in some set of files
+hdr_match ()
+{
+    if [[ -n "$2" ]]; then
+        numlines=$2
+    else
+        numlines=1
+    fi
+
+    for t in $(find . -type f -name "$1"); do
+        head -$numlines $t
+    done | \
+        grep -v '^\s*\\\\\s*$' | \
+        grep -v '^\s*#\s*$' | \
+        sort |uniq -c | \
+        awk '{if ($1 > 1) print; }' | \
+        sed 's/^\s*//' | \
+        cut -f 2- -d ' ' | \
+        xargs -I{} ack -Q "{}"
+}
+
+# Search-and-replace in multiple files
+global_repl ()
+{
+    if [[ "$1" == "-d" ]]; then
+        dirname="$2"
+        shift 2
+    else
+        dirname="."
+    fi
+    if [[ $# -ne 2 ]]; then
+        echo "USAGE: global_repl [-d <dir>] pattern repl" >&2
+        return
+    fi
+    ack -l "$1" "$dirname" | xargs perl -pi -e "s/$1/$2/g"
 }
 
 # Cygwin specific:

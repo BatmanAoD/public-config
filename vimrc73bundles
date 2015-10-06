@@ -1,0 +1,94 @@
+" Bundles incompatible with older Vim
+
+" Fork of Gundo with extra features
+Bundle 'dsummersl/gundo.vim'
+
+let g:using_ycm = 0
+" TODO apparently this is tricky to get working on Windows, unfortunately.
+" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
+if !has('win32') && executable('clang++')
+    Bundle 'Valloric/YouCompleteMe'
+    let g:ycm_confirm_extra_conf = 0
+    let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+    let g:using_ycm = 1
+    " These are the defaults, but they happen to be overridden in the fork I'm
+    " currently using
+    " XXX why is 'tab' still not working???
+    let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
+    let g:ycm_key_list_previous_completion = ['<S-TAB>', '<Up>']
+    " Use YouCompleteMe instead of ctags-style taglist
+    " (Note: YouCompleteMe can also be configured to read the tagslist generated
+    " by 'Exuberant Ctags', but that will slow it down.)
+    nnoremap <C-]> :YcmCompleter GoTo<CR>
+    " Open definition in new window
+    nnoremap <C-W><C-]> :vsplit<CR>:YcmCompleter GoTo<CR>
+endif
+
+if !g:using_ycm && executable('g++')
+    " YCM attempts to do everything Syntastic would do, so there should be no
+    " reason to use Syntastic.
+    Bundle 'scrooloose/syntastic'
+    " TODO figure out a way to generically figure out the 'best' compiler to use
+    let g:syntastic_cpp_compile = "g++"
+    " TODO figure out a way to define flags per-project, e.g. by reading CMake
+    " files
+    let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++"
+    " TODO re-evaluate these after reading the syntastic manual
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 1
+endif
+
+" These should take care of all the 'very magic' nonsense
+" ......buuuuuut note that CRDispatcher actually only works with Vim 7.4+, not
+" 7.3+. For now I'm not going to worry about it.
+Bundle 'coot/CRDispatcher'
+Bundle 'coot/EnchantedVim'
+function! Disenchant()
+    let g:VeryMagic = 0
+    let g:VeryMagicSubstituteNormalise = 0
+    let g:VeryMagicSubstitute = 0
+    let g:VeryMagicGlobal = 0
+    let g:VeryMagicVimGrep = 0
+    let g:VeryMagicSearchArg = 0
+    let g:VeryMagicFunction = 0
+    let g:VeryMagicHelpgrep = 0
+    let g:VeryMagicRange = 0
+    let g:VeryMagicEscapeBackslashesInSearchArg = 0
+    let g:SortEditArgs = 0
+endfunction
+
+" Since I use incsearch:
+let g:VeryMagic = 0
+nnoremap / /\v
+nnoremap ? ?\v
+vnoremap / /\v
+vnoremap ? ?\v
+" If I type // or ??, I don't EVER want \v, since I'm repeating the previous
+" search.
+noremap // //
+noremap ?? ??
+" no-magic searching
+noremap /v/ /\V
+noremap ?V? ?\V
+
+" Turn on all other features.
+let g:VeryMagicSubstituteNormalise = 1
+let g:VeryMagicSubstitute = 1
+let g:VeryMagicGlobal = 1
+let g:VeryMagicVimGrep = 1
+let g:VeryMagicSearchArg = 1
+let g:VeryMagicFunction = 1
+let g:VeryMagicHelpgrep = 1
+let g:VeryMagicRange = 1
+let g:VeryMagicEscapeBackslashesInSearchArg = 1
+let g:SortEditArgs = 1
+
+
+" Additional plugins to try eventually:
+" Lokaltog/vim-easymotion

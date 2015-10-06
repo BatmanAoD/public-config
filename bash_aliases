@@ -1,9 +1,15 @@
-# echo aliases
+#!/bin/bash
+# The shebang is just to ensure that Vim knows how to highlight this file.
+
 alias expand='echo '
+alias expand='xargs '
+
+# Allow aliases with `sudo`
+alias sudo='sudo '
 
 if [[ "$(uname)" = "Linux" ]]
 then
-   alias ls="ls -F --color"
+   alias ls="ls -F --color --dereference-command-line-symlink-to-dir"
 else
    alias ls="ls -F"
 fi
@@ -101,11 +107,10 @@ alias ehco=echo
 alias goog=google
 alias gsearch=google
 
-# Now that 'edit' uses the '&' syntax, it's a function.
+alias edit='$NEWWINDOW_EDIT_CMD'
 alias ed=edit
 alias e=edit
 alias v=vim
-alias editall="xargs $VISUAL"
 alias subed='sublime_text'
 # gview won't work remotely without xauth
 alias gv='gview '
@@ -116,7 +121,6 @@ alias gmake="gmake -s"
 alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U '
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
-alias reload='unalias -a ; source ~/.bashrc '
 alias home="go ~"
 # 'sleep' is to prevent error from being printed after the cmd prompt, which
 # makes it look like the command is hanging.
@@ -144,20 +148,27 @@ alias sudoinstall=sinstall
 alias edvi="edit ~/.vimrc*"
 
 # crontab uses VISUAL, but this only works in batch mode.
-# Currently, VISUAL implies batch mode.
-# alias edcron="VISUAL=\"$EDITOR\" crontab -e"
-alias edcron="crontab -e"
+alias edcron="VISUAL=\"$EDITOR\" crontab -e"
 
 # convenient way to add/edit bash stuff
 # Note that VISUAL is by default set up to use the -f option,
 # so we don't need to use EDITOR
-alias edrc="$VISUAL ~/.bashrc && reload"
-alias edal="$VISUAL ~/.bash_aliases* && reload"
-alias edfx="$VISUAL ~/.bash_functions* && reload"
+alias edrc="$EDITOR ~/.bash_rcbase && reload"
+alias edal="$EDITOR ~/.bash_aliases* && reload"
+alias edfx="$EDITOR ~/.bash_functions* && reload"
+alias edpriv="$EDITOR ~/private-config/bash* && reload"
 
 # configure i3 setup
 # TODO: when I switch to generating this, edit source instead
 alias edi3='edit ~/.i3/config'
+
+# Other config-related aliases
+if [[ -n "$CONFIG_DIR" ]]; then
+    alias gocfg="go $CONFIG_DIR/.git"
+    alias pullcfg="(cd $CONFIG_DIR; git pull)"
+    alias pushcfg="(cd $CONFIG_DIR; git commit -a; git push)"
+fi
+# TODO consider doing the same for private config
 
 # generic i3 commands
 alias qi=i3-msg
@@ -169,25 +180,12 @@ alias iwks=qwks
 alias ic='qi workspace'
 alias qc='ic'
 
-
-# Won't work without "start_synergy" and "start_vnc" scripts, which are
-# currently not included in public_config since they may be system-specific.
-alias swin='~/bin/start_synergy'
-alias svnc='~/bin/start_vnc &'
-# The "official" way of doing things...which doesn't work for
-# screen :0 (by design). It also starts a vnc *viewing* session, so that I 
-# can see screen 1 on my Linux box.
-#alias svnc='start-vnc &'
-# because x0vncserver conflicts with synergy...
-# but for now I'm not using x0vncserver
-alias spause='pkill synergy; echo "press ENTER to resume Synergy."; read cont; swin'
-# while using VNC, turn monitors on/off
-alias xon='xset dpms force on'
-alias xoff='xset dpms force off'
-
+# Requires google docs commandline tools to be installed
 alias gdoc='google docs edit --editor="$EDITOR"'
 
 # some funcs and aliases aren't immediately loaded. Define these.
+# (Every function that defines new functions should be added to the
+# functions_with_defs variable; these should be separated with semicolons.)
 alias defallfuncs='eval ${functions_with_defs}'
 
 # add $TMP/ex to path, which is where temporary executables are
@@ -204,9 +202,25 @@ function dogegit() {
     alias very=git
     alias such=git
     alias wow='git status'
-    alias amaze='git status'
-    alias excite='git status'
+    # These are (currently) BC-specific aliases.
+    alias amaze='git lg'
+    alias excite='git wfb'
 }
+
+# If 'ack-grep' is installed, invoke it using `ack`.
+type ack &>/dev/null
+if [[ $? -ne 0 ]]; then
+    type ack-grep &>/dev/null
+    if [[ $? -eq 0 ]]; then
+        alias ack=ack-grep
+    fi
+fi
+
+# If sshrc is installed, use generated rc file for ssh shell.
+# TODO this got real ugly real fast. It should be a function.
+if hash sshrc 2>/dev/null; then
+    alias ssh="echo 'echo \"-> sshrc\"' > ${HOME}/.sshrc; cat $bash_addl_rcfiles >> ${HOME}/.sshrc; echo 'echo \"<- sshrc\"' >> ${HOME}/.sshrc; sshrc"
+fi
 
 alias save_func=save_function
 alias savefunction=save_function

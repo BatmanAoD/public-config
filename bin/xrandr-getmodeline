@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Get a mode line for xrandr for a given resolution
+
+# TODO add support for specifying framerate
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $0 <hres> <vres>" >&2
+    exit 1
+fi
+
+# Function for getting a viable modeline from `cvt`
+fixmodeline () {
+    # # Explicitly specify first term; cvt gives inconsistent numbers that appear
+    # # to cause problems
+    # echo "93.73 $(echo $* | sed 's/\s+/ /' | cut -d ' ' -f4-11)"
+    echo "$(echo $* | sed 's/\s+/ /' | cut -d ' ' -f3-11)"
+}
+
+fixmodeline $( cvt $1 $2 30 | grep Modeline)

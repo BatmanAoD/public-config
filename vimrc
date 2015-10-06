@@ -4,15 +4,50 @@
 "   directories
 " * in non-gui Vim, help window is apparently unavailable
 
+" Get rid of any existing mappings. (Must happen BEFORE trying to apply plugin
+" mappings!!!!)
+mapclear
+
 " make sure runtimepath has default value
 set rtp&
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
 
+" Setup plugin manager and load plugins
+if has('win32')
+    let pluginfile = expand("~/_vimrcbundles")
+else
+    let pluginfile = expand("~/.vimrcbundles")
+endif
+if filereadable(pluginfile)
+" Should plugins only be loaded once?
+" if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
+  exec ":source " . pluginfile
+  let g:pluginmgr_setup="done"
+endif
+
+" Colors and mouse settings (use jellybeans only if it's loaded as plugin;
+" jellybeans only looks good when rich colors are available, which is true for
+" gvim and nvim but not console-vim)
+if has('gui_running') || has('nvim')
+    if exists("g:jellybeans_overrides")
+        colors jellybeans
+    else
+        colors torte
+    endif
+        set enc=utf-8
+        set mouse=a
+else
+    colors torte
+    set mouse=
+endif
+
 set noerrorbells t_vb=
 set hidden
-" apparently not on by default in 7.4?
 syntax enable
+" TEMPORARY fix for marco highlighting issue; see
+" http://chat.stackexchange.com/rooms/21448/discussion-between-kyle-strand-and-josh-petrie
+hi link cCppOut2 PreProc
 " fancier % matching
 runtime macros/matchit.vim
 " TODO: consider adding one of these as well:
@@ -24,6 +59,10 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
+" Automatically change do directory of current file
+set autochdir
+" All indentation levels should be rounded to a multiple of shiftwidth
+set shiftround
 " switch back to 'block' if this is too open-ended.
 " alternatively, only set to 'all' if I'm editing a file with tabs.
 " This would be easy since I already have the 'PickTabUsage' function.
@@ -47,6 +86,9 @@ nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
 " TODO: figure out how to make this work...
 " nnoremap <silent> <2-LeftMouse> <LeftMouse>i
 set nostartofline
+" XTerm clipboard setting
+set clipboard^=unnamedplus
+" set clipboard=unnamed
 
 function! GenericFile()
     " is this what I want?
@@ -55,6 +97,17 @@ function! GenericFile()
     " Include - as a 'word' character
     set iskeyword+=-
 endfunction
+
+" My Cpp settings
+function! CppFile()
+    " I don't use tabs, but other people do.
+    set tabstop=2
+    set shiftwidth=2
+    set softtabstop=2
+    set tw=80
+    set fo=tcrqnlj
+endfunction
+
 " why doesn't this work? Is there something similar that might?
 " autocmd FileType "" | :call GenericFile() | endif
 augroup filetypes
@@ -65,8 +118,7 @@ augroup filetypes
     " The number of indentation columns depends on the language, not on
     " tab usage
     au FileType * if &filetype == "cpp"
-                   \| set shiftwidth=2
-                   \| set softtabstop=2
+                   \| :call CppFile()
                \| else
                    \| set shiftwidth=4
                    \| set softtabstop=4
@@ -82,8 +134,11 @@ augroup END
 set incsearch
 " Why is this even limited?
 set undolevels=9999999999
+" TODO use a more general strategy here
+" ...and figure out why different fonts appear different on different
+" machines...?????
 if has('win32')
-    set guifont=Consolas:h8:cANSI
+    silent! set guifont=Consolas:h8:cANSI
     " set guifont=Anonymous_Pro:h8:cANSI
 " elseif has('win32unix') " Cygwin
 "     " TODO get a better Cygwin font!
@@ -105,9 +160,11 @@ set gdefault
 " I don't use vim splits that much, but in any case...
 set splitbelow
 set splitright
-" Figure out what the right behavior is...don't want unintended linebreaks, e.g.
-" when editing a long path in a bash script.
+" Disabled for most files; see below for cpp.
 " set tw=80
+" Delete comment leader when joining lines
+" Other `fo` options for Cpp are set by CppFile
+set fo+=j
 set ww=h,l,<,>
 " start scrolling 5 lines from edge of screen
 set scrolloff=5
@@ -135,103 +192,6 @@ set backspace=indent,eol,start
 " ....sadly, it looks like getting this message fairly frequently is
 " unavoidable with i3.
 set shortmess=at
-" Vundle setup, taken from sample .vimrc on Vundle github page
-" TODO: consider using NeoBundle instead: https://github.com/Shougo/neobundle.vim
-filetype off
-if has('win32')
-    set rtp+=$VIMFILES/bundle/Vundle/
-    let path=expand($VIMFILES . '/bundle')
-    call vundle#begin(path)
-else
-    set rtp+=$VIMFILES/bundle/Vundle.vim/
-    call vundle#rc()
-endif
-Bundle 'gmarik/vundle'
-
-" Put new bundles here
-Bundle 'nanotech/jellybeans.vim'
-Bundle 'terryma/vim-multiple-cursors'
-" This remaps '/', which makes it no longer a simple movement, which
-" wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
-" some slow-down when initiating a search. So I'm disabling it.
-" Bundle 'SearchComplete'
-Bundle 'sjl/gundo.vim.git'
-Bundle 'sjl/clam.vim'
-Bundle 'rkitover/vimpager'
-Bundle 'tpope/vim-surround'
-Bundle 'AndrewRadev/linediff.vim'
-Bundle 'LargeFile'
-" TODO figure out why this doesn't seem to work, or figure out a different
-" 'tail-like' configuration
-" Bundle 'Tail-Bundle'
-" This *apparently* getting the right script (1928), but only because of
-" numerical precedence. This is a known bug, unfortunately.
-Bundle 'Rename'
-" This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
-" so I'll just treat it as a bundle because I'm that lazy.
-Bundle 'BenBergman/vsearch.vim'
-" TODO syntax highlighting for different filetypes within the same file:
-" http://www.vim.org/scripts/script.php?script_id=4168
-" TODO figure out how to use this
-" pymode
-Bundle 'klen/python-mode'
-" TODO apparently this is tricky to get working on Windows, unfortunately.
-" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
-" Bundle 'Valloric/YouCompleteMe'
-
-" I really don't know why this is necessary in the Windows-native vim.
-if has('win32')
-    call vundle#end()
-endif
-
-filetype plugin indent on     " required!
-"
-" Brief help
-" :BundleList          - list configured bundles
-" :BundleInstall(!)    - install(update) bundles
-" :BundleSearch(!) foo - search(or refresh cache first) for foo
-" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-"
-" see :h vundle for more details or wiki for FAQ
-" NOTE: comments after Bundle command are not allowed..
-
-" source $VIMRUNTIME/mswin.vim
-
-" SpecialKey and NonText are for particular types of whitespace
-let g:jellybeans_overrides = {
-\   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
-\   'statement':    { 'guifg': '57D9C7' },
-\   'SpecialKey':   { 'guifg': 'FFFA00' },
-\   'NonText':      { 'guifg': '444499' },
-\   'Todo':         { 'guibg': '772222' },
-\}
-if has('gui_running')
-    colors jellybeans
-    set enc=utf-8
-    set mouse=a
-else
-    colors desert
-    set mouse=
-endif
-
-" Plugin settings:
-" I don't really like folds
-let g:pymode_folding = 0
-" prevent Pymode and Gundo from messing with the window size
-set winfixwidth
-set winfixheight
-set guioptions-=L
-
-" Mappings for use with plugins:
-nnoremap <silent> <F5> :GundoToggle<CR>
-" do a diff:
-vnoremap <Leader>ld :Linediff<CR>
-" start a diff and go to end of diff section:
-vnoremap <Leader>ls :Linediff<CR>`>
-" clear diff:
-vnoremap <Leader>lc :LinediffReset<CR>
-nnoremap <Leader>lc :LinediffReset<CR>
-
 if ! has('win32')
     cmap <silent> w!! w !sudo tee > /dev/null %
 endif
@@ -253,9 +213,7 @@ endif
 function! Usetabs()
   " shiftwidth has to do with auto-indent & similar, NOT tabbing.
   " So keep 4 all the time.
-  " set shiftwidth=8
-  " Ensure that tabstop is 8, which should be true already anyway.
-  set tabstop=8
+  " Do NOT change tabstop.
   set noexpandtab
   " if I'm using tabs, LOOK AT THEM.
   set list
@@ -266,10 +224,8 @@ endfunction
 " However, the eol character is still annoying, so don't bother.
 " TODO: can I make the syntax color category for trailing spaces be something
 " else, instead?
-" TODO: is there a generic way to do this, so that I don't need to assume that
-" I'm using jellybeans?
 function! Tabcolors()
-    if has('gui_running')
+    if has('gui_running') && exists("g:jellybeans_overrides")
         let g:jellybeans_overrides.SpecialKey = {'guifg':'444444'}
         let g:jellybeans_overrides.NonText    = {'guifg':'7777CC'}
         colors jellybeans
@@ -287,7 +243,7 @@ function! Nousetabs()
   " set nolist
 endfunction
 function! Nontabcolors()
-    if has('gui_running')
+    if has('gui_running') && exists("g:jellybeans_overrides")
         let g:jellybeans_overrides.SpecialKey = {'guifg':'FFFA00'}
         let g:jellybeans_overrides.NonText    = {'guifg':'444499'}
         colors jellybeans
@@ -355,6 +311,13 @@ augroup autotabs
     autocmd BufEnter,BufRead * :call PickTabUsage()
 augroup END
 
+" map ctrl-Y to copy into system register
+nnoremap <C-Y> "+y
+vnoremap <C-Y> "+y
+" map ctrl-P to paste from system register
+nnoremap <C-P> "+p
+vnoremap <C-P> "+p
+
 nnoremap <Leader>w :set wrap!<cr>
 
 " quick uniquification
@@ -370,13 +333,23 @@ nnoremap <Leader>re :so $MYVIMRC<cr>
 nnoremap <Leader>h :noh<cr>
 
 " Quickly font bigger/smaller
+" TODO: this currently only works on Linux w/ DejaVu Sans Mono installed.
 nnoremap <Leader>= :set guifont=DejaVu\ Sans\ Mono\ 18<cr>
 nnoremap <Leader>- :set guifont=DejaVu\ Sans\ Mono\ 10<cr>
+
+" Quickly underline the current line
+nmap <Leader>l yypV<C-s>./-/<CR>k<Leader>h
+
+" TODO: add a quick way to show carriage returns;
+" see http://stackoverflow.com/a/27259548/1858225
 
 inoremap <C-BS> <C-W>
 inoremap <C-Del> <C-O>dw
 nnoremap <C-BS> <C-W>
 nnoremap <C-Del> <C-O>dw
+
+" Change one letter using 'x'
+nnoremap cx cl
 
 " In insert or command mode, move normally by using Ctrl
 inoremap <C-h> <Left>
@@ -469,6 +442,13 @@ function! RepeatChar(char, count)
 " for consistency with D and C
 nnoremap Y y$
 
+" When `put`ing text, automatically auto-indent it
+" TODO: verify that this consistently works 'well enough.' In particular, I
+" never want tabs to mysteriously appear in files that previously had no tabs.
+" See http://vi.stackexchange.com/q/3452/1060
+nnoremap p pV`]=
+nnoremap P PV`]=
+
 " For using visual mode to swap chunks of text:
 " Delete one piece of text (using any kind of 'd' command), then visually
 " select another piece of text, then press Ctrl-x to swap it with the last
@@ -479,13 +459,8 @@ vnoremap <C-X> <Esc>`.``gvP``P
 " ex mode?? seriously?
 nnoremap Q <nop>
 
-" it's what all the cool people are doing...sort of.
-" (not jj because repetition is hard)
-" (not jk because that means 'just kidding' and
-" because it's easier to roll from right to left)
-" If this becomes a problem because of my initials,
-" just remove or remap it.
-inoremap kj <Esc>
+" No `jk` or `kj` mapping for `Esc`, because remapping to CapsLock is more
+" convenient anyway.
 
 " Easily write and exit buffers
 function! WriteAndDelete()
@@ -534,12 +509,6 @@ unmap <CR>
 " .....so this is too annoying to use.
 " cnoremap = \=
 
-" Visually select search result
-" TODO: consider using https://github.com/Raimondi/vim_search_objects,
-" which was recommended by http://superuser.com/a/370522/199803
-nnoremap g/ //e<cr>v??<cr>
-nnoremap g? ??b<cr>v//e<cr>
-
 " 'Fix' the weird \n vs \r discrepancy
 " (credit: http://superuser.com/a/743087/199803 
 " .....but the fancy regex is mine)
@@ -562,7 +531,9 @@ nmap <C-s> :%s/
 vmap <C-s> :s/
 " quick word count
 nnoremap <C-c> :%s///n<cr>
-inoremap <C-c> :%s///n<cr>
+vnoremap <C-c> :%s///n<cr>
+" Quick section-wide 'global'
+vmap <C-g> :g/
 
 function! ToggleGuiMenu()
     if(&guioptions =~# 'm')
@@ -597,7 +568,9 @@ function! ScrollLarge()
 endfunction
 
 augroup guiopts
-    autocmd BufEnter * :call ScrollLarge()
+    " (hopefully) temporarily disabled, because this causes undesired
+    " window-resizing sometimes
+    " autocmd BufEnter * :call ScrollLarge()
     autocmd GUIEnter * nnoremap <Leader>s :call ToggleGuiScroll()<cr>
     autocmd GUIEnter * set guioptions-=m
     autocmd GUIEnter * nnoremap <Leader>m :call ToggleGuiMenu()<cr>
@@ -616,7 +589,7 @@ augroup matchperms
 augroup END
 
 " from http://stackoverflow.com/a/4294176/1858225
-function s:MkNonExDir(file, buf)
+function! s:MkNonExDir(file, buf)
     if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
         let dir=fnamemodify(a:file, ':h')
         if !isdirectory(dir)
@@ -628,3 +601,36 @@ augroup BWCCreateDir
     autocmd!
     autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
 augroup END
+
+" If multiple buffers, vsplit them all
+"vert sba
+
+" From https://github.com/joeytwiddle/rc_files/blob/c8264794527c6be685829f08f63fd8dfa2903528/.vim/plugin/joeycommands.vim#L112-131
+" Runs the given Ex command and pipes the output to the given shell command.
+" For example: :PipeToShell syn | grep 'Declaration'
+" I considered other names: CmdOut, PipeToShell
+command! -nargs=+ -complete=command PipeCmd call s:PassVimCommandOutputToShellCommand(<q-args>)
+
+function! s:PassVimCommandOutputToShellCommand(line)
+        let vim_cmd = substitute(a:line, '\s*|.*', '', '')
+        let shell_cmd = substitute(a:line, '^[^|]*|\s*', '', '')
+        " TODO: We could redir to a local variable, to avoid clobbering the 'l' register.
+        redir @l
+                silent exe vim_cmd
+        redir END
+        " To pipe to a shell, the only way I thought of was to put the data into a fresh buffer, and then do :w !...
+        new
+        normal "lP
+        exe 'w !'.shell_cmd
+        " Undo the paste so bwipeout can drop the buffer without complaint
+        normal u
+        exe "bwipeout"
+endfunction
+
+" Leave insert mode to the *right* of the final location of the insertion
+" pointer
+" From http://vim.wikia.com/wiki/Prevent_escape_from_moving_the_cursor_one_character_to_the_left
+let CursorColumnI = 0 "the cursor column position in INSERT
+autocmd InsertEnter * let CursorColumnI = col('.')
+autocmd CursorMovedI * let CursorColumnI = col('.')
+autocmd InsertLeave * if col('.') != CursorColumnI | call cursor(0, col('.')+1) | endif

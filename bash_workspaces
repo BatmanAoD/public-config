@@ -1,0 +1,48 @@
+#!/bin/bash
+# The shebang is just to ensure that Vim knows how to highlight this file.
+
+# Set up aliases, etc for workspaces.
+
+WORKSPACEDIR=~/workspaces
+
+alias goDurango=". setupDurangoProj $WORKSPACEDIR/AUC/Durango/src"
+alias goAltDurango=". setupDurangoProj $WORKSPACEDIR/AUC/AltDurango/src"
+
+# TODO: turn searchproj into its own script for generating a file mapping
+# names->projects, where a project consists of:
+#   * source directory
+#   * root directory+
+#   * build command
+#   * VCS system
+#   * Other info?
+#
+# This script should be able to search any directory (not just $WORKSPACEDIR).
+# Its output would be some kind of text file, perhaps in $WORKSPACEDIR.
+#
+# My Bash-specific config would then:
+#   * Read the text file output by the above script and generate appropriate
+#     aliases
+#   * Include an alias for re-running the above script for Git workspaces in
+#     $WORKSPACEDIR. This would NOT be done every time .bashrc is loaded.
+#
+# searchproj () {
+#     # $1 is project "type"
+#     # $2 is project "dir marker" (e.g. .git for Git)
+#     echo Generating aliases for $1 projects:
+#     # Stolen from http://stackoverflow.com/a/11998951/1858225
+#     # Follow symbolic links
+#     wkslist=""
+#     for wksdir in $(find -L $WORKSPACEDIR -name $2 -type d -prune); do
+#         fullpath=$(dirname $wksdir)
+#         projname=$(basename $fullpath)
+#         if [[ $wkslist =~ $projname ]]; then
+#             echo "Warning: duplicate project name ${projname}!" >&2
+#             echo "No aliases for ${fullpath} will be generated." >&2
+#         else
+#             echo " - ${projname} at ${fullpath}"
+#             alias go${projname}="go ${fullpath}"
+#         fi
+#     done
+# }
+# 
+# searchproj Git .git
