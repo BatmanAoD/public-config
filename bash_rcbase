@@ -228,8 +228,8 @@ else
 fi
 
 
-export PEDITOR=$EDITOR
-export EDOVER=$VISUAL
+export PEDITOR="$EDITOR"
+export EDOVER="$VISUAL"
 set -o ignoreeof          # do not let CNTL-D exit the shell
 shopt -s checkwinsize    # Reset LINES and COLUMNS after each command
 
