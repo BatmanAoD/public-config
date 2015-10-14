@@ -33,12 +33,23 @@ for prog in ~/public-config/bin/*; do
     fi
 done
 
+# Linux-specific
+linux_specific=~/public-config/OS_specific/Linux
+
+# Install Xmodmap
+if [[ ! -e ~/.Xmodmap ]]; then
+    echo "Installin Xmodmap"
+    ln -s ${linux_specific}/Xmodmap ~/.Xmodmap
+else
+    echo "Xmodmap already exists; not overwriting"
+fi
+
 # Install .i3 config
 mkdir -p ~/.i3
 cd ~/.i3
 if [[ ! -e config ]]; then
     echo Installing i3 config
-    ln -s ~/public-config/OS_specific/Linux/i3_config
+    ln -s "${linux_specific}/i3_config"
     mv i3_config config
 else
     echo i3 config already installed

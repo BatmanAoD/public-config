@@ -81,7 +81,10 @@ check_if_native_linux
 
 if $NATIVE_LINUX; then
     # Currently using xmodmap instead of xkbmap
-    if [[ ! -r ~/.Xmodmap ]]; then
+    if [[ -r ~/.Xmodmap ]]; then
+        # TODO why doesn't this seem to work with `reload`?
+        xmodmap ~/.Xmodmap
+    else
         echo "WARNING: ~/.Xmodmap not found!" >&2
     fi
     # TODO check if CAPS is configured, and if so, manually load Xmodmap? (Bug
