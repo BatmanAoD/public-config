@@ -1,3 +1,6 @@
+" TODO loooooots of this doesn't work with Vi (`vim-gtk` or similar must be
+" installed), and the Vundle stuff causes lots of errors when Vundle has not
+" been installed. This is annoying when setting up a new machine/profile/etc.
 "
 " TODO fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
