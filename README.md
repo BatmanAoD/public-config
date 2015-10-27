@@ -50,8 +50,3 @@ other TODO items
      ```
      g++ -std=c++14 2>&1 | grep -q 'unrecognized command line'
      ```
-
-setup notes (delete once this is automated)
------------
- * Vundle:
-    `git clone https://github.com/gmarik/Vundle.vim.git /home/BatmanAoD/.vim/bundle/Vundle.vim`

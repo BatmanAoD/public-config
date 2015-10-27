@@ -1,8 +1,15 @@
 "
-" TODO fix the following problems (probably both related to QuitIfLastBuffer):
+" TODO: fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
 "   directories
 " * in non-gui Vim, help window is apparently unavailable
+"
+" TODO: Look through some .vimrc files made by people who actually know what
+" they're doing:
+" * https://github.com/tpope/tpope/blob/master/.vimrc
+" * https://github.com/garybernhardt/dotfiles/blob/master/.vimrc
+" * https://github.com/nelstrom/dotfiles/blob/master/vimrc
+" * https://bitbucket.org/sjl/dotfiles/src/1da770d23a2168f0e0c2e50d0d3e84e5c6d38d27/vim/vimrc?at=default&fileviewer=file-view-default
 
 " Get rid of any existing mappings. (Must happen BEFORE trying to apply plugin
 " mappings!!!!)
@@ -54,6 +61,8 @@ runtime macros/matchit.vim
 " * https://github.com/nelstrom/vim-textobj-rubyblock
 " * https://github.com/rhysd/vim-textobj-ruby
 set hlsearch
+" TODO: there's a fair amount of 'trivial' setup here. Consider using this:
+" https://github.com/tpope/vim-sensible
 set nocompatible
 set showcmd
 set ruler

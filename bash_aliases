@@ -118,7 +118,9 @@ alias gv='gview '
 alias qed=ednew
 
 alias gmake="gmake -s"
-alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U '
+# Use '-U' because otherwise this causes unacceptable slowdown in dirs with
+# lots of entries.
+alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U'
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
 alias home="go ~"

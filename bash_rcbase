@@ -98,8 +98,21 @@ if $NATIVE_LINUX; then
     fi
 fi
 
+known_ids="kjstrand BatmanAoD"
+can_add_dirs=false
+
+for usrname in $known_ids; do
+    if [[ $usrname == $(whoami) ]]; then
+        can_add_dirs=true
+        break
+    fi
+done
+
 toolsbld_path=${HOME}/ToolsBld
-mkdir -p ${toolsbld_path}
+
+if $can_add_dirs; then
+    mkdir -p ${toolsbld_path}
+fi
 
 stderred_path=${toolsbld_path}/stderred
 
@@ -156,8 +169,15 @@ export MANWIDTH=80
 export GIT_ASKPASS=
 
 # create a personal-use tmp dir
-export TMP="$HOME/tmp"
-mkdir -p $TMP
+# Do NOT export! Programs should use the standard `/tmp`!
+TMP="$HOME/tmp"
+if $can_add_dirs; then
+    mkdir -p "$HOME/tmp"
+fi
+
+if [[ ! -d "$TMP" ]]; then
+    TMP=/tmp
+fi
 
 # Set up options
 # set -u                # attempting to expand unset variables is an error
