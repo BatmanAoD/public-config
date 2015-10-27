@@ -1,3 +1,6 @@
+" TODO loooooots of this doesn't work with Vi (`vim-gtk` or similar must be
+" installed), and the Vundle stuff causes lots of errors when Vundle has not
+" been installed. This is annoying when setting up a new machine/profile/etc.
 "
 " TODO: fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
@@ -107,12 +110,16 @@ function! GenericFile()
     set iskeyword+=-
 endfunction
 
+function! SetIndentWidth(spaces)
+    let &tabstop=a:spaces
+    let &shiftwidth=a:spaces
+    let &softtabstop=a:spaces
+endfunction
+
 " My Cpp settings
 function! CppFile()
     " I don't use tabs, but other people do.
-    set tabstop=2
-    set shiftwidth=2
-    set softtabstop=2
+    call SetIndentWidth(2)
     set tw=80
     set fo=tcrqnlj
 endfunction
@@ -129,8 +136,7 @@ augroup filetypes
     au FileType * if &filetype == "cpp"
                    \| :call CppFile()
                \| else
-                   \| set shiftwidth=4
-                   \| set softtabstop=4
+                   \| :call SetIndentWidth(4)
                \| endif
 augroup END
 

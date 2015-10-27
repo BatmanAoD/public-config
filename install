@@ -33,6 +33,8 @@ for prog in ~/public-config/bin/*; do
     fi
 done
 
+# TODO do NOT try to install Linux-specific stuff on
+# Cygwin!
 # Linux-specific
 linux_specific=~/public-config/OS_specific/Linux
 
@@ -115,7 +117,7 @@ havecmake=false
 if hash cmake 2>/dev/null; then
     havecmake=true;
 else
-    if installusingapt; then
+    if $installusingapt; then
         echo Installing cmake using apt
         sudo apt-get install cmake
         if [[ $? -eq 0 ]]; then
