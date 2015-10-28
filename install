@@ -33,16 +33,39 @@ for prog in ~/public-config/bin/*; do
     fi
 done
 
+# TODO do NOT try to install Linux-specific stuff on
+# Cygwin!
+# Linux-specific
+linux_specific=~/public-config/OS_specific/Linux
+
+# Install Xmodmap
+if [[ ! -e ~/.Xmodmap ]]; then
+    echo "Installin Xmodmap"
+    ln -s ${linux_specific}/Xmodmap ~/.Xmodmap
+else
+    echo "Xmodmap already exists; not overwriting"
+fi
+
 # Install .i3 config
 mkdir -p ~/.i3
 cd ~/.i3
 if [[ ! -e config ]]; then
     echo Installing i3 config
-    ln -s ~/public-config/OS_specific/Linux/i3_config
+    ln -s "${linux_specific}/i3_config"
     mv i3_config config
 else
     echo i3 config already installed
 fi
+
+##############################################################################
+##############################################################################
+# CREATE SANDBOX DIRECTORY
+##############################################################################
+##############################################################################
+# XXX TODO
+# * Sandbox setup with makefile, inspired by http://stackoverflow.com/a/32485029/1858225
+# * To check whether c++14, etc is supported:
+# g++ -std=c++14 2>&1 | grep -q 'unrecognized command line'
 
 ##############################################################################
 ##############################################################################
@@ -93,7 +116,7 @@ havecmake=false
 if hash cmake 2>/dev/null; then
     havecmake=true;
 else
-    if installusingapt; then
+    if $installusingapt; then
         echo Installing cmake using apt
         sudo apt-get install cmake
         if [[ $? -eq 0 ]]; then

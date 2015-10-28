@@ -38,10 +38,11 @@ if !g:using_ycm && executable('g++')
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
 
-    let g:syntastic_always_populate_loc_list = 1
-    let g:syntastic_auto_loc_list = 1
-    let g:syntastic_check_on_open = 1
-    let g:syntastic_check_on_wq = 1
+    " TODO consider just...getting rid of syntastic.
+    " let g:syntastic_always_populate_loc_list = 1
+    " let g:syntastic_auto_loc_list = 1
+    " let g:syntastic_check_on_open = 1
+    " let g:syntastic_check_on_wq = 1
 endif
 
 " These should take care of all the 'very magic' nonsense

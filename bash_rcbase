@@ -12,6 +12,10 @@
 PERSONALMACHINEPATH=
 
 # Ensure my personal $HOME/bin dir is on $PATH.
+# Logic to ensure path is only added *once* is taken from
+# http://superuser.com/a/39995/199803
+# TODO Turn this into a function that can be useable elsewhere, as
+# in the original answer!
 HOMEBIN=$HOME/bin
 if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
     export PATH="${PATH:+"$PATH:"}$HOMEBIN"
@@ -24,7 +28,6 @@ if grep -q Cygwin <(uname -o); then
     export SHELLOPTS
     set -o igncr
     CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
-    # taken from http://superuser.com/a/39995/199803
 fi
 
 # Check that I have the rest of my "public-config" stuff.
@@ -78,7 +81,10 @@ check_if_native_linux
 
 if $NATIVE_LINUX; then
     # Currently using xmodmap instead of xkbmap
-    if [[ ! -r ~/.Xmodmap ]]; then
+    if [[ -r ~/.Xmodmap ]]; then
+        # TODO why doesn't this seem to work with `reload`?
+        xmodmap ~/.Xmodmap
+    else
         echo "WARNING: ~/.Xmodmap not found!" >&2
     fi
     # TODO check if CAPS is configured, and if so, manually load Xmodmap? (Bug
@@ -225,8 +231,8 @@ else
 fi
 
 
-export PEDITOR=$EDITOR
-export EDOVER=$VISUAL
+export PEDITOR="$EDITOR"
+export EDOVER="$VISUAL"
 set -o ignoreeof          # do not let CNTL-D exit the shell
 shopt -s checkwinsize    # Reset LINES and COLUMNS after each command
 
