@@ -2,3 +2,4 @@
 *.swo
 lib*.rlib
 .idea
+*.old

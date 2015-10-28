@@ -98,12 +98,16 @@ function! GenericFile()
     set iskeyword+=-
 endfunction
 
+function! SetIndentWidth(spaces)
+    let &tabstop=a:spaces
+    let &shiftwidth=a:spaces
+    let &softtabstop=a:spaces
+endfunction
+
 " My Cpp settings
 function! CppFile()
     " I don't use tabs, but other people do.
-    set tabstop=2
-    set shiftwidth=2
-    set softtabstop=2
+    call SetIndentWidth(2)
     set tw=80
     set fo=tcrqnlj
 endfunction
@@ -120,8 +124,7 @@ augroup filetypes
     au FileType * if &filetype == "cpp"
                    \| :call CppFile()
                \| else
-                   \| set shiftwidth=4
-                   \| set softtabstop=4
+                   \| :call SetIndentWidth(4)
                \| endif
 augroup END
 
