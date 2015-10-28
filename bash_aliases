@@ -224,6 +224,21 @@ if hash sshrc 2>/dev/null; then
     alias ssh="echo 'echo \"-> sshrc\"' > ${HOME}/.sshrc; cat $bash_addl_rcfiles >> ${HOME}/.sshrc; echo 'echo \"<- sshrc\"' >> ${HOME}/.sshrc; sshrc"
 fi
 
+# This provides a way to become root using ssh instead of `su` or `sudo su`.
+# It's useful with `sshrc`.
+alias be-root="ssh root@localhost"
+# NO: this makes autocomplete match two commands, which is annoying.
+# alias be-su="be-root"
+
+be-root -o 'PreferredAuthentications=publickey' "exit" 2>/dev/null 1>/dev/null
+if [[ $? -ne 0 ]]; then
+    ssh-copy-id root@localhost
+fi
+# XXX TODO: shell seems to hang while sourcing bashrc stuff...
+# It actually gets through the rc_base section. Possibly the problem is the
+# above "attempt ssh as root" thing, or another "conditional" action in the
+# functions or aliases file?
+
 alias save_func=save_function
 alias savefunction=save_function
 alias savefunc=save_function

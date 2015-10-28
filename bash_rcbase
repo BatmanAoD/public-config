@@ -30,26 +30,50 @@ if grep -q Cygwin <(uname -o); then
     CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
 fi
 
-# Check that I have the rest of my "public-config" stuff.
-CONFIG_DIR=~/public-config
-# TODO consider looking for private-config, too
-if [[ ! -d $CONFIG_DIR ]]; then
-    echo "WARNING: public config directory not found!" >&2
-    CONFIG_DIR=
-elif grep -v -q -i 'batmanaod' \
-  <(git --git-dir $CONFIG_DIR/.git config --get remote.origin.url \
-  2>/dev/null); then
-    echo "WARNING: this bash config designed for use in conjunction" >&2
-    echo "with the other config files in the BatmanAoD/public-config" >&2
-    echo "git repository." >&2
-else
-    git_remote_head="$(timeout 1s git --git-dir $CONFIG_DIR/.git \
-        ls-NATIVE_LINUX origin -h refs/heads/master 2>/dev/null)"
-    if [[ -n "$git_remote_head" ]]; then
-        if [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
-                2>/dev/null)" != \
-              "$(echo ${git_remote_head} | awk '{print $1}')" ]]; then
-            echo "WARNING: local public config repo is not in sync with github!!" >&2
+known_ids="kjstrand BatmanAoD"
+id_is_known=false
+primary_local_account=''
+
+for usrname in $known_ids; do
+    if [[ $usrname == $(whoami) ]]; then
+        id_is_known=true
+        primary_local_account=$usrname
+        break
+    elif [[ -d $(eval echo ~${usrname} ) ]]; then
+        primary_local_account=$usrname
+    fi
+done
+
+if [[ -n $primary_local_account ]]; then
+    echo -e "\e[0;36mPrimary local account: ${primary_local_account}"
+    if $id_is_known; then
+        echo -e "You are currently using this account."
+    else
+        echo -e "You are currently using account: $(whoami)"
+    fi
+    tput sgr0   # Clear color codes
+    
+    # Check that I have the rest of my "public-config" stuff.
+    CONFIG_DIR=$(eval echo -n ~${primary_local_account})/public-config
+    # TODO consider looking for private-config, too
+    if [[ ! -d $CONFIG_DIR ]]; then
+        echo "WARNING: public config directory not found!" >&2
+        CONFIG_DIR=
+    elif grep -v -q -i 'batmanaod' \
+    <(git --git-dir $CONFIG_DIR/.git config --get remote.origin.url \
+    2>/dev/null); then
+        echo "WARNING: this bash config designed for use in conjunction" >&2
+        echo "with the other config files in the BatmanAoD/public-config" >&2
+        echo "git repository." >&2
+    else
+        git_remote_head="$(timeout 1s git --git-dir $CONFIG_DIR/.git \
+            ls-NATIVE_LINUX origin -h refs/heads/master 2>/dev/null)"
+        if [[ -n "$git_remote_head" ]]; then
+            if [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
+                    2>/dev/null)" != \
+                "$(echo ${git_remote_head} | awk '{print $1}')" ]]; then
+                echo "WARNING: local public config repo is not in sync with github!!" >&2
+            fi
         fi
     fi
 fi
@@ -98,19 +122,9 @@ if $NATIVE_LINUX; then
     fi
 fi
 
-known_ids="kjstrand BatmanAoD"
-can_add_dirs=false
-
-for usrname in $known_ids; do
-    if [[ $usrname == $(whoami) ]]; then
-        can_add_dirs=true
-        break
-    fi
-done
-
 toolsbld_path=${HOME}/ToolsBld
 
-if $can_add_dirs; then
+if $id_is_known; then
     mkdir -p ${toolsbld_path}
 fi
 
@@ -171,7 +185,7 @@ export GIT_ASKPASS=
 # create a personal-use tmp dir
 # Do NOT export! Programs should use the standard `/tmp`!
 TMP="$HOME/tmp"
-if $can_add_dirs; then
+if $id_is_known; then
     mkdir -p "$HOME/tmp"
 fi
 
@@ -265,6 +279,10 @@ bind Space:magic-space # ...for some reason this can't come earlier...?
 PS1='\h|\W> '    
 # Make it cyan
 PS1="\[\e[0;36m\]${PS1}\[\e[m\]"
+# If root, make that obvious
+if [[ $(whoami) == root ]]; then
+    PS1="\[\e[0;31m\]\u@\[\e[m\]${PS1}"
+fi
 # Export it
 export PS1
 
