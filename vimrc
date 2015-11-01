@@ -138,6 +138,10 @@ augroup filetypes
                \| else
                    \| :call SetIndentWidth(4)
                \| endif
+    " Use markdown syntax for .txt files
+    au FileType * if &filetype == "text"
+                   \| :set syntax=markdown
+                \| endif
 augroup END
 
 
