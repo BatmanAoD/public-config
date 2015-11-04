@@ -557,7 +557,7 @@ if hash sshrc 2>/dev/null; then
         echo 'echo \"-> sshrc\"' > "${SSHRC_CFG}"
         cat $bash_addl_rcfiles >> "${SSHRC_CFG}"
         echo 'echo \"<- sshrc\"' >> "${SSHRC_CFG}"
-        sshrc
+        sshrc $@
     }
 fi
 
