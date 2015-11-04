@@ -513,7 +513,7 @@ say() {
     if [[ $1 == "-h" || $1 == "--help" ]]; then
         echo "Options are:"
         for i in "${!tput_sanity_map[@]}"; do
-            echo "$i"
+            echo "$(tput ${tput_sanity_map[$i]})$i$(tput sgr0)"
         done
         return
     fi
