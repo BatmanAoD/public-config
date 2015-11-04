@@ -550,7 +550,8 @@ highlight() {
     sed s"/$2/$fg_c\0$c_rs/g"
 }
 # If sshrc is installed, use generated rc file for ssh shell.
-# TODO this got real ugly real fast. It should be a function.
+# TODO the logic for generating sshrc should really be put in the 'install'
+# script.
 if hash sshrc 2>/dev/null; then
     ssh() {
         SSHRC_CFG="${HOME}/.sshrc"
