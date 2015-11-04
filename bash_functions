@@ -530,7 +530,7 @@ say() {
     done
     # If we did *not* break out of the above loop, this will be equivalent to
     # 'echo $1'
-    echo $echo_opts $@
+    echo $echo_opts "$@"
     tput sgr0
 }
 
