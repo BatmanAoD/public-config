@@ -218,33 +218,6 @@ if [[ $? -ne 0 ]]; then
     fi
 fi
 
-# If sshrc is installed, use generated rc file for ssh shell.
-# TODO this got real ugly real fast. It should be a function.
-if hash sshrc 2>/dev/null; then
-    alias ssh="echo 'echo \"-> sshrc\"' > ${HOME}/.sshrc; cat $bash_addl_rcfiles >> ${HOME}/.sshrc; echo 'echo \"<- sshrc\"' >> ${HOME}/.sshrc; sshrc"
-fi
-
-if [[ $(whoami) != root ]]; then
-    # This provides a way to become root using ssh instead of `su` or `sudo su`.
-    # It's useful with `sshrc`.
-    # NOTE: It also provides a PASSWORDLESS way to become root! (See below.)
-    # This has some dangers.
-    alias be-root="ssh root@localhost"
-    # NO: this makes autocomplete match two commands, which is annoying.
-    # alias be-su="be-root"
-
-    if [[ -f ~/.ssh/id_rsa.pub ]]; then
-        # XXX for some reason this fails with a 'command not found' error...?
-        be-root -o 'PreferredAuthentications=publickey' "exit" 2>/dev/null 1>/dev/null
-        if [[ $? -eq 255 ]]; then
-            # TODO Make this more interactive. (It's "optional" only in the
-            # sense that it asks for a password and can be canceled at that
-            # stage.)
-            ssh-copy-id root@localhost
-        fi
-    fi
-fi
-
 alias save_func=save_function
 alias savefunction=save_function
 alias savefunc=save_function

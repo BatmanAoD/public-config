@@ -39,6 +39,16 @@ done
 # necessary.
 alias reload="unalias -a ; source $(readlink -f "${BASH_SOURCE[0]}") ; eval \${extraconfigcmds}"
 
+# TODO is there a way to preserve a space between the 'echo' statements?
+say -n green "Primary local account:"
+say yellow "${primary_local_account}"
+if $id_is_known; then
+    say cyan "You are currently using your primary account."
+else
+    say -n cyan "You are currently using account: "
+    say yellow "$(whoami)"
+fi
+
 # Print a message
 echo "<- bashrc"
 

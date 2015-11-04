@@ -506,6 +506,7 @@ say() {
     tput_sanity_map[bold]=bold
     tput_sanity_map[dim]=dim
     tput_sanity_map[uline]=smul
+    echo_opts=
     if [[ $# -eq 0 ]]; then
         echo 'USAGE: say [black|red|green...|bold|dim|uline...] "string"' >&2
         return
@@ -518,7 +519,9 @@ say() {
         return
     fi
     while [[ $# -gt 1 ]]; do
-        if [[ -z ${tput_sanity_map[$1]} ]]; then
+        if [[ "$1" =~ ^- ]]; then
+            echo_opts="$echo_opts $1"
+        elif [[ -z ${tput_sanity_map[$1]} ]]; then
             break
         else
             tput ${tput_sanity_map[$1]}
@@ -527,7 +530,7 @@ say() {
     done
     # If we did *not* break out of the above loop, this will be equivalent to
     # 'echo $1'
-    echo $@
+    echo $echo_opts $@
     tput sgr0
 }
 
@@ -546,6 +549,38 @@ highlight() {
     c_rs=$'\e[0m'
     sed s"/$2/$fg_c\0$c_rs/g"
 }
+# If sshrc is installed, use generated rc file for ssh shell.
+# TODO this got real ugly real fast. It should be a function.
+if hash sshrc 2>/dev/null; then
+    ssh() {
+        SSHRC_CFG="${HOME}/.sshrc"
+        echo 'echo \"-> sshrc\"' > "${SSHRC_CFG}"
+        cat $bash_addl_rcfiles >> "${SSHRC_CFG}"
+        echo 'echo \"<- sshrc\"' >> "${SSHRC_CFG}"
+        sshrc
+    }
+fi
+
+if [[ $(whoami) != root ]]; then
+    # This provides a way to become root using ssh instead of `su` or `sudo su`.
+    # It's useful with `sshrc`.
+    # NOTE: It also provides a PASSWORDLESS way to become root! (See below.)
+    # This has some dangers.
+    alias be-root="ssh root@localhost"
+    # NO: this makes autocomplete match two commands, which is annoying.
+    # alias be-su="be-root"
+
+    if [[ -f ~/.ssh/id_rsa.pub ]]; then
+        # XXX for some reason this fails with a 'command not found' error...?
+        be-root -o 'PreferredAuthentications=publickey' "exit" 2>/dev/null 1>/dev/null
+        if [[ $? -eq 255 ]]; then
+            # TODO Make this more interactive. (It's "optional" only in the
+            # sense that it asks for a password and can be canceled at that
+            # stage.)
+            ssh-copy-id root@localhost
+        fi
+    fi
+fi
 
 # Cygwin specific:
 start_xwin ()
