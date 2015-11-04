@@ -492,6 +492,49 @@ global_repl ()
     ack -l "$1" "$dirname" | xargs perl -pi -e "s/$1/$2/g"
 }
 
+# 'echo' with simple 'tput' magic
+say() {
+    declare -A tput_sanity_map
+    tput_sanity_map[black]="setaf 0"
+    tput_sanity_map[red]="setaf 1"
+    tput_sanity_map[green]="setaf 2"
+    tput_sanity_map[yellow]="setaf 3"
+    tput_sanity_map[blue]="setaf 4"
+    tput_sanity_map[magenta]="setaf 5"
+    tput_sanity_map[cyan]="setaf 6"
+    tput_sanity_map[white]="setaf 7"
+    tput_sanity_map[bold]=bold
+    tput_sanity_map[dim]=dim
+    tput_sanity_map[uline]=smul
+    if [[ $# -eq 0 ]]; then
+        echo 'USAGE: say [black|red|green...|bold|dim|uline...] "string"' >&2
+        return
+    fi
+    if [[ $1 == "-h" || $1 == "--help" ]]; then
+        echo "Options are:"
+        for i in "${!tput_sanity_map[@]}"; do
+            echo "$i"
+        done
+        return
+    fi
+    while [[ $# -gt 1 ]]; do
+        if [[ -z ${tput_sanity_map[$1]} ]]; then
+            # TODO consider just breaking out of the 'format' loop and printing
+            # the remaining text.
+            tput sgr0
+            echo "formatting option not valid: ${1}" >&2
+            echo "Remember to put the text to be echoed in quotes!" >&2
+            echo "To see formatting options, use 'say -h'" >&2
+            return 1
+        else
+            tput ${tput_sanity_map[$1]}
+        fi
+        shift
+    done
+    echo $1
+    tput sgr0
+}
+
 # From https://github.com/kepkin/dev-shell-essentials/blob/master/highlight.sh
 highlight() {
     declare -A fg_color_map
