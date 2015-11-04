@@ -519,19 +519,15 @@ say() {
     fi
     while [[ $# -gt 1 ]]; do
         if [[ -z ${tput_sanity_map[$1]} ]]; then
-            # TODO consider just breaking out of the 'format' loop and printing
-            # the remaining text.
-            tput sgr0
-            echo "formatting option not valid: ${1}" >&2
-            echo "Remember to put the text to be echoed in quotes!" >&2
-            echo "To see formatting options, use 'say -h'" >&2
-            return 1
+            break
         else
             tput ${tput_sanity_map[$1]}
         fi
         shift
     done
-    echo $1
+    # If we did *not* break out of the above loop, this will be equivalent to
+    # 'echo $1'
+    echo $@
     tput sgr0
 }
 
