@@ -1,15 +1,21 @@
 #!/bin/bash
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
-# Set a path to my personal machine.
-# TODO make this work.
-# This could probably be done by creating a list of "known" machines, 
-# ordered by some kind of "priority", and then checking each to see if
-# it's accessible on the path, then stopping when I find one.
-# Priority probably doesn't matter, since I don't think there will be
-# cases when I could potentially find multiple machines I "know".
-# For now, use whatever local machine I'm on.
-PERSONALMACHINEPATH=
+known_ids="kjstrand BatmanAoD"
+id_is_known=false
+primary_local_account=''
+
+for usrname in $known_ids; do
+    if [[ $usrname == $(whoami) ]]; then
+        id_is_known=true
+        primary_local_account=$usrname
+        primary_HOME=${HOME}
+        break
+    elif [[ -d $(eval echo ~${usrname} ) ]]; then
+        primary_local_account=$usrname
+        primary_HOME="$(eval echo ~${usrname})";
+    fi
+done
 
 # Ensure my personal $HOME/bin dir is on $PATH.
 # Logic to ensure path is only added *once* is taken from
