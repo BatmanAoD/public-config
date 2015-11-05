@@ -20,11 +20,27 @@ echo "-> bashrc"
 
 shopt -s extglob
 
+known_ids="kjstrand BatmanAoD"
+id_is_known=false
+primary_local_account=''
+
+for usrname in $known_ids; do
+    if [[ $usrname == $(whoami) ]]; then
+        id_is_known=true
+        primary_local_account=$usrname
+        primary_HOME=${HOME}
+        break
+    elif [[ -d $(eval echo ~${usrname} ) ]]; then
+        primary_local_account=$usrname
+        primary_HOME="$(eval echo ~${usrname})";
+    fi
+done
+
 # Source the rc "base" first.
-bash_rcbasefile="${HOME}/.bash_rcbase"
+bash_rcbasefile="${primary_HOME}/.bash_rcbase"
 
 # Aliases, functions, and site-specific config files
-bash_addl_rcfiles="$(echo $bash_rcbasefile ${HOME}/.bash_!(rcbase|profile|history))"
+bash_addl_rcfiles="$(echo $bash_rcbasefile ${primary_HOME}/.bash_!(rcbase|profile|history))"
 for bashfile in ${bash_addl_rcfiles}; do
     echo Sourcing $bashfile
     # We could skip `.swp` files, but in theory these are technically all

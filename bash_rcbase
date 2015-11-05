@@ -16,7 +16,7 @@ PERSONALMACHINEPATH=
 # http://superuser.com/a/39995/199803
 # TODO Turn this into a function that can be useable elsewhere, as
 # in the original answer!
-HOMEBIN=$HOME/bin
+HOMEBIN=${primary_HOME}/bin
 if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
     export PATH="${PATH:+"$PATH:"}$HOMEBIN"
 fi
@@ -30,23 +30,9 @@ if grep -q Cygwin <(uname -o); then
     CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
 fi
 
-known_ids="kjstrand BatmanAoD"
-id_is_known=false
-primary_local_account=''
-
-for usrname in $known_ids; do
-    if [[ $usrname == $(whoami) ]]; then
-        id_is_known=true
-        primary_local_account=$usrname
-        break
-    elif [[ -d $(eval echo ~${usrname} ) ]]; then
-        primary_local_account=$usrname
-    fi
-done
-
 if [[ -n $primary_local_account ]]; then
     # Check that I have the rest of my "public-config" stuff.
-    CONFIG_DIR=$(eval echo -n ~${primary_local_account})/public-config
+    CONFIG_DIR=${primary_HOME}/public-config
     # TODO consider looking for private-config, too
     if [[ ! -d $CONFIG_DIR ]]; then
         echo "WARNING: public config directory not found!" >&2
@@ -70,10 +56,10 @@ if [[ -n $primary_local_account ]]; then
     fi
 fi
 
-# If '~/Public' is empty, delete it. I NEVER use it, and it's mostly just
+# If '${primary_HOME}/Public' is empty, delete it. I NEVER use it, and it's mostly just
 # annoying.
-if [[ -n $CONFIG_DIR && -d ${HOME}/Public && -z $(ls -A ${HOME}/Public) ]]; then
-    rmdir ${HOME}/Public
+if [[ -n $CONFIG_DIR && -d ${primary_HOME}/Public && -z $(ls -A ${primary_HOME}/Public) ]]; then
+    rmdir ${primary_HOME}/Public
 fi
 
 # Not Cygwin, not remote, not virtual
@@ -97,16 +83,16 @@ check_if_native_linux
 
 if $NATIVE_LINUX; then
     # Currently using xmodmap instead of xkbmap
-    if [[ -r ~/.Xmodmap ]]; then
+    if [[ -r ${primary_HOME}/.Xmodmap ]]; then
         # TODO why doesn't this seem to work with `reload`?
-        xmodmap ~/.Xmodmap
+        xmodmap ${primary_HOME}/.Xmodmap
     else
-        echo "WARNING: ~/.Xmodmap not found!" >&2
+        echo "WARNING: ${primary_HOME}/.Xmodmap not found!" >&2
     fi
     # TODO check if CAPS is configured, and if so, manually load Xmodmap? (Bug
     # in some WMs...)
-    if [[ -f ~/.Xkbmap ]]; then
-        echo "WARNING: Use of ~/.Xkbmap is deprecated!" >&2
+    if [[ -f ${primary_HOME}/.Xkbmap ]]; then
+        echo "WARNING: Use of ${primary_HOME}/.Xkbmap is deprecated!" >&2
         if [[ -n $CONFIG_DIR ]]; then
             echo "Latest keymapping customizations can be found" >&2
             echo "in $CONFIG_DIR/.Xmodmap" >&2
@@ -114,7 +100,7 @@ if $NATIVE_LINUX; then
     fi
 fi
 
-toolsbld_path=${HOME}/ToolsBld
+toolsbld_path=${primary_HOME}/ToolsBld
 
 if $id_is_known; then
     mkdir -p ${toolsbld_path}
@@ -130,10 +116,10 @@ fi
 
 # Do profile if asked.  Used when invoking a shell via remsh, since
 # this isnt a bona fide login
-test "${DO_PROFILE}" != "" && . ${HOME}/.bash_profile
+test "${DO_PROFILE}" != "" && . ${primary_HOME}/.bash_profile
 
 ## Set up CDPATH; this is interesting, but probably dangerous
-#export CDPATH=".:~"
+#export CDPATH=".:${primary_HOME}"
 
 # Set information about the history files
 export histchars='!^'  # Get comments saved in history
@@ -157,12 +143,12 @@ fi
 # TODO: if I can figure out how to get VIM to do colors correctly, then
 # I can just implement it myself without all the annoyances built in
 # by whoever programmed this thing.
-# export PAGER='view -S ~/.vimpager'
+# export PAGER='view -S ${primary_HOME}/.vimpager'
 # TODO: make a list of things that bug me about this thing, because I can't
 # actually remember why I stopped using it.
 #   * numbers not on by default, even though 'set nu' is in vimrc
-if [[ -e ${HOME}/bin/vimpager ]]; then
-    PAGER=$(readlink -f ${HOME}/bin/vimpager)
+if [[ -e ${primary_HOME}/bin/vimpager ]]; then
+    PAGER=$(readlink -f ${HOMEBIN}/vimpager)
 else
   PAGER="less -n -Q"
 fi
@@ -176,9 +162,9 @@ export GIT_ASKPASS=
 
 # create a personal-use tmp dir
 # Do NOT export! Programs should use the standard `/tmp`!
-TMP="$HOME/tmp"
+TMP="${primary_HOME}/tmp"
 if $id_is_known; then
-    mkdir -p "$HOME/tmp"
+    mkdir -p "${primary_HOME}/tmp"
 fi
 
 if [[ ! -d "$TMP" ]]; then

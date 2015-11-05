@@ -554,7 +554,7 @@ highlight() {
 # script.
 if hash sshrc 2>/dev/null; then
     ssh() {
-        SSHRC_CFG="${HOME}/.sshrc"
+        SSHRC_CFG="${primary_HOME}/.sshrc"
         echo 'echo \"-> sshrc\"' > "${SSHRC_CFG}"
         cat $bash_addl_rcfiles >> "${SSHRC_CFG}"
         echo 'echo \"<- sshrc\"' >> "${SSHRC_CFG}"
