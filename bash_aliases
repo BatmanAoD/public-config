@@ -27,6 +27,22 @@ alias ldir="ls -d "
 alias chomd=chmod
 alias follow="clear && tail -F -n +0"
 
+# Find a script to generically open files
+# xdg-open is the most generic and modern
+if hash xdg-open 2>/dev/null; then
+    alias open=xdg-open
+# Gnome-specific:
+# gvfs-open might be replacing gnome-open...?
+elif hash gvfs-open 2>/dev/null; then
+    alias open=gvfs-open
+elif hash gnome-open 2>/dev/null; then
+    alias open=gnome-open
+# KDE-specific:
+elif hash kde-open 2>/dev/null; then
+    alias open=kde-open
+# TODO warn if an open utility can't be found?
+fi
+
 # the "-p" option for `history` is a bit like an "eval" for ! events.
 alias histeval='history -p'
 alias heval=histeval
