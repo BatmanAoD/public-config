@@ -11,6 +11,8 @@ projc++ () {
 
     # Start work on a new class
     newclass () {
+        # XXX TODO this doesn't work when
+        # the path starts with '../..'
         path_noext=${1%.*}
         header="${path_noext}.hpp"
         defs="${path_noext}.cpp"

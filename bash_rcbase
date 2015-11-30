@@ -16,6 +16,8 @@ PERSONALMACHINEPATH=
 # http://superuser.com/a/39995/199803
 # TODO Turn this into a function that can be useable elsewhere, as
 # in the original answer!
+# For more PATH-editing convenience functions:
+# http://superuser.com/a/1001014/199803
 HOMEBIN=${primary_HOME}/bin
 if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
     export PATH="${PATH:+"$PATH:"}$HOMEBIN"
