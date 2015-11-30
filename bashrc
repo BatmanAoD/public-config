@@ -6,6 +6,12 @@
 
 # TODO: figure out a way to add auto-updating version info (using git?)
 
+# If not in an interactive shell, we don't want any custom config stuff.
+# TODO: ....right???
+if echo "$-" | grep -v i > /dev/null; then
+    return
+fi
+
 # Set the default umask
 umask 002
 
@@ -24,6 +30,7 @@ cfg_HOME="$(dirname "${BASHRC_PATH}")"
 # Source the rc "base" first.
 bash_rcbasefile="${cfg_HOME}/.bash_rcbase"
 
+# TODO use a strategy more like this: https://www.turnkeylinux.org/blog/generic-shell-hooks
 # Aliases, functions, and site-specific config files
 bash_addl_rcfiles="$(echo $bash_rcbasefile ${cfg_HOME}/.bash_!(rcbase|profile|history))"
 for bashfile in ${bash_addl_rcfiles}; do

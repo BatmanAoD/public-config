@@ -552,14 +552,19 @@ highlight() {
 # If sshrc is installed, use generated rc file for ssh shell.
 # TODO the logic for generating sshrc should really be put in the 'install'
 # script.
+# TODO Also, note that sshrc supports 'sshrc.d'.
 if hash sshrc 2>/dev/null; then
-    ssh() {
+    ssh_sshrc() {
         SSHRC_CFG="${primary_HOME}/.sshrc"
         echo 'echo \"-> sshrc\"' > "${SSHRC_CFG}"
         cat $bash_addl_rcfiles >> "${SSHRC_CFG}"
         echo 'echo \"<- sshrc\"' >> "${SSHRC_CFG}"
         sshrc $@
     }
+    # Since `rsync`, etc use `ssh`, the specialized version must be an alias
+    # rather than a function to permit suppression of the non-default behavior
+    # by turning off alias-expansion.
+    alias ssh=ssh_sshrc
 fi
 
 if [[ $(whoami) != root ]]; then
