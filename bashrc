@@ -4,43 +4,35 @@
 #                       ~/.bashrc
 ################################################################################
 
-# XXX TEMP profiling
-#PS4='+ $(date "+%s.%N")\011 '
-#exec 3>&2 2>/tmp/bashstart.$$.log
-#set -x
-
 # TODO: figure out a way to add auto-updating version info (using git?)
+
+# If not in an interactive shell, we don't want any custom config stuff.
+# TODO: ....right???
+if echo "$-" | grep -v i > /dev/null; then
+    return
+fi
 
 # Set the default umask
 umask 002
 
 # Print a message
 # TODO include version info?
-echo "-> bashrc"
+echo -e "$(tput setaf 2)-> bashrc$(tput sgr0)"
 
+# Needed to find bash_addl_rcfiles
 shopt -s extglob
 
-known_ids="kjstrand BatmanAoD"
-id_is_known=false
-primary_local_account=''
+# DO NOT 'readlink' here--that will point to 'bashrc' in public-config!
+BASHRC_PATH="${BASH_SOURCE[0]}"
 
-for usrname in $known_ids; do
-    if [[ $usrname == $(whoami) ]]; then
-        id_is_known=true
-        primary_local_account=$usrname
-        primary_HOME=${HOME}
-        break
-    elif [[ -d $(eval echo ~${usrname} ) ]]; then
-        primary_local_account=$usrname
-        primary_HOME="$(eval echo ~${usrname})";
-    fi
-done
+cfg_HOME="$(dirname "${BASHRC_PATH}")"
 
 # Source the rc "base" first.
-bash_rcbasefile="${primary_HOME}/.bash_rcbase"
+bash_rcbasefile="${cfg_HOME}/.bash_rcbase"
 
+# TODO use a strategy more like this: https://www.turnkeylinux.org/blog/generic-shell-hooks
 # Aliases, functions, and site-specific config files
-bash_addl_rcfiles="$(echo $bash_rcbasefile ${primary_HOME}/.bash_!(rcbase|profile|history))"
+bash_addl_rcfiles="$(echo $bash_rcbasefile ${cfg_HOME}/.bash_!(rcbase|profile|history))"
 for bashfile in ${bash_addl_rcfiles}; do
     echo Sourcing $bashfile
     # We could skip `.swp` files, but in theory these are technically all
@@ -53,7 +45,9 @@ done
 # `extraconfigcmds` is a set of commands used to restore any "additional" setup
 # that was in place before the reload. I'm not sure why the `eval` is
 # necessary.
-alias reload="unalias -a ; source $(readlink -f "${BASH_SOURCE[0]}") ; eval \${extraconfigcmds}"
+# TODO on repeated 'reload'ing, it appears that 'extraconfigcmds' grows
+# geometrically. Fix this.
+alias reload="unalias -a ; source \"${BASHRC_PATH}\" ; eval \${extraconfigcmds}"
 
 say -n green "Primary local account: "
 say yellow "${primary_local_account}"
@@ -65,8 +59,4 @@ else
 fi
 
 # Print a message
-echo "<- bashrc"
-
-# XXX TEMP profiling
-#set +x
-#exec 2>&3 3>&-
+say green "<- bashrc"
