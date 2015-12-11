@@ -207,10 +207,9 @@ augroup END
 " and end-of-line with 'set list'
 set lcs=tab:»·,trail:¬
 set backspace=indent,eol,start
-" hopefully this will stop some of the 'Press Enter to continue' stuff.
-" ....sadly, it looks like getting this message fairly frequently is
-" unavoidable with i3.
-set shortmess=at
+" This avoids most (...all?) of the 'press ENTER to continue' messages from
+" simple operations like undo/redo.
+set shortmess=aoOstT
 if ! has('win32')
     cmap <silent> w!! w !sudo tee > /dev/null %
 endif

@@ -1,5 +1,5 @@
 --type-add=cmake=.cmake,.txt
 --type-add=hxx=.hxx
 --type-add=header=.h,.hpp,.hxx
---type-add=qml=.qml
+--type-add=qt=.qml,.qrc
 --ignore-dir=.idea

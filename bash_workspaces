@@ -7,6 +7,7 @@ WORKSPACEDIR=~/workspaces
 
 alias goDurango=". setupDurangoProj $WORKSPACEDIR/AUC/Durango/src"
 alias goAltDurango=". setupDurangoProj $WORKSPACEDIR/AUC/AltDurango/src"
+alias goGuiDummy="cd $WORKSPACEDIR/DummyAucGui/src"
 
 # TODO: turn searchproj into its own script for generating a file mapping
 # names->projects, where a project consists of:
