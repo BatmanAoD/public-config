@@ -2,4 +2,5 @@
 --type-add=hxx=.hxx
 --type-add=header=.h,.hpp,.hxx
 --type-add=qt=.qml,.qrc
+--type-add=cfg=.ini,.cfg,.info,.json,.xml
 --ignore-dir=.idea

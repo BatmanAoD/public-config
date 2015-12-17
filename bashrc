@@ -7,7 +7,6 @@
 # TODO: figure out a way to add auto-updating version info (using git?)
 
 # If not in an interactive shell, we don't want any custom config stuff.
-# TODO: ....right???
 if echo "$-" | grep -v i > /dev/null; then
     return
 fi
