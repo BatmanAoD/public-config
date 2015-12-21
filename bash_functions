@@ -556,9 +556,9 @@ highlight() {
 if hash sshrc 2>/dev/null; then
     ssh_sshrc() {
         SSHRC_CFG="${primary_HOME}/.sshrc"
-        echo 'echo \"-> sshrc\"' > "${SSHRC_CFG}"
+        echo 'echo "-> sshrc"' > "${SSHRC_CFG}"
         cat $bash_addl_rcfiles >> "${SSHRC_CFG}"
-        echo 'echo \"<- sshrc\"' >> "${SSHRC_CFG}"
+        echo 'echo "<- sshrc"' >> "${SSHRC_CFG}"
         sshrc $@
     }
     # Since `rsync`, etc use `ssh`, the specialized version must be an alias
