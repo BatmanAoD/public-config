@@ -2,6 +2,10 @@
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
 alias expand='echo '
+alias expand='xargs '
+
+# Allow aliases with `sudo`
+alias sudo='sudo '
 
 if [[ "$(uname)" = "Linux" ]]
 then
@@ -22,6 +26,22 @@ alias lf="ls -d "
 alias ldir="ls -d "
 alias chomd=chmod
 alias follow="clear && tail -F -n +0"
+
+# Find a script to generically open files
+# xdg-open is the most generic and modern
+if hash xdg-open 2>/dev/null; then
+    alias open=xdg-open
+# Gnome-specific:
+# gvfs-open might be replacing gnome-open...?
+elif hash gvfs-open 2>/dev/null; then
+    alias open=gvfs-open
+elif hash gnome-open 2>/dev/null; then
+    alias open=gnome-open
+# KDE-specific:
+elif hash kde-open 2>/dev/null; then
+    alias open=kde-open
+# TODO warn if an open utility can't be found?
+fi
 
 # the "-p" option for `history` is a bit like an "eval" for ! events.
 alias histeval='history -p'
@@ -103,6 +123,7 @@ alias ehco=echo
 alias goog=google
 alias gsearch=google
 
+alias edit='$NEWWINDOW_EDIT_CMD'
 alias ed=edit
 alias e=edit
 alias v=vim
@@ -113,7 +134,9 @@ alias gv='gview '
 alias qed=ednew
 
 alias gmake="gmake -s"
-alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U '
+# Use '-U' because otherwise this causes unacceptable slowdown in dirs with
+# lots of entries.
+alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U'
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
 alias home="go ~"
@@ -151,10 +174,19 @@ alias edcron="VISUAL=\"$EDITOR\" crontab -e"
 alias edrc="$EDITOR ~/.bash_rcbase && reload"
 alias edal="$EDITOR ~/.bash_aliases* && reload"
 alias edfx="$EDITOR ~/.bash_functions* && reload"
+alias edpriv="$EDITOR ~/private-config/bash* && reload"
 
 # configure i3 setup
 # TODO: when I switch to generating this, edit source instead
 alias edi3='edit ~/.i3/config'
+
+# Other config-related aliases
+if [[ -n "$CONFIG_DIR" ]]; then
+    alias gocfg="go $CONFIG_DIR/.git"
+    alias pullcfg="(cd $CONFIG_DIR; git pull)"
+    alias pushcfg="(cd $CONFIG_DIR; git commit -a; git push)"
+fi
+# TODO consider doing the same for private config
 
 # generic i3 commands
 alias qi=i3-msg
@@ -200,13 +232,6 @@ if [[ $? -ne 0 ]]; then
     if [[ $? -eq 0 ]]; then
         alias ack=ack-grep
     fi
-fi
-
-# If sshrc is installed, use generated rc file for ssh shell.
-# TODO this got real ugly real fast. It should be a function.
-which sshrc &>/dev/null
-if [[ $? -eq 0 ]]; then
-    alias ssh="echo 'echo \"-> sshrc\"' > ${HOME}/.sshrc; cat $bash_addl_rcfiles >> ${HOME}/.sshrc; echo 'echo \"<- sshrc\"' >> ${HOME}/.sshrc; sshrc"
 fi
 
 alias save_func=save_function

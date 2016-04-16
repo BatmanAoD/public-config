@@ -4,30 +4,34 @@
 #                       ~/.bashrc
 ################################################################################
 
-# XXX TEMP profiling
-#PS4='+ $(date "+%s.%N")\011 '
-#exec 3>&2 2>/tmp/bashstart.$$.log
-#set -x
-
 # TODO: figure out a way to add auto-updating version info (using git?)
+
+# If not in an interactive shell, we don't want any custom config stuff.
+if echo "$-" | grep -v i > /dev/null; then
+    return
+fi
 
 # Set the default umask
 umask 002
 
-# Only execute if interactive
-test "${-#*i}" != "$-" || return 0
-
 # Print a message
 # TODO include version info?
-echo "-> bashrc"
+echo -e "$(tput setaf 2)-> bashrc$(tput sgr0)"
 
+# Needed to find bash_addl_rcfiles
 shopt -s extglob
 
-# Source the rc "base" first.
-bash_rcbasefile="${HOME}/.bash_rcbase"
+# DO NOT 'readlink' here--that will point to 'bashrc' in public-config!
+BASHRC_PATH="${BASH_SOURCE[0]}"
 
+cfg_HOME="$(dirname "${BASHRC_PATH}")"
+
+# Source the rc "base" first.
+bash_rcbasefile="${cfg_HOME}/.bash_rcbase"
+
+# TODO use a strategy more like this: https://www.turnkeylinux.org/blog/generic-shell-hooks
 # Aliases, functions, and site-specific config files
-bash_addl_rcfiles="$(echo $bash_rcbasefile ${HOME}/.bash_!(rcbase|profile|history))"
+bash_addl_rcfiles="$(echo $bash_rcbasefile ${cfg_HOME}/.bash_!(rcbase|profile|history))"
 for bashfile in ${bash_addl_rcfiles}; do
     echo Sourcing $bashfile
     # We could skip `.swp` files, but in theory these are technically all
@@ -35,13 +39,23 @@ for bashfile in ${bash_addl_rcfiles}; do
     . ${bashfile}
 done
 
-# This is here, rather than in .bash_aliases, because it explicitly refers to
-# the bashrc file by name.
-alias reload='unalias -a ; source ~/.bashrc'
+# This is here, rather than in .bash_aliases, due to how it determines the
+# bashrc path.
+# `extraconfigcmds` is a set of commands used to restore any "additional" setup
+# that was in place before the reload. I'm not sure why the `eval` is
+# necessary.
+# TODO on repeated 'reload'ing, it appears that 'extraconfigcmds' grows
+# geometrically. Fix this.
+alias reload="unalias -a ; source \"${BASHRC_PATH}\" ; eval \${extraconfigcmds}"
+
+say -n green "Primary local account: "
+say yellow "${primary_local_account}"
+if $id_is_known; then
+    say cyan "You are currently using your primary account."
+else
+    say -n cyan "You are currently using account: "
+    say yellow "$(whoami)"
+fi
 
 # Print a message
-echo "<- bashrc"
-
-# XXX TEMP profiling
-#set +x
-#exec 2>&3 3>&-
+say green "<- bashrc"

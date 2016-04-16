@@ -1,8 +1,18 @@
+" TODO loooooots of this doesn't work with Vi (`vim-gtk` or similar must be
+" installed), and the Vundle stuff causes lots of errors when Vundle has not
+" been installed. This is annoying when setting up a new machine/profile/etc.
 "
-" TODO fix the following problems (probably both related to QuitIfLastBuffer):
+" TODO: fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
 "   directories
 " * in non-gui Vim, help window is apparently unavailable
+"
+" TODO: Look through some .vimrc files made by people who actually know what
+" they're doing:
+" * https://github.com/tpope/tpope/blob/master/.vimrc
+" * https://github.com/garybernhardt/dotfiles/blob/master/.vimrc
+" * https://github.com/nelstrom/dotfiles/blob/master/vimrc
+" * https://bitbucket.org/sjl/dotfiles/src/1da770d23a2168f0e0c2e50d0d3e84e5c6d38d27/vim/vimrc?at=default&fileviewer=file-view-default
 
 " Get rid of any existing mappings. (Must happen BEFORE trying to apply plugin
 " mappings!!!!)
@@ -54,6 +64,8 @@ runtime macros/matchit.vim
 " * https://github.com/nelstrom/vim-textobj-rubyblock
 " * https://github.com/rhysd/vim-textobj-ruby
 set hlsearch
+" TODO: there's a fair amount of 'trivial' setup here. Consider using this:
+" https://github.com/tpope/vim-sensible
 set nocompatible
 set showcmd
 set ruler
@@ -98,12 +110,16 @@ function! GenericFile()
     set iskeyword+=-
 endfunction
 
+function! SetIndentWidth(spaces)
+    let &tabstop=a:spaces
+    let &shiftwidth=a:spaces
+    let &softtabstop=a:spaces
+endfunction
+
 " My Cpp settings
 function! CppFile()
     " I don't use tabs, but other people do.
-    set tabstop=2
-    set shiftwidth=2
-    set softtabstop=2
+    call SetIndentWidth(2)
     set tw=80
     set fo=tcrqnlj
 endfunction
@@ -120,9 +136,12 @@ augroup filetypes
     au FileType * if &filetype == "cpp"
                    \| :call CppFile()
                \| else
-                   \| set shiftwidth=4
-                   \| set softtabstop=4
+                   \| :call SetIndentWidth(4)
                \| endif
+    " Use markdown syntax for .txt files
+    au FileType * if &filetype == "text"
+                   \| :set syntax=markdown
+                \| endif
 augroup END
 
 
@@ -188,10 +207,9 @@ augroup END
 " and end-of-line with 'set list'
 set lcs=tab:»·,trail:¬
 set backspace=indent,eol,start
-" hopefully this will stop some of the 'Press Enter to continue' stuff.
-" ....sadly, it looks like getting this message fairly frequently is
-" unavoidable with i3.
-set shortmess=at
+" This avoids most (...all?) of the 'press ENTER to continue' messages from
+" simple operations like undo/redo.
+set shortmess=aoOstT
 if ! has('win32')
     cmap <silent> w!! w !sudo tee > /dev/null %
 endif
@@ -532,6 +550,8 @@ vmap <C-s> :s/
 " quick word count
 nnoremap <C-c> :%s///n<cr>
 vnoremap <C-c> :%s///n<cr>
+" Quick section-wide 'global'
+vmap <C-g> :g/
 
 function! ToggleGuiMenu()
     if(&guioptions =~# 'm')

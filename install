@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -i
+# We run in 'interactive' mode so that we can use settings from .bashrc
 
 cd ~
 
@@ -33,26 +34,151 @@ for prog in ~/public-config/bin/*; do
     fi
 done
 
+# TODO do NOT try to install Linux-specific stuff on
+# Cygwin!
+# Linux-specific
+linux_specific=~/public-config/OS_specific/Linux
+
+# Install Xmodmap
+if [[ ! -e ~/.Xmodmap ]]; then
+    echo "Installin Xmodmap"
+    ln -s ${linux_specific}/Xmodmap ~/.Xmodmap
+else
+    echo "Xmodmap already exists; not overwriting"
+fi
+
 # Install .i3 config
 mkdir -p ~/.i3
 cd ~/.i3
 if [[ ! -e config ]]; then
     echo Installing i3 config
-    ln -s ~/public-config/OS_specific/Linux/i3_config
+    ln -s "${linux_specific}/i3_config"
     mv i3_config config
 else
     echo i3 config already installed
 fi
 
-# TODO: install other OS_specific
-# TODO: install stderred, but NOT on Cygwin (source bashrc and check
-# Cygwin variable)
-# . .bashrc
+##############################################################################
+##############################################################################
+# CREATE SANDBOX DIRECTORY
+##############################################################################
+##############################################################################
+# XXX TODO
+# * Sandbox setup with makefile, inspired by http://stackoverflow.com/a/32485029/1858225
+# * To check whether c++14, etc is supported:
+# g++ -std=c++14 2>&1 | grep -q 'unrecognized command line'
 
-# TODO: test this
+##############################################################################
+##############################################################################
+# INSTALL 3RD-PARTY TOOLS
+##############################################################################
+##############################################################################
+
+if [[ $1 != "--tools" ]]; then
+    exit
+fi
+
+echo "bashrc is: " ~/.bashrc
+
+. ~/.bashrc
+
+# XXX TEMP
+echo "Cygwin var: $CYGWIN"
+
+##############################################################################
+##############################################################################
+# Other git stuff
+##############################################################################
+##############################################################################
+# XXX TODO automatically generate SSH ID and send to GitHub?
+##############################################################################
+
+##############################################################################
+# Install Vundle
 vundle_bundle=~/.vim/bundle/Vundle.vim
 if [[ ! -a ${vundle_bundle} ]]; then
     echo Installing Vundle plugins
     git clone https://github.com/gmarik/Vundle.vim.git ${vundle_bundle}
     vim "+BundleInstall" "+qa"
+fi
+
+# Install dev tools (Debian-based only)
+# TODO: other package managers
+if hash apt-get 2>/dev/null; then
+    installusingapt=true
+else
+    installusingapt=false
+fi
+
+havetoolchain=false
+if hash g++ 2>/dev/null; then
+    havetoolchain=true;
+else
+    if hash clang++ 2>/dev/null; then
+        havetoolchain=true;
+    else
+        if $installusingapt; then
+            echo Installing build-essential using apt
+            sudo apt-get install build-essential
+            if [[ $? -eq 0 ]]; then
+                havetoolchain=true
+            fi
+        fi
+    fi
+fi
+
+havecmake=false
+if hash cmake 2>/dev/null; then
+    havecmake=true;
+else
+    if $installusingapt; then
+        echo Installing cmake using apt
+        sudo apt-get install cmake
+        if [[ $? -eq 0 ]]; then
+            havecmake=true
+        fi
+    fi
+fi
+
+# Install sshrc
+# XXX this doesn't appear to always work....??
+if hash sshrc 2>/dev/null; then
+    echo Installing sshrc
+    wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc &&
+        chmod +x sshrc &&
+        sudo mv sshrc ${HOME}/bin
+fi
+
+# TODO: install rust & racer? complications:
+# * From source: /opt vs ${toolsbld}
+# * If Rust is NOT installed from src, Racer won't work
+
+# TODO: install ack? (`ack-grep` in most or all Debian-based package managers,
+# but I'm not sure how universal that is...)
+
+# Install stderred
+skipstderred=false
+# XXX ${CYGWIN} is sometimes empty, despite sourcing .bashrc above...??
+if ${CYGWIN}; then
+    echo "Cygwin var is ${CYGWIN}"
+    echo "On Cygwin; not installing stderred."
+    skipstderred=true
+fi
+if ! $havetoolchain; then
+    echo "No toolchain installed; not installing stderred."
+    skipstderred=true
+fi
+if ! $havecmake; then
+    echo "No cmake installed; not installing stderred."
+    skipstderred=true
+fi
+
+if ! $skipstderred; then
+    if [[ ! -d ${stderred_path} ]]; then
+        echo Installing stderred
+        cd $(dirname ${stderred_path})
+        git clone git://github.com/sickill/stderred.git
+        cd stderred
+        make
+    fi
 fi

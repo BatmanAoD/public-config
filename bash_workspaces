@@ -5,10 +5,9 @@
 
 WORKSPACEDIR=~/workspaces
 
-alias goHiddenDragon-tmp="go $WORKSPACEDIR/HiddenDragon-tmp"
 alias goDurango=". setupDurangoProj $WORKSPACEDIR/AUC/Durango/src"
 alias goAltDurango=". setupDurangoProj $WORKSPACEDIR/AUC/AltDurango/src"
-alias goHiddenDragon-sym="go $WORKSPACEDIR/HiddenDragon-sym"
+alias goGuiDummy="cd $WORKSPACEDIR/DummyAucGui/src"
 
 # TODO: turn searchproj into its own script for generating a file mapping
 # names->projects, where a project consists of:

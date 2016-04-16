@@ -40,16 +40,13 @@ config files to eventually re-write as generated code
 
 other TODO items
 -----------
- * one-stop-shopping: easy way to install/update all this stuff
  * use local variables in Bash functions!
  * file or set of files just containing variables for options that should be
     easy to change without digging through code and adjusting multiple things 
     (e.g. setting primary editor to be Vim, Emacs, or Sublime)
  * Refactor .vimrc to give it some organization
- * Better way to set up tools from public git repos, such as stderred
-   (currently handled--sort of--in bashrc) and https://github.com/Russell91/sshrc
-
-setup notes (delete once this is automated)
------------
- * Vundle:
-    `git clone https://github.com/gmarik/Vundle.vim.git /home/BatmanAoD/.vim/bundle/Vundle.vim`
+ * Sandbox setup with makefile, inspired by http://stackoverflow.com/a/32485029/1858225
+   * To check whether c++14, etc is supported:
+     ```
+     g++ -std=c++14 2>&1 | grep -q 'unrecognized command line'
+     ```
