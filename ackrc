@@ -3,4 +3,5 @@
 --type-add=header=.h,.hpp,.hxx
 --type-add=qt=.qml,.qrc
 --type-add=cfg=.ini,.cfg,.info,.json,.xml
+--type-add=pru=.pasm,.pru,.hpru
 --ignore-dir=.idea

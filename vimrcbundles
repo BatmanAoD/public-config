@@ -63,6 +63,8 @@ Bundle 'tpope/vim-dispatch'
 " NOT in `file:line` format. Disabled for now.
 " TODO find a different solution.
 " Bundle 'bogado/file-line'
+" Syntax plugin for TI's PRUSS assembly language
+Bundle 'BatmanAoD/pruss-vim'
 
 call vundle#end()
 filetype plugin indent on     " required!
