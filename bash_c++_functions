@@ -93,8 +93,13 @@ CATCHTEMPLATE
         fi
         pattern="$1"
         replacement="$2"
-        # TODO implement some sort of 'undo' making use of the `.bak` files
         ack -l "$pattern" | xargs perl -pi.bak -E "s/$pattern/$replacement/g"
+    }
+    
+    bakrestore () {
+        for i in $(find . -name '*.bak'); do
+            mv -f $i ${i%.bak};
+        done
     }
     
     # Remove backups created by 'acksub'

@@ -20,6 +20,7 @@ for prog in bash input gdb irb vim zsh git ack ycm; do
 done
 
 # Use .gitignore globally
+# XXX TODO what if git isn't installed yet?
 git config --global core.excludesfile ~/.gitignore
 
 mkdir -p ~/bin
@@ -155,6 +156,18 @@ fi
 
 # TODO: install ack? (`ack-grep` in most or all Debian-based package managers,
 # but I'm not sure how universal that is...)
+
+# TODO: install how2? (Not sure how useful it is yet; requires nodejs and some
+# fiddling to make it work; specifically, how2 assumes nodejs executable is
+# called `node`)
+
+# TODO: other possibly useful command-line tools:
+# * eg (easygit) - Simply wget and chmod
+# * Stuff from here: http://zeroturnaround.com/rebellabs/5-unexpectedly-useful-command-line-tools-you-might-overlook/
+#   * z - remembers common dirs (work with `cd` alias?)
+#   * shellcheck - static analysis of Bash for common errors
+#   * multitail - better than `tail -F`?
+#   * tree - nice recursive dir printing (already installed at work)
 
 # Install stderred
 skipstderred=false

@@ -588,6 +588,18 @@ if [[ $(whoami) != root ]]; then
     fi
 fi
 
+# Given a PID, print the number of threads
+numthreads ()
+{
+    if [[ $# -ne 1 ]]; then
+        echo "USAGE: numthreads <PID>" >&2
+        return 1
+    fi
+    
+    # NOTE: This ONLY works in Linux 2.7+ (or...something like that.)
+    cat /proc/${1}/stat | awk '{print $20}'
+}
+
 # Cygwin specific:
 start_xwin ()
 {

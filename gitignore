@@ -3,3 +3,4 @@
 lib*.rlib
 .idea
 *.old
+*.pyc
