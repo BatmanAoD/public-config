@@ -4,6 +4,9 @@
 # TODO some of these (e.g. acksub) are not C++ specific. Consider moving them
 # elsewhere.
 
+# Default args for compiling C++ programs
+CXX_ARGS="-std=c++14 -Wall -Wextra -Wpedantic $CXX_ARGS"
+
 # Call this to customize environment for C++ dev work
 projc++ () {
 
@@ -82,6 +85,26 @@ projc++ () {
 CATCHTEMPLATE
         edit $catchname
     }
+    
+    # Compile & link multiple translation units
+    g++all () {
+        if [[ $# -lt 2 ]]; then
+            echo "Usage: g++all <progname> <src> [<src> ... ]" >&2
+            return 1
+        fi
+        
+        progname="$1"
+        shift
+        
+        objfiles=
+        
+        for f in $*; do
+            g++ $CXX_ARGS -c -std=c++14 -Wall -Wextra $f -o $f.o
+            objfiles="$objfiles $f.o"
+        done
+
+        g++ $CXX_ARGS -o "${progname}" $objfiles
+    }
 
     # Global search & replace
     # TODO this isn't C++ specific; move somewhere else
@@ -89,7 +112,7 @@ CATCHTEMPLATE
         rmbak_acksub
         if [[ $# -lt 2 ]]; then
             echo "Usage: acksub <pattern> <replacement>" >&2
-            exit 1
+            return 1
         fi
         pattern="$1"
         replacement="$2"

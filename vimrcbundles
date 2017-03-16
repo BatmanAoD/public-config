@@ -65,6 +65,8 @@ Bundle 'tpope/vim-dispatch'
 " Bundle 'bogado/file-line'
 " Syntax plugin for TI's PRUSS assembly language
 Bundle 'BatmanAoD/pruss-vim'
+" Table mode
+Bundle 'dhruvasagar/vim-table-mode'
 
 call vundle#end()
 filetype plugin indent on     " required!
@@ -123,6 +125,9 @@ endfunction
 augroup CppDispatch
     autocmd BufEnter *.cpp :call SetCppDispatchCmd()
 augroup END
+
+" Use markdown-style tables
+let g:table_mode_corner="|"
 
 " Mappings for use with plugins:
 nnoremap <silent> <F5> :GundoToggle<CR>

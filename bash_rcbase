@@ -17,17 +17,19 @@ for usrname in $known_ids; do
     fi
 done
 
-# Ensure my personal $HOME/bin dir is on $PATH.
+# Ensure particular dirs are on $PATH if they exist.
 # Logic to ensure path is only added *once* is taken from
 # http://superuser.com/a/39995/199803
-# TODO Turn this into a function that can be useable elsewhere, as
-# in the original answer!
 # For more PATH-editing convenience functions:
 # http://superuser.com/a/1001014/199803
-HOMEBIN=${primary_HOME}/bin
-if [[ -d "$HOMEBIN" ]] && [[ ":$PATH:" != *":$HOMEBIN:"* ]]; then
-    export PATH="${PATH:+"$PATH:"}$HOMEBIN"
-fi
+ensure_on_path () {
+    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+}
+
+ensure_on_path "${primary_HOME}/bin"
+ensure_on_path "${primary_HOME}/.cargo/bin"
 
 CYGWIN=false
 if grep -q Cygwin <(uname -o); then
@@ -286,6 +288,3 @@ if [[ -r /etc/bash_completion ]]; then
      . /etc/bash_completion
      set completion-ignore-case on
 fi
-
-# Default args for compiling C++ programs
-CXX_ARGS="-std=c++14 -Wall -Wextra -Wpedantic -isystem"
