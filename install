@@ -83,9 +83,6 @@ echo "bashrc is: " ~/.bashrc
 
 . ~/.bashrc
 
-# XXX TEMP
-echo "Cygwin var: $CYGWIN"
-
 ##############################################################################
 ##############################################################################
 # Other git stuff
@@ -141,21 +138,49 @@ else
     fi
 fi
 
+# Install fzf
+if [[ ! -d ~/.fzf ]]; then
+    echo Installing fzf
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+fi
+
+# Create installers directory
+mkdir -p ~/Installers
+
+# Install rust
+if ! hash rustc 2>/dev/null; then
+    echo Installing Rust
+    wget -P ~/Installers https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
+    chmod a+x ~/Installers/rustup-init
+    ~/Installers/rustup-init
+else
+    echo Checking for Rust updates
+    rustup update
+fi
+
+# Just in case the above didn't work
+if ! hash cargo 2>/dev/null; then
+    echo "Can't install rust tools; cargo not installed!" >&2
+else
+    # Install ripgrep
+    if ! hash rg 2>/dev/null; then
+        echo Installing ripgrep
+        cargo install ripgrep
+    fi
+    if ! hash racer 2>/dev/null; then
+        echo Installing racer
+        cargo install racer
+    fi
+fi
+
 # Install sshrc
-# XXX this doesn't appear to always work....??
-if hash sshrc 2>/dev/null; then
+if ! hash sshrc 2>/dev/null; then
     echo Installing sshrc
     wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc &&
         chmod +x sshrc &&
         sudo mv sshrc ${HOME}/bin
 fi
-
-# TODO: install rust & racer? complications:
-# * From source: /opt vs ${toolsbld}
-# * If Rust is NOT installed from src, Racer won't work
-
-# TODO: install ack? (`ack-grep` in most or all Debian-based package managers,
-# but I'm not sure how universal that is...)
 
 # TODO: install how2? (Not sure how useful it is yet; requires nodejs and some
 # fiddling to make it work; specifically, how2 assumes nodejs executable is
