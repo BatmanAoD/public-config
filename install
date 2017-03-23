@@ -19,6 +19,8 @@ for prog in bash input gdb irb vim zsh git ack ycm; do
     done
 done
 
+# TODO on Windows, create symlink: _vimrcbundles -> .vimrcbundles
+
 # Use .gitignore globally
 # XXX TODO what if git isn't installed yet?
 git config --global core.excludesfile ~/.gitignore
@@ -42,7 +44,7 @@ linux_specific=~/public-config/OS_specific/Linux
 
 # Install Xmodmap
 if [[ ! -e ~/.Xmodmap ]]; then
-    echo "Installin Xmodmap"
+    echo "Installing Xmodmap"
     ln -s ${linux_specific}/Xmodmap ~/.Xmodmap
 else
     echo "Xmodmap already exists; not overwriting"
@@ -197,6 +199,7 @@ fi
 # Install stderred
 skipstderred=false
 # XXX ${CYGWIN} is sometimes empty, despite sourcing .bashrc above...??
+# XXX Cygwin is of course not set inside mingw Bash (e.g. git-bash).
 if ${CYGWIN}; then
     echo "Cygwin var is ${CYGWIN}"
     echo "On Cygwin; not installing stderred."
