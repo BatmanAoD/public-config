@@ -98,9 +98,12 @@ nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
 " TODO: figure out how to make this work...
 " nnoremap <silent> <2-LeftMouse> <LeftMouse>i
 set nostartofline
-" XTerm clipboard setting
-set clipboard^=unnamedplus
-" set clipboard=unnamed
+if has('win32')
+    set clipboard=unnamed
+else
+    " XTerm clipboard setting
+    set clipboard^=unnamedplus
+endif
 
 function! GenericFile()
     " is this what I want?
