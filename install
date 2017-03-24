@@ -4,27 +4,29 @@
 echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
 if [[ -d "$WINDIR" ]]; then
     WINDOWS=true
+    # TODO: don't give this warning unless the `public_config` directory's
+    # parent is somewhere other than `$HOME`.
     cat <<WIN_HOME_INSTRUCTIONS
 To set the HOME variable to your user-profile directory, manually create
 it and assign it to '%USERPROFILE%'.
 WIN_HOME_INSTRUCTIONS
+    read dummy
     # Windows linking command based on http://stackoverflow.com/a/25394801/1858225
     # TODO this seems like it could be useful in the standard bash setup as well.
     # Ideally, it would be an alias for `ln` that uses the `/h` flag if `-s` is
     # not given as an argument.
     win_symlink() {
+        target="$(cygpath -d ${1})"
         if [[ $# -eq 1 ]]; then
-            target="${1}"
-            new_link="$(basename "${target}")"
+            new_link="$(basename "${1}")"
         elif [[ $# -eq 2 ]]; then
             new_link="${2}"
-            target="${1}"
         else
             echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
             # Currently, we *exit* with *error*...because this is a script bug.
             exit 1
         fi
-	echo "Making symlink: ${new_link} -> ${target}"
+        echo "Making symlink: ${new_link} -> ${target}"
         # Windows needs to be told if it's a directory or not. Infer that.
         # Also: note that we convert `/` to `\`. In this case it's necessary.
         if [[ -d "$target" ]]; then
@@ -33,12 +35,20 @@ WIN_HOME_INSTRUCTIONS
             cmd <<< "mklink \"$new_link\" \"${target//\//\\}\"" > /dev/null
         fi
     }
-    alias link_s=win_symlink
+    alias universal_symlink=win_symlink
 else
     WINDOWS=false
-    alias link_s='ln -s'
+    alias universal_symlink='ln -s'
 fi
-read dummy
+
+link_s () {
+    if [[ -h ${rcname} ]]; then rm ${rcname}; fi
+    if [[ -e ${rcname} ]]; then
+        echo "ERROR: Can't overwrite non-symlink file: ${rcname}" >&2
+    else
+        universal_symlink ${file} ${rcname}
+    fi
+}
 
 cd ~
 
@@ -49,12 +59,7 @@ for prog in bash input gdb irb vim zsh git ack ycm; do
     for file in ~/public-config/${prog}* ~/private-config/${prog}*; do
         if [[ -d ${file} ]]; then continue; fi
         rcname=".$(basename ${file})"
-        if [[ -h ${rcname} ]]; then rm ${rcname}; fi
-        if [[ -e ${rcname} ]]; then
-            echo "ERROR: Can't overwrite non-symlink file: ${rcname}" >&2
-        else
-            link_s ${file} ${rcname}
-        fi
+        link_s ${file} ${rcname}
     done
 done
 
