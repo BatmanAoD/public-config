@@ -73,7 +73,8 @@ for prog in bash input gdb irb vim zsh git ack ycm; do
 done
 
 if ${WINDOWS}; then
-    # XXX TODO for some reason this re-does the ycm config linking...???
+    # TODO Here in the OS-specific Vim setup might be the best place to
+    # automatically download a nice font, if possible.
     link_s .vim vimfiles
     link_s .vimrcbundles _vimrcbundles 
 fi
