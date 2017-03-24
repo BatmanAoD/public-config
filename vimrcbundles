@@ -3,7 +3,9 @@
 "
 filetype off
 if has('win32')
-    set rtp+=$VIMFILES/bundle/Vundle/
+    set rtp+=$VIMFILES/bundle/Vundle.vim/
+    " Installing with git-bash created Vundle.vim, not Vundle...why?
+    " set rtp+=$VIMFILES/bundle/Vundle/
     let path=expand($VIMFILES . '/bundle')
     call vundle#begin(path)
 else

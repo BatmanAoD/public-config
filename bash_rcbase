@@ -245,6 +245,20 @@ elif hash gvim 2>/dev/null; then
         export EDITOR=vim
         export VISUAL=vim
     fi
+# On Windows, git-bash will install `/usr/bin/vim` -- which is *NOT* what we
+# want if we have a full Windows gVim install. Ideally, we could use the
+# Windows `start` command to simply check if `gvim` is on the *Windows* PATH,
+# then use something like `start /b gvim` as our $NEWWINDOW_EDIT_COMMAND, but
+# for some reason the `/b` flag can't be used in git-bash.
+# So we simply explicitly check for the `gvim.bat` file in the location that
+# the Vim installer happens to use.
+# TODO this seems brittle--there's no particular reason for the Vim installer
+# to always install the batch files to C:\Windows. Re-evaluate the `start`
+# situation and/or try to find another way to search the Windows PATH for gvim.
+elif [[ -e "$(cygpath 'C:\Windows\gvim.bat')" ]]; then
+    export NEWWINDOW_EDIT_CMD="$(cygpath 'C:\Windows\gvim.bat')"
+    export EDITOR="$NEWWINDOW_EDIT_CMD -f"
+    export VISUAL="$NEWWINDOW_EDIT_CMD  -f"
 else
     # `vi` is universal.
     export NEWWINDOW_EDIT_CMD=vi
