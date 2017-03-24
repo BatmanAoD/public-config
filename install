@@ -1,6 +1,10 @@
 #!/bin/bash -i
 # We run in 'interactive' mode so that we can use settings from .bashrc
 
+# XXX TODO: create a minimal 'bash_bootstrap' file that we can *source* both
+# hear and in `.bashrc` for setup that we use here (e.g. the Windows symlink
+# function)
+
 echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
 if [[ -d "$WINDIR" ]]; then
     WINDOWS=true
@@ -17,11 +21,7 @@ WIN_HOME_INSTRUCTIONS
     # not given as an argument.
     win_symlink() {
         target="$(cygpath -d ${1})"
-        if [[ $# -eq 1 ]]; then
-            new_link="$(basename "${1}")"
-        elif [[ $# -eq 2 ]]; then
-            new_link="${2}"
-        else
+        if [[ $# -ne 2 ]]; then
             echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
             # Currently, we *exit* with *error*...because this is a script bug.
             exit 1
@@ -42,11 +42,20 @@ else
 fi
 
 link_s () {
-    if [[ -h ${rcname} ]]; then rm ${rcname}; fi
-    if [[ -e ${rcname} ]]; then
-        echo "ERROR: Can't overwrite non-symlink file: ${rcname}" >&2
+    if [[ $# -eq 1 ]]; then
+        new_link="$(basename "${1}")"
+    elif [[ $# -eq 2 ]]; then
+        new_link="${2}"
     else
-        universal_symlink ${file} ${rcname}
+        echo "ERROR: symlink creation requires one or two arguments!" >&2
+        # Currently, we *exit* with *error*...because this is a script bug.
+        exit 1
+    fi
+    if [[ -h ${new_link} ]]; then rm ${new_link}; fi
+    if [[ -e ${new_link} ]]; then
+        echo "ERROR: Can't overwrite non-symlink file: ${new_link}" >&2
+    else
+        universal_symlink ${1} ${new_link}
     fi
 }
 
@@ -64,6 +73,8 @@ for prog in bash input gdb irb vim zsh git ack ycm; do
 done
 
 if ${WINDOWS}; then
+    # XXX TODO for some reason this re-does the ycm config linking...???
+    link_s .vim vimfiles
     link_s .vimrcbundles _vimrcbundles 
 fi
 
@@ -145,6 +156,8 @@ vundle_bundle=~/.vim/bundle/Vundle.vim
 if [[ ! -a ${vundle_bundle} ]]; then
     echo Installing Vundle plugins
     git clone https://github.com/gmarik/Vundle.vim.git ${vundle_bundle}
+    # TODO in git-bash, this *only* installs Vundle for the vim installation
+    # that comes with Git.
     vim "+BundleInstall" "+qa"
 fi
 
