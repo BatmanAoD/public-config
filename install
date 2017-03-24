@@ -1,6 +1,45 @@
 #!/bin/bash -i
 # We run in 'interactive' mode so that we can use settings from .bashrc
 
+echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
+if [[ -d "$WINDIR" ]]; then
+    WINDOWS=true
+    cat <<WIN_HOME_INSTRUCTIONS
+To set the HOME variable to your user-profile directory, manually create
+it and assign it to '%USERPROFILE%'.
+WIN_HOME_INSTRUCTIONS
+    # Windows linking command based on http://stackoverflow.com/a/25394801/1858225
+    # TODO this seems like it could be useful in the standard bash setup as well.
+    # Ideally, it would be an alias for `ln` that uses the `/h` flag if `-s` is
+    # not given as an argument.
+    win_symlink() {
+        if [[ $# -eq 1 ]]; then
+            target="${1}"
+            new_link="$(basename "${target}")"
+        elif [[ $# -eq 2 ]]; then
+            new_link="${2}"
+            target="${1}"
+        else
+            echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
+            # Currently, we *exit* with *error*...because this is a script bug.
+            exit 1
+        fi
+	echo "Making symlink: ${new_link} -> ${target}"
+        # Windows needs to be told if it's a directory or not. Infer that.
+        # Also: note that we convert `/` to `\`. In this case it's necessary.
+        if [[ -d "$target" ]]; then
+            cmd <<< "mklink /D \"$new_link\" \"${target//\//\\}\"" > /dev/null
+        else
+            cmd <<< "mklink \"$new_link\" \"${target//\//\\}\"" > /dev/null
+        fi
+    }
+    alias link_s=win_symlink
+else
+    WINDOWS=false
+    alias link_s='ln -s'
+fi
+read dummy
+
 cd ~
 
 shopt -s nullglob
@@ -14,12 +53,14 @@ for prog in bash input gdb irb vim zsh git ack ycm; do
         if [[ -e ${rcname} ]]; then
             echo "ERROR: Can't overwrite non-symlink file: ${rcname}" >&2
         else
-            ln -s ${file} ${rcname}
+            link_s ${file} ${rcname}
         fi
     done
 done
 
-# TODO on Windows, create symlink: _vimrcbundles -> .vimrcbundles
+if ${WINDOWS}; then
+    link_s .vimrcbundles _vimrcbundles 
+fi
 
 # Use .gitignore globally
 # XXX TODO what if git isn't installed yet?
@@ -31,34 +72,34 @@ for prog in ~/public-config/bin/*; do
     basename=$(basename ${prog})
     if [[ ! -e ${basename} ]]; then
         echo Installing ~/bin/${basename}
-        ln -s ${prog}
+        link_s ${prog}
     else
         echo ${basename} already installed
     fi
 done
 
-# TODO do NOT try to install Linux-specific stuff on
-# Cygwin!
-# Linux-specific
-linux_specific=~/public-config/OS_specific/Linux
-
-# Install Xmodmap
-if [[ ! -e ~/.Xmodmap ]]; then
-    echo "Installing Xmodmap"
-    ln -s ${linux_specific}/Xmodmap ~/.Xmodmap
-else
-    echo "Xmodmap already exists; not overwriting"
-fi
-
-# Install .i3 config
-mkdir -p ~/.i3
-cd ~/.i3
-if [[ ! -e config ]]; then
-    echo Installing i3 config
-    ln -s "${linux_specific}/i3_config"
-    mv i3_config config
-else
-    echo i3 config already installed
+if ! ${WINDOWS}; then
+    # Linux-specific
+    linux_specific=~/public-config/OS_specific/Linux
+    
+    # Install Xmodmap
+    if [[ ! -e ~/.Xmodmap ]]; then
+        echo "Installing Xmodmap"
+        link_s ${linux_specific}/Xmodmap ~/.Xmodmap
+    else
+        echo "Xmodmap already exists; not overwriting"
+    fi
+    
+    # Install .i3 config
+    mkdir -p ~/.i3
+    cd ~/.i3
+    if [[ ! -e config ]]; then
+        echo Installing i3 config
+        link_s "${linux_specific}/i3_config"
+        mv i3_config config
+    else
+        echo i3 config already installed
+    fi
 fi
 
 ##############################################################################
@@ -144,6 +185,7 @@ fi
 if [[ ! -d ~/.fzf ]]; then
     echo Installing fzf
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    # TODO currently, this fails on Windows with MinGW (no prebuilt binary found)
     ~/.fzf/install
 fi
 
@@ -152,10 +194,13 @@ mkdir -p ~/Installers
 
 # Install rust
 if ! hash rustc 2>/dev/null; then
-    echo Installing Rust
-    wget -P ~/Installers https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
-    chmod a+x ~/Installers/rustup-init
-    ~/Installers/rustup-init
+    if ! ${WINDOWS}; then
+        echo Installing Rust
+        wget -P ~/Installers https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
+        chmod a+x ~/Installers/rustup-init
+        ~/Installers/rustup-init
+    fi
+    # TODO: on Windows, automatically download and run rustup for windows
 else
     echo Checking for Rust updates
     rustup update
@@ -165,7 +210,6 @@ fi
 if ! hash cargo 2>/dev/null; then
     echo "Can't install rust tools; cargo not installed!" >&2
 else
-    # Install ripgrep
     if ! hash rg 2>/dev/null; then
         echo Installing ripgrep
         cargo install ripgrep
@@ -173,6 +217,10 @@ else
     if ! hash racer 2>/dev/null; then
         echo Installing racer
         cargo install racer
+    fi
+    if ! hash loc 2>/dev/null; then
+        echo Installing loc
+        cargo install loc
     fi
 fi
 
@@ -196,13 +244,13 @@ fi
 #   * multitail - better than `tail -F`?
 #   * tree - nice recursive dir printing (already installed at work)
 
+# TODO: automatically install windows tools?
+
 # Install stderred
 skipstderred=false
-# XXX ${CYGWIN} is sometimes empty, despite sourcing .bashrc above...??
-# XXX Cygwin is of course not set inside mingw Bash (e.g. git-bash).
-if ${CYGWIN}; then
-    echo "Cygwin var is ${CYGWIN}"
-    echo "On Cygwin; not installing stderred."
+if ${WINDOWS}; then
+    echo "WINDOWS var is ${WINDOWS}"
+    echo "On WINDOWS; not installing stderred."
     skipstderred=true
 fi
 if ! $havetoolchain; then
