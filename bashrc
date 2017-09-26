@@ -11,6 +11,12 @@ if echo "$-" | grep -v i > /dev/null; then
     return
 fi
 
+# Permit explicitly skipping all our Bash customization
+# (set SKIP_CUSTOM_CFG to `true`)
+if [[ -n "$SKIP_CUSTOM_CFG" ]] && $SKIP_CUSTOM_CFG; then
+    return
+fi
+
 # Set the default umask
 umask 002
 
@@ -46,6 +52,8 @@ done
 # necessary.
 # TODO on repeated 'reload'ing, it appears that 'extraconfigcmds' grows
 # geometrically. Fix this.
+# TODO in Windows, can we also reload system environment variables? (`cmd`
+# offers `refreshenv`, apparently, but we can't call that in Bash.)
 alias reload="unalias -a ; source \"${BASHRC_PATH}\" ; eval \${extraconfigcmds}"
 
 say -n green "Primary local account: "

@@ -18,16 +18,22 @@
 " mappings!!!!)
 mapclear
 
+" Trying to use the Git Bash shell has a weird problem--the version of Vim
+" included with Git treats (escaped) spaces in the shell variable just fine,
+" but native Vim/gVim tries to execute 'C:\Program' as a program. Bleargh.
+if has('win32')
+    set shell=$COMSPEC
+endif
+
 " make sure runtimepath has default value
 set rtp&
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
 
 " Setup plugin manager and load plugins
-if has('win32')
+let pluginfile = expand("~/.vimrcbundles")
+if filereadable(pluginfile)
     let pluginfile = expand("~/_vimrcbundles")
-else
-    let pluginfile = expand("~/.vimrcbundles")
 endif
 if filereadable(pluginfile)
 " Should plugins only be loaded once?
@@ -154,8 +160,8 @@ augroup END
 " letter rather frequently.
 " set tildeop
 set incsearch
-" Why is this even limited?
-set undolevels=9999999999
+" This limit exists to limit memory consuption.
+set undolevels=90000
 " TODO use a more general strategy here
 " ...and figure out why different fonts appear different on different
 " machines...?????
@@ -220,10 +226,9 @@ endif
 set nobackup
 set nowritebackup
 set nu
-if has('win32')
+let vim73file = expand("~/.vimrc73")
+if !filereadable(vim73file)
     let vim73file = expand("~/_vimrc73")
-else
-    let vim73file = expand("~/.vimrc73")
 endif
 if version >= 703 && filereadable(vim73file)
   exec ":source " . vim73file
@@ -601,13 +606,15 @@ augroup guiopts
 augroup END
 
 " from http://superuser.com/a/657733/199803
-augroup matchperms
-    au BufRead * let b:oldfile = expand("<afile>")
-    au BufWritePost * if exists("b:oldfile") | let b:newfile = expand("<afile>") 
-                \| if b:newfile != b:oldfile 
-                \| silent echo system("chmod --reference=".b:oldfile." ".b:newfile) 
-                \| endif |endif
-augroup END
+if !has('win32')
+    augroup matchperms
+        au BufRead * let b:oldfile = expand("<afile>")
+        au BufWritePost * if exists("b:oldfile") | let b:newfile = expand("<afile>") 
+                    \| if b:newfile != b:oldfile 
+                    \| silent echo system("chmod --reference=".b:oldfile." ".b:newfile) 
+                    \| endif |endif
+    augroup END
+endif
 
 " from http://stackoverflow.com/a/4294176/1858225
 function! s:MkNonExDir(file, buf)

@@ -79,6 +79,10 @@ check_if_native_linux()
     # Are we on Cygwin?
     $CYGWIN && NATIVE_LINUX=false && return;
     # Are we SSH-ing in?
+    # XXX TODO `SSH` actually does show up as `SSH_ASKPASS` when ssh
+    # credentials are stored. Purely coincidentally, this appears to be the
+    # only thing preventing the script from treating git-bash on Windows as
+    # "native Linux" (!!). Clearly this logic needs some improvement.
     grep -q SSH <(env) && NATIVE_LINUX=false && return;
     # Is this a VirtualBox session?
     grep -q VBOX0 <(xrandr) && NATIVE_LINUX=false && return;
@@ -287,6 +291,9 @@ if [[ $(whoami) == root ]]; then
 elif ! ${id_is_known}; then
     PS1="\[\e[0;33m\]\u@\[\e[m\]${PS1}"
 fi
+# TODO adopt some of the tricks used for the default git-bash prompt?
+# Here is the full prompt variable:
+# \[\033]0;$TITLEPREFIX:${PWD//[^[:ascii:]]/?}\007\]\n\[\033[32m\]\u@\h \[\033[35m\]$MSYSTEM \[\033[33m\]\w\[\033[36m\]`__git_ps1`\[\033[0m\]\n$
 # Export it
 export PS1
 

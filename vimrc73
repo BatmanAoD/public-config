@@ -32,21 +32,16 @@ augroup END
 if exists("+undofile")
     set undodir=$VIMFILES/undodir/
     if isdirectory(expand(&undodir)) == 0
-        if has('win32')
-            :silent !mkdir \%HOMEPATH\%\vimfiles\undodir
-        else
-            :silent call system('mkdir -p ' . &undodir)
-        endif
+        :silent call mkdir(expand(&undodir), '-p')
     endif
     set undofile
-    set undolevels=1000 "maximum number of changes that can be undone
+    set undolevels=90000 "maximum number of changes that can be undone
     set undoreload=10000 "maximum number lines to save for undo on a buffer reload
 endif
 
-if has('win32')
+let pluginfile73 = expand("~/.vimrc73bundles")
+if !filereadable(pluginfile73)
     let pluginfile73 = expand("~/_vimrc73bundles")
-else
-    let pluginfile73 = expand("~/.vimrc73bundles")
 endif
 if filereadable(pluginfile73)
   exec ":source " . pluginfile73

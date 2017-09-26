@@ -23,12 +23,14 @@ WIN_HOME_INSTRUCTIONS
     # Ideally, it would be an alias for `ln` that uses the `/h` flag if `-s` is
     # not given as an argument.
     win_symlink() {
-        target="$(cygpath -d ${1})"
         if [[ $# -ne 2 ]]; then
             echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
             # Currently, we *exit* with *error*...because this is a script bug.
             exit 1
         fi
+        target="$(cygpath -d ${1})"
+        # TODO need `cygpath`?
+        new_link="${2}"
         echo "Making symlink: ${new_link} -> ${target}"
         # Windows needs to be told if it's a directory or not. Infer that.
         # Also: note that we convert `/` to `\`. In this case it's necessary.
@@ -62,6 +64,10 @@ link_s () {
     fi
 }
 
+# XXX TODO
+# Check for `private-config`; if it doesn't exist, prompt to see if there's one
+# to clone from Enterprise GitHub (or similar)?
+
 cd ~
 
 shopt -s nullglob
@@ -76,12 +82,9 @@ for prog in bash input gdb irb vim zsh git ack ycm; do
 done
 
 if ${WINDOWS}; then
-    # TODO Here in the OS-specific Vim setup might be the best place to
-    # automatically download a nice font, if possible.
-    # ...with Chocolatey, this should actually be possible! I just need to pick
-    # something I like that's available in one of these packages, and make sure
-    # that the package itself is up-to-date, working, etc:
-    # https://chocolatey.org/packages?q=fonts
+    # TODO change Windows options using Powershell, e.g. show file extensions
+    # in Explorer:
+    # http://stackoverflow.com/a/8110982/1858225
     link_s .vim vimfiles
     link_s .vimrcbundles _vimrcbundles 
 fi
@@ -173,11 +176,48 @@ fi
 # TODO: other package managers
 # XXX TODO: On Windows, install Chocolatey! This seems like a no-brainer
 # obvious win now that I'm working more with Windows.
-if hash apt-get 2>/dev/null; then
+installusingchoco=false
+installusingapt=false
+if ${WINDOWS}; then
+    # if ! hash choco 2>/dev/null; then
+    #     XXX TODO We need an ELEVATED command shell to install Chocolatey.
+    #     ...doing the install automatically is probably not worth the hassle.
+    #     And indeed by the time we're runing this script, we've already
+    #     installed some kind of Bash, which could have been installed using
+    #     Chocolatey!
+    #     It may be better to just make the Chocolatey install the manual
+    #     "first step" for all new machines; the setup would be:
+    #       * Open `cmd` as admin
+    #       * Run the Chocolatey install-command (below)
+    #       * `%ALLUSERSPROFILE%\chocolatey\bin\choco install git.install`
+    #       * `%ALLUSERSPROFILE%\chocolatey\bin\choco install conemu`
+    #       * Close the `cmd` window, open git bash in conemu, do manual conemu setup
+    #           * TODO: conemu setup is stored in `xml`; we could probably
+    #             include this as a config file!
+    #       * Here in `install`, just check if `choco` is installed.
+    #           * If not: print a warning
+    #           * If so: install packages
+    #     Command to install chocolatey:
+    #       @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+    #     Chocolatey bin path is: %ALLUSERSPROFILE%\chocolatey\bin
+    # fi
+    if hash choco 2>/dev/null; then
+        installusingchoco=true
+    fi
+elif hash apt-get 2>/dev/null; then
     installusingapt=true
-else
-    installusingapt=false
 fi
+
+# TODO it should be able to unify our package-manager logic.
+# * Install commands are always (?) of the form `<pkg-mgr-install> <pkg-name>`
+# * We would need to set up a pkg-mgr-install-command function/alias/variable,
+#   then have a lookup table for known packages. Then something like:
+#       for pkg in $known_pkgs; do
+#           # TODO check syntax for assoc-array!!
+#           pkg_name="${pkg_names[$mgr][$pkg]}"
+#           if [[ -z "$pkg_name" ]]; then continue; fi
+#           $pkgmgr_install $pkg_name
+#       done
 
 havetoolchain=false
 if hash g++ 2>/dev/null; then

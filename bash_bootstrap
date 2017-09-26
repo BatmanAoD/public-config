@@ -1,0 +1,29 @@
+#!/bin/bash
+# The shebang is just to ensure that Vim knows how to highlight this file.
+
+# Functions and other setup used by other public-config scripts, *including*
+# `install`, *and* sourced by `.bashrc`.
+
+# TODO add stuff here from `install` and possibly `.bashrc/.bash_rcbase`, then use it in
+# those scripts
+
+if [[ -d "$WINDIR" ]]; then
+    win_symlink() {
+        if [[ $# -ne 2 ]]; then
+            echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
+            # Currently, we *exit* with *error*...because this is a script bug.
+            exit 1
+        fi
+        target="$(cygpath -d ${1})"
+        # TODO need `cygpath`?
+        new_link="${2}"
+        echo "Making symlink: ${new_link} -> ${target}"
+        # Windows needs to be told if it's a directory or not. Infer that.
+        # Also: note that we convert `/` to `\`. In this case it's necessary.
+        if [[ -d "$target" ]]; then
+            cmd <<< "mklink /D \"$new_link\" \"${target//\//\\}\"" > /dev/null
+        else
+            cmd <<< "mklink \"$new_link\" \"${target//\//\\}\"" > /dev/null
+        fi
+    }
+fi
