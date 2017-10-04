@@ -287,30 +287,29 @@ function! Untab()
   retab
 endfunction
 
-" XXX TEMP START BAD SECTION
 " exit vim when exiting last buffer
 " stolen from
 " http://vim.1045645.n5.nabble.com/buffer-list-count-td1200936.html
-" TODO: figure out why this causes problems with directory-viewer, etc
-function! CountNonemptyBuffers()
-    let cnt = 0
-    for nr in range(1,bufnr("$"))
-        if buflisted(nr) && ! empty(bufname(nr)) || ! empty(getbufvar(nr, '&buftype'))
-            let cnt += 1
-        endif
-    endfor
-    return cnt
-endfunction
-function! QuitIfLastBuffer()
-    if CountNonemptyBuffers() == 1
-        :q
-    endif
-endfunction
-augroup closebuf
-    autocmd BufDelete * :call QuitIfLastBuffer()
-augroup END
- " one-line version from http://superuser.com/a/668612/199803
- " autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
+" TODO: figure out why this causes problems with Vim-Plug, directory-viewer, etc
+" function! CountNonemptyBuffers()
+"     let cnt = 0
+"     for nr in range(1,bufnr("$"))
+"         if buflisted(nr) && ! empty(bufname(nr)) || ! empty(getbufvar(nr, '&buftype'))
+"             let cnt += 1
+"         endif
+"     endfor
+"     return cnt
+" endfunction
+" function! QuitIfLastBuffer()
+"     if CountNonemptyBuffers() == 1
+"         :q
+"     endif
+" endfunction
+" augroup closebuf
+"     autocmd BufDelete * :call QuitIfLastBuffer()
+" augroup END
+" one-line version from http://superuser.com/a/668612/199803
+" autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
 
 function! PickTabUsage()
     if &readonly || ! &modifiable
@@ -588,8 +587,6 @@ function! ScrollLarge()
         set guioptions-=r
     endif
 endfunction
-
-" XXX TEMP END BAD SECTION
 
 augroup guiopts
     " (hopefully) temporarily disabled, because this causes undesired

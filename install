@@ -172,7 +172,7 @@ if hash gvim 2>/dev/null; then
             echo Installing Vundle plugins
             curl -fLo ${plugin_mgr} --create-dirs \
                 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-            gvim "+PlugInstall" "+qa"
+            gvim "+PlugInstall"
         else
             echo "'curl' not installed; not installing Vim-Plug."
         fi
@@ -344,7 +344,7 @@ if ! $skipstderred; then
     if [[ ! -d ${stderred_path} ]]; then
         echo Installing stderred
         cd $(dirname ${stderred_path})
-        git clone git://github.com/sickill/stderred.git
+        git clone  https://github.com/sickill/stderred.git
         cd stderred
         make
     fi
