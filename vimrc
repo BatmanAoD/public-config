@@ -1,4 +1,5 @@
 " TODO loooooots of this doesn't work with Vi (`vim-gtk` or similar must be
+"
 " installed). This is annoying when setting up a new machine/profile/etc.
 "
 " TODO: fix the following problems (probably both related to QuitIfLastBuffer):
@@ -27,8 +28,7 @@ endif
 " make sure runtimepath has default value
 set rtp&
 " create a variable to generically reference the location of vim files
-" XXX let $VIMFILES=split(&rtp,",")[0]
-let $VIMFILES = expand("~/.vim")
+let $VIMFILES=split(&rtp,",")[0]
 
 " Setup plugin manager and load plugins
 let pluginfile = expand("~/.vimrcplugins")
@@ -287,6 +287,7 @@ function! Untab()
   retab
 endfunction
 
+" XXX TEMP START BAD SECTION
 " exit vim when exiting last buffer
 " stolen from
 " http://vim.1045645.n5.nabble.com/buffer-list-count-td1200936.html
@@ -587,6 +588,8 @@ function! ScrollLarge()
         set guioptions-=r
     endif
 endfunction
+
+" XXX TEMP END BAD SECTION
 
 augroup guiopts
     " (hopefully) temporarily disabled, because this causes undesired
