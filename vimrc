@@ -1,6 +1,5 @@
 " TODO loooooots of this doesn't work with Vi (`vim-gtk` or similar must be
-" installed), and the Vundle stuff causes lots of errors when Vundle has not
-" been installed. This is annoying when setting up a new machine/profile/etc.
+" installed). This is annoying when setting up a new machine/profile/etc.
 "
 " TODO: fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
@@ -28,29 +27,29 @@ endif
 " make sure runtimepath has default value
 set rtp&
 " create a variable to generically reference the location of vim files
-let $VIMFILES=split(&rtp,",")[0]
+" XXX let $VIMFILES=split(&rtp,",")[0]
+let $VIMFILES = expand("~/.vim")
 
 " Setup plugin manager and load plugins
-let pluginfile = expand("~/.vimrcbundles")
-if filereadable(pluginfile)
-    let pluginfile = expand("~/_vimrcbundles")
+let pluginfile = expand("~/.vimrcplugins")
+if !filereadable(pluginfile)
+    let pluginfile = expand("~/_vimrcplugins")
 endif
 if filereadable(pluginfile)
-" Should plugins only be loaded once?
-" if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
-  exec ":source " . pluginfile
-  let g:pluginmgr_setup="done"
+    " Should plugins only be loaded once?
+    " if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
+    exec ":source " . pluginfile
 endif
 
 " Colors and mouse settings (use jellybeans only if it's loaded as plugin;
 " jellybeans only looks good when rich colors are available, which is true for
 " gvim and nvim but not console-vim)
 if has('gui_running') || has('nvim')
-    if exists("g:jellybeans_overrides")
+    try
         colors jellybeans
-    else
+    catch
         colors torte
-    endif
+    endtry
         set enc=utf-8
         set mouse=a
 else
@@ -77,8 +76,10 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
-" Automatically change do directory of current file
+" Automatically change to directory of current file
 set autochdir
+" Automatic indent
+filetype plugin indent on
 " All indentation levels should be rounded to a multiple of shiftwidth
 set shiftround
 " switch back to 'block' if this is too open-ended.
@@ -226,13 +227,7 @@ endif
 set nobackup
 set nowritebackup
 set nu
-let vim73file = expand("~/.vimrc73")
-if !filereadable(vim73file)
-    let vim73file = expand("~/_vimrc73")
-endif
-if version >= 703 && filereadable(vim73file)
-  exec ":source " . vim73file
-endif
+set relativenumber
 
 " Don't get caught off-guard by tabs
 " Note that shiftwidth and softtabstop are set separately
@@ -662,3 +657,39 @@ let CursorColumnI = 0 "the cursor column position in INSERT
 autocmd InsertEnter * let CursorColumnI = col('.')
 autocmd CursorMovedI * let CursorColumnI = col('.')
 autocmd InsertLeave * if col('.') != CursorColumnI | call cursor(0, col('.')+1) | endif
+
+" Useful if not using gVim
+" TODO: figure out how to turn off the RelativeFocus autogroup once I've
+" used this function to take manual control of this feature.
+function! ToggleRelativeNumbering()
+    if(&relativenumber == 1)
+        set norelativenumber
+    else
+        set relativenumber
+    endif
+endfunction
+nnoremap <Leader>n :call ToggleRelativeNumbering()<cr>
+
+augroup RelativeFocus
+    if has('win32unix') 
+        " With XWin, 'focus lost' apparently only occurs when a *different*
+        " X window gains focus. So here's a lame but hopefully good-enough
+        " alternative.
+        au CursorHold * :set norelativenumber
+        au CursorMoved * :set relativenumber
+    else
+        au FocusLost * :set norelativenumber
+        au FocusGained * :set relativenumber
+    endif
+augroup END
+
+" using logic from http://stackoverflow.com/a/9528322/1858225
+if exists("+undofile")
+    set undodir=$VIMFILES/undodir/
+    if isdirectory(expand(&undodir)) == 0
+        :silent call mkdir(expand(&undodir), '-p')
+    endif
+    set undofile
+    set undolevels=90000 "maximum number of changes that can be undone
+    set undoreload=10000 "maximum number lines to save for undo on a buffer reload
+endif

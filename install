@@ -162,14 +162,24 @@ echo "bashrc is: " ~/.bashrc
 ##############################################################################
 
 ##############################################################################
-# Install Vundle
-vundle_bundle=~/.vim/bundle/Vundle.vim
-if [[ ! -a ${vundle_bundle} ]]; then
-    echo Installing Vundle plugins
-    git clone https://github.com/gmarik/Vundle.vim.git ${vundle_bundle}
-    # TODO in git-bash, this *only* installs Vundle for the vim installation
-    # that comes with Git.
-    vim "+BundleInstall" "+qa"
+# Install Vim plugin manager
+# (Only if we've installed a nice version of vim--assume that the existence
+# of gvim means that this is done.)
+if hash gvim 2>/dev/null; then
+    plugin_mgr=~/.vim/autoload/plug.vim
+    if [[ ! -a ${plugin_mgr} ]]; then
+        if hash curl 2>/dev/null; then
+            echo Installing Vundle plugins
+            curl -fLo ${plugin_mgr} --create-dirs \
+                https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            gvim "+PlugInstall" "+qa"
+        else
+            echo "'curl' not installed; not installing Vim-Plug."
+        fi
+    fi
+else
+    # TODO `vim-gtk` seems pretty good, generally; just install that?
+    echo "WARNING: gvim not installed"
 fi
 
 # Install dev tools (Debian-based only)
