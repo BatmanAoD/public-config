@@ -1,0 +1,215 @@
+" See readme here: https://github.com/junegunn/vim-plug
+"
+" PlugInstall [name ...] [#threads] -   Install plugins
+" PlugUpdate [name ...] [#threads]  -   Install or update plugins
+" PlugClean[!]                      -   Remove unused directories (bang version will clean without prompt)
+" PlugUpgrade                       -   Upgrade vim-plug itself
+" PlugStatus                        -   Check the status of plugins
+" PlugDiff                          -   Examine changes from the previous update and the pending changes
+" PlugSnapshot[!] [output path]     -   Generate script for restoring the current snapshot of the plugins
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'gmarik/Vundle.vim'
+
+" Put new plugins here
+Plug 'nanotech/jellybeans.vim'
+Plug 'terryma/vim-multiple-cursors'
+" This remaps '/', which makes it no longer a simple movement, which
+" wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
+" some slow-down when initiating a search. So I'm disabling it.
+" Plug 'SearchComplete'
+Plug 'sjl/clam.vim'
+Plug 'rkitover/vimpager'
+Plug 'tpope/vim-surround'
+Plug 'AndrewRadev/linediff.vim'
+Plug 'vim-scripts/LargeFile'
+" QML syntax highlighting
+Plug 'peterhoeg/vim-qml'
+" Rust syntax highlighting and autocompletion
+Plug 'rust-lang/rust.vim'
+" TODO only enable this is Racer is installed
+" Plug 'phildawes/racer'
+" TODO find a plugin that works for tailing
+" Plug 'Tail-Bundle'
+Plug 'vim-scripts/Rename'
+" This guy copied a VimTip into his personal, GitHub-controlled Vim setup...
+" so I'll just treat it as a plugin because I'm that lazy.
+Plug 'BenBergman/vsearch.vim'
+" TODO syntax highlighting for different filetypes within the same file:
+" http://www.vim.org/scripts/script.php?script_id=4168
+" TODO figure out how to use this
+" pymode
+Plug 'klen/python-mode'
+" Er, NVM, I hate this.
+" Plug 'Raimondi/delimitMate'
+" For attempting to debug syntax issues
+Plug 'vim-scripts/SyntaxAttr.vim'
+" For comments. Could switch to tpope/vim-commentary
+" See discussion here: http://www.reddit.com/r/vim/comments/26mszm/what_is_everyones_favorite_commenting_plugin_and/
+Plug 'tomtom/tcomment_vim'
+" Git stuff
+Plug 'tpope/vim-fugitive'
+" Asynchronous commands (TODO: learn to use this)
+" TODO: for NeoVim, switch to https://github.com/benekastah/neomake
+Plug 'tpope/vim-dispatch'
+" Allow opening files at a particular line number using 'file:line' format
+" For some reason this causes an extra 'press ENTER' message when the arg is
+" NOT in `file:line` format. Disabled for now.
+" TODO find a different solution.
+" Plug 'bogado/file-line'
+" Syntax plugin for TI's PRUSS assembly language
+Plug 'BatmanAoD/pruss-vim'
+" Table mode
+Plug 'dhruvasagar/vim-table-mode'
+
+" These should take care of all the 'very magic' nonsense
+Plug 'coot/CRDispatcher'
+Plug 'coot/EnchantedVim'
+
+" Fork of Gundo with extra features
+Plug 'dsummersl/gundo.vim'
+
+call plug#end()
+
+" Jellybeans settings:
+" TODO check first if jellybeans was successfully turned on?
+" SpecialKey and NonText are for particular types of whitespace
+let g:jellybeans_overrides = {
+\   'cursor':       { 'guifg': '151515', 'guibg': 'b0d0f0' },
+\   'statement':    { 'guifg': '57D9C7' },
+\   'SpecialKey':   { 'guifg': 'FFFA00' },
+\   'NonText':      { 'guifg': '444499' },
+\   'Todo':         { 'guibg': '772222' },
+\   'YcmWarningSign'    : { 'guibg': '774444' },
+\   'YcmWarningSection' : { 'guibg': '774444' },
+\}
+" The ycm groups define YCM warning highlighting; default is 'todo'.
+" Errors match 'error', which....is possibly the same as 'todo'.
+
+" Other plugin settings:
+" TODO how to set Racer/Rust paths properly?
+" let g:racer_cmd = expand("~/ToolsBld/racer/target/release/racer")
+" let $RUST_SRC_PATH = expand("~/sandbox/rust")
+
+" I don't really like folds
+let g:pymode_folding = 0
+" This is causing problems
+let g:pymode_rope = 0
+" prevent Pymode and Gundo from messing with the window size
+set winfixwidth
+set winfixheight
+set guioptions-=L
+
+" TODO determine how best to use vim-dispatch
+" function! SetCppDispatchCmd()
+"     " Check if my BC infrastructure suite is available and that I'm in a directory
+"     " that can use it....
+"     silent call system('findpdirs')
+"     if ! v:shell_error
+"         let b:dispatch = 'build'
+"     " Otherwise, use my generic 
+"     else
+"         let b:dispatch = 'qg++'
+"     endif
+" endfunction
+" 
+" augroup CppDispatch
+"     autocmd BufEnter *.cpp :call SetCppDispatchCmd()
+" augroup END
+
+" Use markdown-style tables
+let g:table_mode_corner="|"
+
+" Mappings for use with plugins:
+nnoremap <silent> <F5> :GundoToggle<CR>
+" do a diff:
+vnoremap <Leader>ld :Linediff<CR>
+" start a diff and go to end of diff section:
+vnoremap <Leader>ls :Linediff<CR>`>
+" clear diff:
+vnoremap <Leader>lc :LinediffReset<CR>
+nnoremap <Leader>lc :LinediffReset<CR>
+
+
+let g:using_ycm = 0
+" TODO can I use `Plug` after `plug#end()`?
+" TODO apparently this is tricky to get working on Windows, unfortunately.
+" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
+if !has('win32') && executable('clang++')
+    Plug 'Valloric/YouCompleteMe'
+    let g:ycm_confirm_extra_conf = 0
+    let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+    let g:using_ycm = 1
+    " Use YouCompleteMe instead of ctags-style taglist
+    " (Note: YouCompleteMe can also be configured to read the tagslist generated
+    " by 'Exuberant Ctags', but that will slow it down.)
+    nnoremap <C-]> :YcmCompleter GoTo<CR>
+    " Open definition in new window
+    nnoremap <C-W><C-]> :vsplit<CR>:YcmCompleter GoTo<CR>
+endif
+
+if !g:using_ycm && executable('g++')
+    " YCM attempts to do everything Syntastic would do, so there should be no
+    " reason to use Syntastic.
+    Plug 'scrooloose/syntastic'
+    " TODO figure out a way to generically figure out the 'best' compiler to use
+    let g:syntastic_cpp_compile = "g++"
+    " TODO figure out a way to define flags per-project, e.g. by reading CMake
+    " files
+    let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++"
+    " TODO re-evaluate these after reading the syntastic manual
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    " TODO consider just...getting rid of syntastic.
+    " let g:syntastic_always_populate_loc_list = 1
+    " let g:syntastic_auto_loc_list = 1
+    " let g:syntastic_check_on_open = 1
+    " let g:syntastic_check_on_wq = 1
+endif
+
+function! Disenchant()
+let g:VeryMagic = 0
+let g:VeryMagicSubstituteNormalise = 0
+let g:VeryMagicSubstitute = 0
+let g:VeryMagicGlobal = 0
+let g:VeryMagicVimGrep = 0
+let g:VeryMagicSearchArg = 0
+let g:VeryMagicFunction = 0
+let g:VeryMagicHelpgrep = 0
+let g:VeryMagicRange = 0
+let g:VeryMagicEscapeBackslashesInSearchArg = 0
+let g:SortEditArgs = 0
+endfunction
+
+" Since I use incsearch:
+let g:VeryMagic = 0
+nnoremap / /\v
+nnoremap ? ?\v
+vnoremap / /\v
+vnoremap ? ?\v
+" If I type // or ??, I don't EVER want \v, since I'm repeating the previous
+" search.
+noremap // //
+noremap ?? ??
+" no-magic searching
+noremap /v/ /\V
+noremap ?V? ?\V
+
+" Turn on all other features.
+let g:VeryMagicSubstituteNormalise = 1
+let g:VeryMagicSubstitute = 1
+let g:VeryMagicGlobal = 1
+let g:VeryMagicVimGrep = 1
+let g:VeryMagicSearchArg = 1
+let g:VeryMagicFunction = 1
+let g:VeryMagicHelpgrep = 1
+let g:VeryMagicRange = 1
+let g:VeryMagicEscapeBackslashesInSearchArg = 1
+let g:SortEditArgs = 1
+
+
+" Additional plugins to try eventually:
+" Lokaltog/vim-easymotion

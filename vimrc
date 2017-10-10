@@ -1,6 +1,6 @@
 " TODO loooooots of this doesn't work with Vi (`vim-gtk` or similar must be
-" installed), and the Vundle stuff causes lots of errors when Vundle has not
-" been installed. This is annoying when setting up a new machine/profile/etc.
+"
+" installed). This is annoying when setting up a new machine/profile/etc.
 "
 " TODO: fix the following problems (probably both related to QuitIfLastBuffer):
 " * the close-when-last-buffer-is-closed autocommand appears to prevent opening
@@ -31,26 +31,25 @@ set rtp&
 let $VIMFILES=split(&rtp,",")[0]
 
 " Setup plugin manager and load plugins
-let pluginfile = expand("~/.vimrcbundles")
-if filereadable(pluginfile)
-    let pluginfile = expand("~/_vimrcbundles")
+let pluginfile = expand("~/.vimrcplugins")
+if !filereadable(pluginfile)
+    let pluginfile = expand("~/_vimrcplugins")
 endif
 if filereadable(pluginfile)
-" Should plugins only be loaded once?
-" if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
-  exec ":source " . pluginfile
-  let g:pluginmgr_setup="done"
+    " Should plugins only be loaded once?
+    " if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
+    exec ":source " . pluginfile
 endif
 
 " Colors and mouse settings (use jellybeans only if it's loaded as plugin;
 " jellybeans only looks good when rich colors are available, which is true for
 " gvim and nvim but not console-vim)
 if has('gui_running') || has('nvim')
-    if exists("g:jellybeans_overrides")
+    try
         colors jellybeans
-    else
+    catch
         colors torte
-    endif
+    endtry
         set enc=utf-8
         set mouse=a
 else
@@ -77,8 +76,10 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
-" Automatically change do directory of current file
+" Automatically change to directory of current file
 set autochdir
+" Automatic indent
+filetype plugin indent on
 " All indentation levels should be rounded to a multiple of shiftwidth
 set shiftround
 " switch back to 'block' if this is too open-ended.
@@ -226,13 +227,7 @@ endif
 set nobackup
 set nowritebackup
 set nu
-let vim73file = expand("~/.vimrc73")
-if !filereadable(vim73file)
-    let vim73file = expand("~/_vimrc73")
-endif
-if version >= 703 && filereadable(vim73file)
-  exec ":source " . vim73file
-endif
+set relativenumber
 
 " Don't get caught off-guard by tabs
 " Note that shiftwidth and softtabstop are set separately
@@ -293,28 +288,8 @@ function! Untab()
 endfunction
 
 " exit vim when exiting last buffer
-" stolen from
-" http://vim.1045645.n5.nabble.com/buffer-list-count-td1200936.html
-" TODO: figure out why this causes problems with directory-viewer, etc
-function! CountNonemptyBuffers()
-    let cnt = 0
-    for nr in range(1,bufnr("$"))
-        if buflisted(nr) && ! empty(bufname(nr)) || ! empty(getbufvar(nr, '&buftype'))
-            let cnt += 1
-        endif
-    endfor
-    return cnt
-endfunction
-function! QuitIfLastBuffer()
-    if CountNonemptyBuffers() == 1
-        :q
-    endif
-endfunction
-augroup closebuf
-    autocmd BufDelete * :call QuitIfLastBuffer()
-augroup END
- " one-line version from http://superuser.com/a/668612/199803
- " autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
+" courtesy of http://superuser.com/a/668612/199803
+autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
 
 function! PickTabUsage()
     if &readonly || ! &modifiable
@@ -402,25 +377,25 @@ cnoremap <C-l> <Right>
 " skipblanks (bool): true: Skip blank lines
 " false: Don't skip blank lines
 function! NextIndent(exclusive, fwd, lowerlevel, skipblanks)
-  let line = line('.')
-  let column = col('.')
-  let lastline = line('$')
-  let indent = indent(line)
-  let stepvalue = a:fwd ? 1 : -1
-  while (line > 0 && line <= lastline)
+let line = line('.')
+let column = col('.')
+let lastline = line('$')
+let indent = indent(line)
+let stepvalue = a:fwd ? 1 : -1
+while (line > 0 && line <= lastline)
     let line = line + stepvalue
     if ( ! a:lowerlevel && indent(line) == indent ||
-          \ a:lowerlevel && indent(line) < indent)
-      if (! a:skipblanks || strlen(getline(line)) > 0)
+        \ a:lowerlevel && indent(line) < indent)
+    if (! a:skipblanks || strlen(getline(line)) > 0)
         if (a:exclusive)
-          let line = line - stepvalue
+        let line = line - stepvalue
         endif
         exe line
         exe "normal " column . "|"
         return
-      endif
     endif
-  endwhile
+    endif
+endwhile
 endfunction
 " Moving back and forth between lines of same or lower indentation.
 nnoremap <silent> [l :call NextIndent(0, 0, 0, 1)<CR>
@@ -454,10 +429,10 @@ nnoremap <C-l> <Right>
 " for single-character entry
 " from http://vim.wikia.com/wiki/Insert_a_single_character
 function! RepeatChar(char, count)
-   return repeat(a:char, a:count)
- endfunction
- nnoremap <silent> s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
- nnoremap <silent> S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
+return repeat(a:char, a:count)
+endfunction
+nnoremap <silent> s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
+nnoremap <silent> S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
 " somehow I got it into my head that these were the defaults anyway.
 " nnoremap B _
@@ -490,8 +465,8 @@ nnoremap Q <nop>
 
 " Easily write and exit buffers
 function! WriteAndDelete()
-  :w
-  :bd
+:w
+:bd
 endfunction
 
 command! Wd :call WriteAndDelete()
@@ -662,3 +637,39 @@ let CursorColumnI = 0 "the cursor column position in INSERT
 autocmd InsertEnter * let CursorColumnI = col('.')
 autocmd CursorMovedI * let CursorColumnI = col('.')
 autocmd InsertLeave * if col('.') != CursorColumnI | call cursor(0, col('.')+1) | endif
+
+" Useful if not using gVim
+" TODO: figure out how to turn off the RelativeFocus autogroup once I've
+" used this function to take manual control of this feature.
+function! ToggleRelativeNumbering()
+    if(&relativenumber == 1)
+        set norelativenumber
+    else
+        set relativenumber
+    endif
+endfunction
+nnoremap <Leader>n :call ToggleRelativeNumbering()<cr>
+
+augroup RelativeFocus
+    if has('win32unix') 
+        " With XWin, 'focus lost' apparently only occurs when a *different*
+        " X window gains focus. So here's a lame but hopefully good-enough
+        " alternative.
+        au CursorHold * :set norelativenumber
+        au CursorMoved * :set relativenumber
+    else
+        au FocusLost * :set norelativenumber
+        au FocusGained * :set relativenumber
+    endif
+augroup END
+
+" using logic from http://stackoverflow.com/a/9528322/1858225
+if exists("+undofile")
+    set undodir=$VIMFILES/undodir/
+    if isdirectory(expand(&undodir)) == 0
+        :silent call mkdir(expand(&undodir), '-p')
+    endif
+    set undofile
+    set undolevels=90000 "maximum number of changes that can be undone
+    set undoreload=10000 "maximum number lines to save for undo on a buffer reload
+endif
