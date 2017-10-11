@@ -225,16 +225,35 @@ set -o vi               # vi command-line editing
 #     fi
 # fi
 
-# Switch these to use nvim.
-# if hash nvim 2>/dev/null; then
-if false; then
+# Workaround for a gvim/git-bash oddity.
+# See https://stackoverflow.com/q/31167411/1858225
+if ! hash gvim 2>/dev/null && type gvim.bat &>/dev/null; then
+    alias gvim=gvim.bat
+fi
+# XXX TODO
+# Disable this if I have more problems with neovim!
+# TODO - `nvim`, at least on Windows, launches "headless mode",
+# with no display at all...not really sure how to get nvim in the
+# terminal reliably.
+if hash nvim 2>/dev/null; then
     export EDITOR=nvim
     # Custom script for launcing nvim in a new gnome terminal
     # TODO the native GUI interface for nvim will make this unnecessary
-    if hash NewNvimWindow 2>/dev/null && test -n $DISPLAY; then
-        export NEWWINDOW_EDIT_CMD=NewNvimWindow
-        # TODO use "-f" with native GUI once support is available
-        export VISUAL=nvim
+    if hash nvim-qt 2>/dev/null && test -n $DISPLAY; then
+        # `nvim-qt` and `gvim` both have an odd problem in git-bash
+        # that causes them not to fork appropriately.
+        # TODO figure out a better condition here.
+        if $NATIVE_LINUX; then
+            export NEWWINDOW_EDIT_CMD=nvim-qt
+            # TODO check whether this is supported on Linux yet.
+            # export VISUAL="nvim-qt -f"
+            export VISUAL=nvim
+        else
+            export NEWWINDOW_EDIT_CMD="start nvim-qt"
+            # Exploit the bug mentioned above.
+            # TODO Since this is a bug, it probably isn't reliable...
+            export VISUAL=nvim-qt
+        fi
     else
         export NEWWINDOW_EDIT_CMD=nvim
         export VISUAL=nvim

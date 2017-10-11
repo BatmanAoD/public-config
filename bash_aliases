@@ -4,8 +4,9 @@
 alias expand='echo '
 alias expand='xargs '
 
-# Allow aliases with `sudo`
+# Allow aliases with `sudo` and `xargs`
 alias sudo='sudo '
+alias xargs='xargs '
 
 if [[ "$(uname)" = "Linux" ]]
 then
@@ -233,6 +234,10 @@ if [[ $? -ne 0 ]]; then
         alias ack=ack-grep
     fi
 fi
+
+# If we're using Bash, always print Unix-style path separators in ripgrep.
+# TODO: Why is `//` required instead of `/`? See https://github.com/BurntSushi/ripgrep/issues/275
+alias rg='rg --path-separator //'
 
 alias save_func=save_function
 alias savefunction=save_function
