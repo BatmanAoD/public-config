@@ -54,7 +54,7 @@ abspath() {
     fi
     tmp_path=$(readlink -f $targ)
     # If on Windows, get a Windows path
-    if $CYGWIN; then
+    if $WINDOWS; then
         tmp_path=$(cygpath -w $tmp_path)
     # Otherwise, try to substitute out `~<usr>`
     else

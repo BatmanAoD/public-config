@@ -235,9 +235,12 @@ if [[ $? -ne 0 ]]; then
     fi
 fi
 
-# If we're using Bash, always print Unix-style path separators in ripgrep.
-# TODO: Why is `//` required instead of `/`? See https://github.com/BurntSushi/ripgrep/issues/275
-alias rg='rg --path-separator //'
+# If we're using Bash on Windows, always print Unix-style path separators in ripgrep.
+if $WINDOWS; then
+    # TODO: Why is `//` required instead of `/`? See
+    # https://github.com/BurntSushi/ripgrep/issues/275
+    alias rg='rg --path-separator //'
+fi
 
 alias save_func=save_function
 alias savefunction=save_function

@@ -31,13 +31,21 @@ ensure_on_path () {
 ensure_on_path "${primary_HOME}/bin"
 ensure_on_path "${primary_HOME}/.cargo/bin"
 
+WINDOWS=false
 CYGWIN=false
-if grep -q Cygwin <(uname -o); then
-    CYGWIN=true
-    # Don't get fooled by the carriage-return character.
-    export SHELLOPTS
-    set -o igncr
-    CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
+# Alternate:
+# if grep -q '_NT-' <(uname -s); then
+if [[ -d "$WINDIR" ]]; then
+    WINDOWS=true
+    # Cygwin-specific oddities
+    if grep -q Cygwin <(uname -o); then
+        CYGWIN=true
+        # Don't get fooled by the carriage-return character.
+        export SHELLOPTS
+        set -o igncr
+        CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
+    fi
+    # TODO: if using Git-Bash, fix `ln`!! (See `install` script)
 fi
 
 if [[ -n $primary_local_account ]]; then
@@ -55,7 +63,7 @@ if [[ -n $primary_local_account ]]; then
         echo "git repository." >&2
     else
         git_remote_head="$(timeout 1s git --git-dir $CONFIG_DIR/.git \
-            ls-NATIVE_LINUX origin -h refs/heads/master 2>/dev/null)"
+            ls-LINUX_NATIVE origin -h refs/heads/master 2>/dev/null)"
         if [[ -n "$git_remote_head" ]]; then
             if [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
                     2>/dev/null)" != \
@@ -72,30 +80,28 @@ if [[ -n $CONFIG_DIR && -d ${primary_HOME}/Public && -z $(ls -A ${primary_HOME}/
     rmdir ${primary_HOME}/Public
 fi
 
-# Not Cygwin, not remote, not virtual
+LINUX_ANY=false
+if [[ Linux == "$(uname -s)" ]]; then
+    LINUX_ANY=true
+fi
+
+# Not Windows, not remote, not virtual
 check_if_native_linux()
 {
-    NATIVE_LINUX=true;
-    # Are we on Cygwin?
-    $CYGWIN && NATIVE_LINUX=false && return;
+    LINUX_NATIVE=$LINUX_ANY;
+    $LINUX_NATIVE || return;
     # Are we SSH-ing in?
-    # XXX TODO `SSH` actually does show up as `SSH_ASKPASS` when ssh
-    # credentials are stored. Purely coincidentally, this appears to be the
-    # only thing preventing the script from treating git-bash on Windows as
-    # "native Linux" (!!). Clearly this logic needs some improvement.
-    grep -q SSH <(env) && NATIVE_LINUX=false && return;
-    # Is this a VirtualBox session?
-    grep -q VBOX0 <(xrandr) && NATIVE_LINUX=false && return;
-    # ...or a VMWare session?
-    # (Other ways to check: http://serverfault.com/q/65718/207703)
-    grep -q -i vmware <(lspci) && NATIVE_LINUX=false && return;
+    grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
+    # Is this a VM?
+    grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
     # Is Xmodmap usage explicitly disabled? (True for TightVNC connection)
-    test -n "$XKL_XMODMAP_DISABLE" && NATIVE_LINUX=false && return;
+    # TODO any way to check for VNC or RDP protocol automatically?
+    test -n "$XKL_XMODMAP_DISABLE" && LINUX_NATIVE=false && return;
 }
 
 check_if_native_linux
 
-if $NATIVE_LINUX; then
+if $LINUX_NATIVE; then
     # Currently using xmodmap instead of xkbmap
     if [[ -r ${primary_HOME}/.Xmodmap ]]; then
         # TODO why doesn't this seem to work with `reload`?
@@ -243,16 +249,16 @@ if hash nvim 2>/dev/null; then
         # `nvim-qt` and `gvim` both have an odd problem in git-bash
         # that causes them not to fork appropriately.
         # TODO figure out a better condition here.
-        if $NATIVE_LINUX; then
-            export NEWWINDOW_EDIT_CMD=nvim-qt
-            # TODO check whether this is supported on Linux yet.
-            # export VISUAL="nvim-qt -f"
-            export VISUAL=nvim
-        else
+        if $WINDOWS; then
             export NEWWINDOW_EDIT_CMD="start nvim-qt"
             # Exploit the bug mentioned above.
             # TODO Since this is a bug, it probably isn't reliable...
             export VISUAL=nvim-qt
+        else
+            export NEWWINDOW_EDIT_CMD=nvim-qt
+            # TODO check whether this is supported on Linux yet.
+            # export VISUAL="nvim-qt -f"
+            export VISUAL=nvim
         fi
     else
         export NEWWINDOW_EDIT_CMD=nvim
