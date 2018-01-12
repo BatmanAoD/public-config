@@ -25,8 +25,11 @@ if has('win32')
     set shell=$COMSPEC
 endif
 
-" make sure runtimepath has default value
-set rtp&
+" This screws up the nvim-qt rtp setup.
+if !has('nvim')
+    " make sure runtimepath has default value
+    set rtp&
+endif
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
 

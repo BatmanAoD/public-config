@@ -561,10 +561,12 @@ if hash sshrc 2>/dev/null; then
         echo 'echo "<- sshrc"' >> "${SSHRC_CFG}"
         sshrc $@
     }
-    # Since `rsync`, etc use `ssh`, the specialized version must be an alias
-    # rather than a function to permit suppression of the non-default behavior
-    # by turning off alias-expansion.
-    alias ssh=ssh_sshrc
+    # TODO sshrc doesn't work with all target platforms. It would be nice to
+    # find a way to detect that and disable it for that target.
+    # # Since `rsync`, etc use `ssh`, the specialized version must be an alias
+    # # rather than a function to permit suppression of the non-default behavior
+    # # by turning off alias-expansion.
+    # alias ssh=ssh_sshrc
 fi
 
 if [[ $(whoami) != root ]]; then
