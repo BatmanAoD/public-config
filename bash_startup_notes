@@ -1,0 +1,44 @@
+#!/bin/bash
+# The shebang is just to ensure that Vim knows how to highlight this file.
+
+if [[ -n $CONFIG_DIR ]]; then
+    notes_dir="$CONFIG_DIR/startup_notes"
+
+    print_notes () {
+        # Use a subshell to ensure that `shopt` does not affect current settings.
+        (
+            shopt -s nullglob
+            say yellow bold "*********************************************************"
+            say yellow bold "NOTES:"
+            for f in "$notes_dir"/*; do
+                say cyan "Notes from $(basename "$f"):"
+                cat $f
+            done
+            say yellow bold "*********************************************************"
+        )
+    }
+
+    mknote () {
+        if [[ $# -eq 1 ]]; then
+            f="$1"
+        else
+            f="general"
+        fi
+        f="$notes_dir/$f"
+        $EDITOR "$f"
+        cfgd_git add "$f"
+    }
+
+    delnote () {
+        if [[ $# -eq 1 ]]; then
+            f="$1"
+        else
+            say red "Must specify note file to remove!"
+            return 1
+        fi
+        cfgd_git rm "$notes_dir/$f"
+    }
+
+    mkdir -p "$notes_dir"
+    print_notes
+fi
