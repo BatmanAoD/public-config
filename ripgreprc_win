@@ -1,0 +1,10 @@
+#!/bin/bash
+# Windows-specific RipGrep configuration.
+# ^ Shebang because bash highlighting is reasonable (if not strictly correct)
+# for this file.
+
+# If we're using Bash on Windows, always print Unix-style path separators in ripgrep.
+# TODO: Why is `//` required instead of `/`? See
+# https://github.com/BurntSushi/ripgrep/issues/275
+--path-separator
+//
