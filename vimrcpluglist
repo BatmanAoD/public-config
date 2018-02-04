@@ -70,6 +70,17 @@ Plug 'coot/EnchantedVim'
 " Fork of Gundo with extra features
 Plug 'dsummersl/gundo.vim'
 
+" Asynchronous language server (LSP) client with autocompletion
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+if has('nvim')
+    " TODO figure out a viable lldb plugin for gVim, too.
+    Plug 'critiqjo/lldb.nvim'
+endif
+
 call plug#end()
 
 " Jellybeans settings:
@@ -87,10 +98,19 @@ let g:jellybeans_overrides = {
 " The ycm groups define YCM warning highlighting; default is 'todo'.
 " Errors match 'error', which....is possibly the same as 'todo'.
 
-" Other plugin settings:
-" TODO how to set Racer/Rust paths properly?
-" let g:racer_cmd = expand("~/ToolsBld/racer/target/release/racer")
-" let $RUST_SRC_PATH = expand("~/sandbox/rust")
+" Rust LSP (RLS) integration
+if executable('rls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'rls',
+        \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+        \ 'whitelist': ['rust'],
+        \ })
+endif
+
+" Debug logging for async RLS...
+let g:asyncomplete_log_file = expand('~/asyncomplete.log')
+let g:lsp_log_file = expand('~/vim-lsp.log')
+let g:lsp_log_verbose = 1
 
 " I don't really like folds
 let g:pymode_folding = 0
@@ -100,6 +120,8 @@ let g:pymode_rope = 0
 set winfixwidth
 set winfixheight
 set guioptions-=L
+
+" Other plugin settings:
 
 " TODO determine how best to use vim-dispatch
 " function! SetCppDispatchCmd()
@@ -149,26 +171,26 @@ if !has('win32') && executable('clang++')
     nnoremap <C-W><C-]> :vsplit<CR>:YcmCompleter GoTo<CR>
 endif
 
-if !g:using_ycm && executable('g++')
-    " YCM attempts to do everything Syntastic would do, so there should be no
-    " reason to use Syntastic.
-    Plug 'scrooloose/syntastic'
-    " TODO figure out a way to generically figure out the 'best' compiler to use
-    let g:syntastic_cpp_compile = "g++"
-    " TODO figure out a way to define flags per-project, e.g. by reading CMake
-    " files
-    let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++"
-    " TODO re-evaluate these after reading the syntastic manual
-    set statusline+=%#warningmsg#
-    set statusline+=%{SyntasticStatuslineFlag()}
-    set statusline+=%*
-
-    " TODO consider just...getting rid of syntastic.
-    " let g:syntastic_always_populate_loc_list = 1
-    " let g:syntastic_auto_loc_list = 1
-    " let g:syntastic_check_on_open = 1
-    " let g:syntastic_check_on_wq = 1
-endif
+" " YCM and/or LSP should do everything Syntastic would do, so there should be no
+" " reason to use Syntastic.
+" if !g:using_ycm && executable('g++')
+"     Plug 'scrooloose/syntastic'
+"     " TODO figure out a way to generically figure out the 'best' compiler to use
+"     let g:syntastic_cpp_compile = "g++"
+"     " TODO figure out a way to define flags per-project, e.g. by reading CMake
+"     " files
+"     let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++"
+"     " TODO re-evaluate these after reading the syntastic manual
+"     set statusline+=%#warningmsg#
+"     set statusline+=%{SyntasticStatuslineFlag()}
+"     set statusline+=%*
+"
+"     " TODO consider just...getting rid of syntastic.
+"     " let g:syntastic_always_populate_loc_list = 1
+"     " let g:syntastic_auto_loc_list = 1
+"     " let g:syntastic_check_on_open = 1
+"     " let g:syntastic_check_on_wq = 1
+" endif
 
 function! Disenchant()
 let g:VeryMagic = 0

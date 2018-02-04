@@ -52,20 +52,23 @@ if [[ -n $primary_local_account ]]; then
     # Check that I have the rest of my "public-config" stuff.
     CONFIG_DIR=${primary_HOME}/public-config
     # TODO consider looking for private-config, too
+    alias cfgd_git="git --git-dir $CONFIG_DIR/.git"
     if [[ ! -d $CONFIG_DIR ]]; then
         echo "WARNING: public config directory not found!" >&2
         CONFIG_DIR=
+        unalias cfgd_git
     elif grep -v -q -i 'batmanaod' \
-    <(git --git-dir $CONFIG_DIR/.git config --get remote.origin.url \
+    <(cfgd_git config --get remote.origin.url \
     2>/dev/null); then
         echo "WARNING: this bash config designed for use in conjunction" >&2
         echo "with the other config files in the BatmanAoD/public-config" >&2
         echo "git repository." >&2
+        unalias cfgd_git
     else
-        git_remote_head="$(timeout 1s git --git-dir $CONFIG_DIR/.git \
+        git_remote_head="$(timeout 1s cfgd_git \
             ls-LINUX_NATIVE origin -h refs/heads/master 2>/dev/null)"
         if [[ -n "$git_remote_head" ]]; then
-            if [[ "$(git --git-dir $CONFIG_DIR/.git rev-parse HEAD \
+            if [[ "$(cfgd_git rev-parse HEAD \
                     2>/dev/null)" != \
                 "$(echo ${git_remote_head} | awk '{print $1}')" ]]; then
                 echo "WARNING: local public config repo is not in sync with github!!" >&2
