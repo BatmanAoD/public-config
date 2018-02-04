@@ -77,7 +77,7 @@ cd ~
 
 shopt -s nullglob
 
-for prog in bash input gdb irb vim zsh git ack ycm; do
+for prog in bash input gdb irb vim zsh git ack ycm ripgrep; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/${prog}* ~/private-config/${prog}*; do
         if [[ -d ${file} ]]; then continue; fi
