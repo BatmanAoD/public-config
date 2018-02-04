@@ -29,8 +29,14 @@ alias chomd=chmod
 alias follow="clear && tail -F -n +0"
 
 # Find a script to generically open files
-# xdg-open is the most generic and modern
-if hash xdg-open 2>/dev/null; then
+if $WINDOWS; then
+    # TODO: handle multiple files, other args?
+    win-open () {
+        start "$(cygpath -w "$1")"
+    }
+    alias open=win-open
+# On *NIX, xdg-open is the most generic and modern
+elif hash xdg-open 2>/dev/null; then
     alias open=xdg-open
 # Gnome-specific:
 # gvfs-open might be replacing gnome-open...?

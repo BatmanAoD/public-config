@@ -1,11 +1,5 @@
 " TODO loooooots of this doesn't work with Vi (`vim-gtk` or similar must be
-"
 " installed). This is annoying when setting up a new machine/profile/etc.
-"
-" TODO: fix the following problems (probably both related to QuitIfLastBuffer):
-" * the close-when-last-buffer-is-closed autocommand appears to prevent opening
-"   directories
-" * in non-gui Vim, help window is apparently unavailable
 "
 " TODO: Look through some .vimrc files made by people who actually know what
 " they're doing:
@@ -163,9 +157,8 @@ augroup END
 set incsearch
 " This limit exists to limit memory consuption.
 set undolevels=90000
-" TODO use a more general strategy here
-" ...and figure out why different fonts appear different on different
-" machines...?????
+" For NeoVim, use ~/.config/nvim/ginit.vim.
+" See https://github.com/equalsraf/neovim-qt/issues/213
 if has('win32')
     silent! set guifont=Consolas:h8:cANSI
     " set guifont=Anonymous_Pro:h8:cANSI
