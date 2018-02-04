@@ -332,6 +332,21 @@ export PS1
 # ....not reeeeeally sure what this does...
 # export LESS="-XR"
 
+# Figure out the correct RipGrep config file.
+# If the parent env has already set a config file path, use that.
+if [[ -z "$RIPGREP_CONFIG_PATH" ]]; then
+    RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+    if $WINDOWS; then
+        RIPGREP_CONFIG_PATH_win="${RIPGREP_CONFIG_PATH}_win"
+        if [[ -r "$RIPGREP_CONFIG_PATH_win" ]]; then
+            RIPGREP_CONFIG_PATH="$RIPGREP_CONFIG_PATH_win"
+        fi
+    fi
+fi
+if [[ -r "$RIPGREP_CONFIG_PATH" ]]; then
+    export RIPGREP_CONFIG_PATH
+fi
+
 # Load completion function
 if [[ -r /etc/bash_completion ]]; then
      . /etc/bash_completion
