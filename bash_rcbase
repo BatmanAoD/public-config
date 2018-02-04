@@ -337,6 +337,8 @@ export PS1
 if [[ -z "$RIPGREP_CONFIG_PATH" ]]; then
     RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
     if $WINDOWS; then
+        # TODO consider setting this varialbe in Windows environment
+        # settings so that it works in cmd.exe.
         RIPGREP_CONFIG_PATH_win="${RIPGREP_CONFIG_PATH}_win"
         if [[ -r "$RIPGREP_CONFIG_PATH_win" ]]; then
             RIPGREP_CONFIG_PATH="$RIPGREP_CONFIG_PATH_win"
