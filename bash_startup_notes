@@ -12,7 +12,8 @@ if [[ -n $CONFIG_DIR ]]; then
             say yellow bold "NOTES:"
             for f in "$notes_dir"/*; do
                 say cyan "Notes from '$(basename "$f")':"
-                cat "$f"
+                # Don't use `cat` alias
+                \cat "$f"
                 echo
             done
             say yellow bold "*********************************************************"
