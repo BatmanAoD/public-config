@@ -162,8 +162,11 @@ set incsearch
 set undolevels=90000
 " For NeoVim, use ~/.config/nvim/ginit.vim.
 " See https://github.com/equalsraf/neovim-qt/issues/213
+" TODO this needs to be...better. It would be nice to automatically detect
+" fonts, construct them from a list of preferred fonts and info about what's
+" available and what the DPI is, etc...
 if has('win32')
-    silent! set guifont=Consolas:h8:cANSI
+    silent! set guifont=Consolas:h11:cANSI
     " set guifont=Anonymous_Pro:h8:cANSI
 " elseif has('win32unix') " Cygwin
 "     " TODO get a better Cygwin font!

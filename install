@@ -175,13 +175,22 @@ fi
 ##############################################################################
 ##############################################################################
 
-if [[ ! -v 1 || $1 != "--tools" ]]; then
+# Original condition: checks if `$1` is even set.
+# Dd not work in Windows; not sure why.
+# `-v` is new in Bash 4.2; see https://stackoverflow.com/a/17538964/1858225
+# if [[ ! -v 1 || $1 != "--tools" ]]; then
+if [[ $1 != "--tools" ]]; then
     exit
 fi
 
 echo "bashrc is: " ~/.bashrc
 
+# Be a bit more permissive when running `.bashrc`; it uses unset variables.
+set +u
+set +e
 . ~/.bashrc
+set -u
+set -e
 
 ##############################################################################
 ##############################################################################
@@ -197,7 +206,9 @@ echo "bashrc is: " ~/.bashrc
 # of gvim means that this is done.)
 vim_plug=autoload/plug.vim
 vim_plugin_mgr=~/.vim/${vim_plug}
-if hash gvim 2>/dev/null; then
+# For some reason `hash gvim` can't find gvim on Windows in Git Bash, so
+# try `where` as well.
+if hash gvim 2>/dev/null || where gvim &>/dev/null; then
     if [[ ! -a ${vim_plugin_mgr} ]]; then
         if hash curl 2>/dev/null; then
             echo Installing Vundle plugins
@@ -339,12 +350,13 @@ else
     fi
 fi
 
+cd ${HOME}/bin
+
 # Install sshrc
 if ! hash sshrc 2>/dev/null; then
     echo Installing sshrc
     wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc &&
-        chmod +x sshrc &&
-        sudo mv sshrc ${HOME}/bin
+        chmod +x sshrc
 fi
 
 # TODO: install how2? (Not sure how useful it is yet; requires nodejs and some
