@@ -241,15 +241,6 @@ if [[ $? -ne 0 ]]; then
     fi
 fi
 
-# This is now in the ripgrep config file; see .bash_rcbase.
-# However, at time of writing, the latest *release* of ripgrep
-# doesn't support a config file, so I won't yet remove this code.
-# if $WINDOWS; then
-#     # TODO: Why is `//` required instead of `/`? See
-#     # https://github.com/BurntSushi/ripgrep/issues/275
-#     alias rg='rg --path-separator //'
-# fi
-
 alias save_func=save_function
 alias savefunction=save_function
 alias savefunc=save_function
