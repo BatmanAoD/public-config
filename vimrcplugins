@@ -1,4 +1,4 @@
-let plugin_mgr = expand($VIMFILES . '/autoload/plug.vim')
+let plugin_mgr = fnameescape(expand($VIMFILES . '/autoload/plug.vim'))
 let plug_listfile = expand("~/.vimrcpluglist")
 if filereadable(plugin_mgr) && filereadable(plug_listfile)
     exec ":source " . plug_listfile
