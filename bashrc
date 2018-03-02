@@ -24,7 +24,7 @@ umask 002
 # TODO include version info?
 echo -e "$(tput setaf 2)-> bashrc$(tput sgr0)"
 
-# Needed to find bash_addl_rcfiles
+# Needed to find additional rcfiles
 shopt -s extglob
 
 # DO NOT 'readlink' here--that will point to 'bashrc' in public-config!
@@ -38,12 +38,11 @@ bash_rcbasefile="${cfg_HOME}/.bash_rcbase"
 # TODO use a strategy more like this: https://www.turnkeylinux.org/blog/generic-shell-hooks
 # Aliases, functions, and site-specific config files
 # Do not source files with multiple '.'s (such as .swp files)
-bash_addl_rcfiles="$(echo $bash_rcbasefile ${cfg_HOME}/.bash_!(rcbase|profile|history|logout|*.*))"
-for bashfile in ${bash_addl_rcfiles}; do
-    echo Sourcing $bashfile
+for bashfile in "$bash_rcbasefile" "${cfg_HOME}"/.bash_!(rcbase|profile|history|logout|*.*); do
+    echo "Sourcing '$bashfile'"
     # We could skip `.swp` files, but in theory these are technically all
     # symlinks anyway, so the `.swp` files will be elsewhere.
-    . ${bashfile}
+    . "${bashfile}"
 done
 
 # This is here, rather than in .bash_aliases, due to how it determines the
@@ -68,3 +67,5 @@ fi
 
 # Print a message
 say green "<- bashrc"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

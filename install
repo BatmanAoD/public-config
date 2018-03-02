@@ -34,8 +34,8 @@ WIN_HOME_INSTRUCTIONS
             # Currently, we *exit* with *error*...because this is a script bug.
             exit 1
         fi
-        target="$(cygpath -w ${1})"
-        new_link="$(cygpath -w ${2})"
+        target="$(cygpath -w "${1}")"
+        new_link="$(cygpath -w "${2}")"
         echo "Making symlink: ${new_link} -> ${target}"
         # Windows needs to be told if it's a directory or not. Infer that.
         # Cygpath should already have performed the directory-separator conversion.
@@ -61,11 +61,11 @@ link_s () {
         # Currently, we *exit* with *error*...because this is a script bug.
         exit 1
     fi
-    if [[ -h ${new_link} ]]; then rm ${new_link}; fi
-    if [[ -e ${new_link} ]]; then
+    if [[ -h "${new_link}" ]]; then rm "${new_link}"; fi
+    if [[ -e "${new_link}" ]]; then
         echo "ERROR: Can't overwrite non-symlink file: ${new_link}" >&2
     else
-        universal_symlink ${1} ${new_link}
+        universal_symlink "${1}" "${new_link}"
     fi
 }
 
@@ -80,9 +80,9 @@ shopt -s nullglob
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/${prog}* ~/private-config/${prog}*; do
-        if [[ -d ${file} ]]; then continue; fi
-        rcname=".$(basename ${file})"
-        link_s ${file} ${rcname}
+        if [[ -d "${file}" ]]; then continue; fi
+        rcname=".$(basename "${file}")"
+        link_s "${file}" ${rcname}
     done
 done
 
@@ -108,7 +108,7 @@ for prog in ~/public-config/bin/*; do
     basename=$(basename ${prog})
     if [[ ! -e ${basename} ]]; then
         echo Installing ~/bin/${basename}
-        link_s ${prog}
+        link_s "${prog}"
     else
         echo ${basename} already installed
     fi
@@ -141,7 +141,7 @@ if ! ${WINDOWS}; then
         # Install Xmodmap
         if [[ ! -e ~/.Xmodmap ]]; then
             echo "Installing Xmodmap"
-            link_s ${linux_specific}/Xmodmap ~/.Xmodmap
+            link_s "${linux_specific}"/Xmodmap ~/.Xmodmap
         else
             echo "Xmodmap already exists; not overwriting"
         fi
@@ -209,10 +209,10 @@ vim_plugin_mgr=~/.vim/${vim_plug}
 # For some reason `hash gvim` can't find gvim on Windows in Git Bash, so
 # try `where` as well.
 if hash gvim 2>/dev/null || where gvim &>/dev/null; then
-    if [[ ! -a ${vim_plugin_mgr} ]]; then
+    if [[ ! -a "${vim_plugin_mgr}" ]]; then
         if hash curl 2>/dev/null; then
             echo Installing Vundle plugins
-            curl -fLo ${vim_plugin_mgr} --create-dirs \
+            curl -fLo "${vim_plugin_mgr}" --create-dirs \
                 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
             gvim "+PlugInstall"
         else
@@ -350,7 +350,7 @@ else
     fi
 fi
 
-cd ${HOME}/bin
+cd ~/bin
 
 # Install sshrc
 if ! hash sshrc 2>/dev/null; then
@@ -390,9 +390,9 @@ if ! $havecmake; then
 fi
 
 if ! $skipstderred; then
-    if [[ ! -d ${stderred_path} ]]; then
+    if [[ ! -d "${stderred_path}" ]]; then
         echo Installing stderred
-        cd $(dirname ${stderred_path})
+        cd $(dirname "${stderred_path}")
         git clone  https://github.com/sickill/stderred.git
         cd stderred
         make

@@ -28,7 +28,7 @@ endif
 let $VIMFILES=split(&rtp,",")[0]
 
 " Setup plugin manager and load plugins
-let pluginfile = expand("~/.vimrcplugins")
+let pluginfile = fnameescape(expand("~/.vimrcplugins"))
 if !filereadable(pluginfile)
     let pluginfile = expand("~/_vimrcplugins")
 endif
@@ -664,9 +664,12 @@ augroup END
 
 " using logic from http://stackoverflow.com/a/9528322/1858225
 if exists("+undofile")
+    " Doesn't work if `$VIMFILES` has a space.
+    " This might help...?
+    " https://stackoverflow.com/a/4294176/1858225
     set undodir=$VIMFILES/undodir/
     if isdirectory(expand(&undodir)) == 0
-        :silent call mkdir(expand(&undodir), '-p')
+        :silent call mkdir(expand(&undodir)), '-p')
     endif
     set undofile
     set undolevels=90000 "maximum number of changes that can be undone
