@@ -8,22 +8,24 @@
 # those scripts
 
 if [[ -d "$WINDIR" ]]; then
+    # Windows linking command based on http://stackoverflow.com/a/25394801/1858225
+    # Ideally, in standard bash setup on Windows, this would be an alias for
+    # `ln` that uses the `/h` flag if `-s` is not given as an argument.
     win_symlink() {
         if [[ $# -ne 2 ]]; then
             echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
             # Currently, we *exit* with *error*...because this is a script bug.
             exit 1
         fi
-        target="$(cygpath -d ${1})"
-        # TODO need `cygpath`?
-        new_link="${2}"
+        target="$(cygpath -w "${1}")"
+        new_link="$(cygpath -w "${2}")"
         echo "Making symlink: ${new_link} -> ${target}"
         # Windows needs to be told if it's a directory or not. Infer that.
-        # Also: note that we convert `/` to `\`. In this case it's necessary.
+        # Cygpath should already have performed the directory-separator conversion.
         if [[ -d "$target" ]]; then
-            cmd <<< "mklink /D \"$new_link\" \"${target//\//\\}\"" > /dev/null
+            cmd <<< "mklink /D \"$new_link\" \"$target\"" > /dev/null
         else
-            cmd <<< "mklink \"$new_link\" \"${target//\//\\}\"" > /dev/null
+            cmd <<< "mklink \"$new_link\" \"$target\"" > /dev/null
         fi
     }
 fi

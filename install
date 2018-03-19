@@ -4,47 +4,21 @@
 # `.bashrc`, if it exists.
 # This may not be desirable.
 
-# XXX TODO: create a minimal 'bash_bootstrap' file that we can *source* both
-# hear and in `.bashrc` for setup that we use here (e.g. the Windows symlink
-# function)
-# (Though MAKE SURE that it will be sourced BEFORE ~/.bash_rcbase. Note that
-# bash glob output is "alphabetically sorted", though it may be good to use
-# `sort` just for sanity's sake.)
-
 set -u
 set -e
+
+. ~/public-config/bash_bootstrap
 
 echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
 if [[ -v WINDIR ]]; then
     WINDOWS=true
-    # TODO: don't give this warning unless the `public_config` directory's
+    # TODO: don't give this warning unless the `public-config` directory's
     # parent is somewhere other than `$HOME`.
     cat <<WIN_HOME_INSTRUCTIONS
 To set the HOME variable to your user-profile directory, manually create
 it and assign it to '%USERPROFILE%'.
 WIN_HOME_INSTRUCTIONS
     read dummy
-    # Windows linking command based on http://stackoverflow.com/a/25394801/1858225
-    # TODO this seems like it could be useful in the standard bash setup as well.
-    # Ideally, it would be an alias for `ln` that uses the `/h` flag if `-s` is
-    # not given as an argument.
-    win_symlink() {
-        if [[ $# -ne 2 ]]; then
-            echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
-            # Currently, we *exit* with *error*...because this is a script bug.
-            exit 1
-        fi
-        target="$(cygpath -w "${1}")"
-        new_link="$(cygpath -w "${2}")"
-        echo "Making symlink: ${new_link} -> ${target}"
-        # Windows needs to be told if it's a directory or not. Infer that.
-        # Cygpath should already have performed the directory-separator conversion.
-        if [[ -d "$target" ]]; then
-            cmd <<< "mklink /D \"$new_link\" \"$target\"" > /dev/null
-        else
-            cmd <<< "mklink \"$new_link\" \"$target\"" > /dev/null
-        fi
-    }
     alias universal_symlink=win_symlink
 else
     WINDOWS=false
@@ -96,7 +70,7 @@ if ${WINDOWS}; then
     NVIM_PATH=~/AppData/Local/nvim
 fi
 
-link_s ~/.vimrc "${NVIM_PATH}/init.vim"
+link_s "~/.vimrc" "${NVIM_PATH}/init.vim"
 
 # Use .gitignore globally
 # XXX TODO what if git isn't installed yet?
@@ -105,12 +79,12 @@ git config --global core.excludesfile ~/.gitignore
 mkdir -p ~/bin
 cd ~/bin
 for prog in ~/public-config/bin/*; do
-    basename=$(basename ${prog})
-    if [[ ! -e ${basename} ]]; then
-        echo Installing ~/bin/${basename}
+    basename="$(basename "${prog}")"
+    if [[ ! -e "${basename}" ]]; then
+        echo "Installing '~/bin/${basename}'"
         link_s "${prog}"
     else
-        echo ${basename} already installed
+        echo "'${basename}' already installed"
     fi
 done
 
@@ -179,7 +153,7 @@ fi
 # Dd not work in Windows; not sure why.
 # `-v` is new in Bash 4.2; see https://stackoverflow.com/a/17538964/1858225
 # if [[ ! -v 1 || $1 != "--tools" ]]; then
-if [[ $1 != "--tools" ]]; then
+if [[ $# -eq 0 || $1 != "--tools" ]]; then
     exit
 fi
 
@@ -336,14 +310,16 @@ fi
 if ! hash cargo 2>/dev/null; then
     echo "Can't install rust tools; cargo not installed!" >&2
 else
+    rustup default stable
     if ! hash rg 2>/dev/null; then
         echo Installing ripgrep
         cargo install ripgrep
     fi
-    if ! hash racer 2>/dev/null; then
-        echo Installing racer
-        cargo install racer
-    fi
+    # Racer is being superceded by RLS
+#     if ! hash racer 2>/dev/null; then
+#         echo Installing racer
+#         cargo install racer
+#     fi
     if ! hash loc 2>/dev/null; then
         echo Installing loc
         cargo install loc
