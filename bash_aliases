@@ -86,7 +86,7 @@ alias find='find -H'
 
 alias psearch=pathsearch
 
-alias cd=go
+alias cd=godir
 #alias cd='pushd $PWD &> /dev/null; cd'
 
 alias lstmp="ls $TMP"
@@ -146,7 +146,7 @@ alias gmake="gmake -s"
 alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U'
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
-alias home="go ~"
+alias home="godir ~"
 # 'sleep' is to prevent error from being printed after the cmd prompt, which
 # makes it look like the command is hanging.
 alias back="popd > /dev/null 2> >(toerr) && lsd || sleep 0.2"
@@ -189,7 +189,7 @@ alias edi3='edit ~/.i3/config'
 
 # Other config-related aliases
 if [[ -n "$CONFIG_DIR" ]]; then
-    alias gocfg="go $CONFIG_DIR/.git"
+    alias gocfg="godir $CONFIG_DIR/.git"
     alias pullcfg="(cd $CONFIG_DIR; git pull)"
     alias pushcfg="(cd $CONFIG_DIR; git commit -a; git push)"
 fi

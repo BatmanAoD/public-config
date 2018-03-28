@@ -3,17 +3,17 @@
 
 # generic Bash functions
 
-go() { 
+godir() { 
     if [ "$1" != "" ]
     then
         pushd "$1" &> /dev/null
         if [[ $? -ne 0 ]]; then
-            echo "go: error! Possibly invalid directory." >&2
+            echo "godir: error! Possibly invalid directory." >&2
             return 1
         fi
     lsd
     else
-        echo "go: no path given!" >&2
+        echo "godir: no path given!" >&2
     fi
 }
 
@@ -21,7 +21,7 @@ up() {
     DOWN_DIR=$PWD
     local numdirs
     if [[ -z $1 ]]; then
-        go ../
+        godir ../
     else
         if [[ "$1" -eq "$1" ]] 2>/dev/null; then
             numdirs=$1
@@ -32,7 +32,7 @@ up() {
         for (( i=1; i<=$numdirs; i++)); do
             pdir="../$pdir"
         done
-        go $pdir
+        godir $pdir
     fi
     UP_DIR=$PWD
 }

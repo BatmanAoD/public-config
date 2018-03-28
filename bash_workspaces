@@ -41,7 +41,7 @@ alias goGuiDummy="cd $WORKSPACEDIR/DummyAucGui/src"
 #             echo "No aliases for ${fullpath} will be generated." >&2
 #         else
 #             echo " - ${projname} at ${fullpath}"
-#             alias go${projname}="go ${fullpath}"
+#             alias go${projname}="godir ${fullpath}"
 #         fi
 #     done
 # }
