@@ -7,7 +7,7 @@
 # TODO add stuff here from `install` and possibly `.bashrc/.bash_rcbase`, then use it in
 # those scripts
 
-if [[ -d "$WINDIR" ]]; then
+if [[ -v WINDIR ]]; then
     # Windows linking command based on http://stackoverflow.com/a/25394801/1858225
     # Ideally, in standard bash setup on Windows, this would be an alias for
     # `ln` that uses the `/h` flag if `-s` is not given as an argument.
