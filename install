@@ -70,7 +70,9 @@ if ${WINDOWS}; then
     NVIM_PATH=~/AppData/Local/nvim
 fi
 
-link_s "~/.vimrc" "${NVIM_PATH}/init.vim"
+if [[ -d "${NVIM_PATH}" ]]; then
+    link_s "~/.vimrc" "${NVIM_PATH}/init.vim"
+fi
 
 # Use .gitignore globally
 # XXX TODO what if git isn't installed yet?
@@ -185,7 +187,7 @@ vim_plugin_mgr=~/.vim/${vim_plug}
 if hash gvim 2>/dev/null || where gvim &>/dev/null; then
     if [[ ! -a "${vim_plugin_mgr}" ]]; then
         if hash curl 2>/dev/null; then
-            echo Installing Vundle plugins
+            echo Installing Vim plugins
             curl -fLo "${vim_plugin_mgr}" --create-dirs \
                 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
             gvim "+PlugInstall"
