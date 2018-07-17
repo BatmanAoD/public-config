@@ -669,7 +669,7 @@ if exists("+undofile")
     " https://stackoverflow.com/a/4294176/1858225
     set undodir=$VIMFILES/undodir/
     if isdirectory(expand(&undodir)) == 0
-        :silent call mkdir(expand(&undodir)), '-p')
+        :silent call mkdir(expand(&undodir)), '-p'
     endif
     set undofile
     set undolevels=90000 "maximum number of changes that can be undone

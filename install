@@ -198,6 +198,9 @@ else
     echo "WARNING: gvim not installed"
 fi
 
+# TODO Somehow automatically perform no-extension file-association?
+# https://superuser.com/a/13947/199803
+
 # TODO ultimately this should *NOT* depend on Vim.
 if [[ -e "$vim_plugin_mgr" && ! -e "${NVIM_PATH}/${vim_plug}" ]]; then
     mkdir -p "${NVIM_PATH}/$(dirname "${vim_plug}")"
@@ -294,13 +297,22 @@ mkdir -p ~/Installers
 
 # Install rust
 if ! hash rustc 2>/dev/null; then
-    if ! ${WINDOWS}; then
-        echo Installing Rust
-        wget -P ~/Installers https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
-        chmod a+x ~/Installers/rustup-init
-        ~/Installers/rustup-init
+    if hash sh 2>/dev/null; then
+        if hash wget 2>/dev/null; then
+            echo Installing Rust
+            wget -P ~/Installers https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init
+            chmod a+x ~/Installers/rustup-init
+            ~/Installers/rustup-init
+        elif hash curl 2>/dev/null; then
+            echo Installing Rust
+            curl https://sh.rustup.rs -sSf | sh
+        else
+            echo "Neither 'curl' nor 'wget' is installed; not installing Rust" >&2
+        fi
+    else
+        echo "*NIX shell not available; not installing Rust" >&2
+        # TODO: on Windows, download and run the `rustup` executable
     fi
-    # TODO: on Windows, automatically download and run rustup for windows
 else
     echo Checking for Rust updates
     rustup update
