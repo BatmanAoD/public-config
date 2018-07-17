@@ -27,11 +27,18 @@ endif
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
 
+function! EscapeFilename(fname)
+    let fname = fnameescape(expand(a:fname))
+    if !filereadable(fname)
+        " On windows, `fnameescape` doesn't work.
+        let fname = expand(a:fname)
+    endif
+    " Either we successfully escaped the name, or we didn't.
+    return fname
+endfunction
+
 " Setup plugin manager and load plugins
-let pluginfile = fnameescape(expand("~/.vimrcplugins"))
-if !filereadable(pluginfile)
-    let pluginfile = expand("~/_vimrcplugins")
-endif
+let pluginfile = EscapeFilename("~/.vimrcplugins")
 if filereadable(pluginfile)
     " Should plugins only be loaded once?
     " if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
