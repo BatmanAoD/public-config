@@ -24,3 +24,5 @@ PS1="%{$fg[yellow]%}%m:%~> %{$reset_color%}"
 # TODO ensure cross-compatibility and rename these
 . ~/.bash_functions
 . ~/.bash_aliases
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
