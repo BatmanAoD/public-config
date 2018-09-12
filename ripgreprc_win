@@ -6,3 +6,5 @@
 # If we're using Bash on Windows, always print Unix-style path separators in ripgrep.
 --path-separator
 /
+
+--crlf
