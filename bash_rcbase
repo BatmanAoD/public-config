@@ -1,9 +1,10 @@
 #!/bin/bash
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
-known_ids="kjstrand BatmanAoD"
+known_ids="kjstrand BatmanAoD batmanaod"
 id_is_known=false
-primary_local_account=''
+primary_local_account=
+primary_HOME=
 
 for usrname in $known_ids; do
     if [[ $usrname == $(whoami) ]]; then
@@ -17,19 +18,23 @@ for usrname in $known_ids; do
     fi
 done
 
-# Ensure particular dirs are on $PATH if they exist.
-# Logic to ensure path is only added *once* is taken from
-# http://superuser.com/a/39995/199803
-# For more PATH-editing convenience functions:
-# http://superuser.com/a/1001014/199803
-ensure_on_path () {
-    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
-        export PATH="${PATH:+"$PATH:"}$1"
-    fi
-}
+# TODO what about when you're *not* using a 'primary' account??
 
-ensure_on_path "${primary_HOME}/bin"
-ensure_on_path "${primary_HOME}/.cargo/bin"
+if [[ -n "$primary_HOME" ]]; then
+    # Ensure particular dirs are on $PATH if they exist.
+    # Logic to ensure path is only added *once* is taken from
+    # http://superuser.com/a/39995/199803
+    # For more PATH-editing convenience functions:
+    # http://superuser.com/a/1001014/199803
+    ensure_on_path () {
+        if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+            export PATH="${PATH:+"$PATH:"}$1"
+        fi
+    }
+
+    ensure_on_path "${primary_HOME}/bin"
+    ensure_on_path "${primary_HOME}/.cargo/bin"
+fi
 
 WINDOWS=false
 CYGWIN=false
@@ -56,9 +61,9 @@ elif [[ -d "$WINDIR" ]]; then
     # TODO: if using Git-Bash, fix `ln`!! (See `install` script)
 fi
 
-if [[ -n $primary_local_account ]]; then
+if [[ -n "$primary_HOME" ]]; then
     # Check that I have the rest of my "public-config" stuff.
-    CONFIG_DIR=${primary_HOME}/public-config
+    CONFIG_DIR="${primary_HOME}/public-config"
     # TODO consider looking for private-config, too
     alias cfgd_git="git --git-dir $CONFIG_DIR/.git"
     if [[ ! -d $CONFIG_DIR ]]; then
@@ -87,8 +92,8 @@ fi
 
 # If '${primary_HOME}/Public' is empty, delete it. I NEVER use it, and it's mostly just
 # annoying.
-if [[ -n $CONFIG_DIR && -d ${primary_HOME}/Public && -z $(ls -A ${primary_HOME}/Public) ]]; then
-    rmdir ${primary_HOME}/Public
+if [[ -n "${primary_HOME}" && -n "$CONFIG_DIR" && -d "${primary_HOME}/Public" && -z $(ls -A "${primary_HOME}/Public") ]]; then
+    rmdir "${primary_HOME}/Public"
 fi
 
 LINUX_ANY=false
@@ -115,12 +120,13 @@ check_if_native_linux()
 check_if_native_linux
 
 if $LINUX_NATIVE; then
-    # Currently using xmodmap instead of xkbmap
-    if [[ -r ${primary_HOME}/.Xmodmap ]]; then
-        # TODO why doesn't this seem to work with `reload`?
-        xmodmap ${primary_HOME}/.Xmodmap
-    else
-        echo "WARNING: ${primary_HOME}/.Xmodmap not found!" >&2
+    if [[ -n "${primary_HOME}" ]]; then
+        # Currently using xmodmap instead of xkbmap
+        if [[ -r "${primary_HOME}/.Xmodmap" ]]; then
+            xmodmap "${primary_HOME}/.Xmodmap"
+        else
+            echo "WARNING: ${primary_HOME}/.Xmodmap not found!" >&2
+        fi
     fi
     # TODO check if CAPS is configured, and if so, manually load Xmodmap? (Bug
     # in some WMs...)
