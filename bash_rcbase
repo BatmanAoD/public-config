@@ -1,9 +1,10 @@
 #!/bin/bash
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
-known_ids="kjstrand BatmanAoD"
+known_ids="kjstrand BatmanAoD batmanaod"
 id_is_known=false
-primary_local_account=''
+primary_local_account=
+primary_HOME=
 
 for usrname in $known_ids; do
     if [[ $usrname == $(whoami) ]]; then
@@ -17,25 +18,37 @@ for usrname in $known_ids; do
     fi
 done
 
-# Ensure particular dirs are on $PATH if they exist.
-# Logic to ensure path is only added *once* is taken from
-# http://superuser.com/a/39995/199803
-# For more PATH-editing convenience functions:
-# http://superuser.com/a/1001014/199803
-ensure_on_path () {
-    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
-        export PATH="${PATH:+"$PATH:"}$1"
-    fi
-}
+# TODO what about when you're *not* using a 'primary' account??
 
-ensure_on_path "${primary_HOME}/bin"
-ensure_on_path "${primary_HOME}/.cargo/bin"
+if [[ -n "$primary_HOME" ]]; then
+    # Ensure particular dirs are on $PATH if they exist.
+    # Logic to ensure path is only added *once* is taken from
+    # http://superuser.com/a/39995/199803
+    # For more PATH-editing convenience functions:
+    # http://superuser.com/a/1001014/199803
+    ensure_on_path () {
+        if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+            export PATH="${PATH:+"$PATH:"}$1"
+        fi
+    }
+
+    ensure_on_path "${primary_HOME}/bin"
+    ensure_on_path "${primary_HOME}/.cargo/bin"
+fi
 
 WINDOWS=false
 CYGWIN=false
+WSL=false   # Linux Subsystem on Windows
+# See https://stackoverflow.com/a/43618657/1858225
+if grep -qE "(Microsoft|WSL)" /proc/version &>/dev/null; then
+    # TODO set WINDOWS=true?
+    WSL=true
+    # TODO check if X11 server is running somehow? (xset? not installed by
+    # default...)
+    export DISPLAY=:0.0
 # Alternate:
 # if grep -q '_NT-' <(uname -s); then
-if [[ -d "$WINDIR" ]]; then
+elif [[ -d "$WINDIR" ]]; then
     WINDOWS=true
     # Cygwin-specific oddities
     if grep -q Cygwin <(uname -o); then
@@ -48,9 +61,9 @@ if [[ -d "$WINDIR" ]]; then
     # TODO: if using Git-Bash, fix `ln`!! (See `install` script)
 fi
 
-if [[ -n $primary_local_account ]]; then
+if [[ -n "$primary_HOME" ]]; then
     # Check that I have the rest of my "public-config" stuff.
-    CONFIG_DIR=${primary_HOME}/public-config
+    CONFIG_DIR="${primary_HOME}/public-config"
     # TODO consider looking for private-config, too
     alias cfgd_git="git --git-dir $CONFIG_DIR/.git"
     if [[ ! -d $CONFIG_DIR ]]; then
@@ -79,8 +92,8 @@ fi
 
 # If '${primary_HOME}/Public' is empty, delete it. I NEVER use it, and it's mostly just
 # annoying.
-if [[ -n $CONFIG_DIR && -d ${primary_HOME}/Public && -z $(ls -A ${primary_HOME}/Public) ]]; then
-    rmdir ${primary_HOME}/Public
+if [[ -n "${primary_HOME}" && -n "$CONFIG_DIR" && -d "${primary_HOME}/Public" && -z $(ls -A "${primary_HOME}/Public") ]]; then
+    rmdir "${primary_HOME}/Public"
 fi
 
 LINUX_ANY=false
@@ -97,6 +110,8 @@ check_if_native_linux()
     grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
     # Is this a VM?
     grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
+    # Is it the Linux Subsystem on Windows?
+    $WSL && LINUX_NATIVE=false && return;
     # Is Xmodmap usage explicitly disabled? (True for TightVNC connection)
     # TODO any way to check for VNC or RDP protocol automatically?
     test -n "$XKL_XMODMAP_DISABLE" && LINUX_NATIVE=false && return;
@@ -105,12 +120,13 @@ check_if_native_linux()
 check_if_native_linux
 
 if $LINUX_NATIVE; then
-    # Currently using xmodmap instead of xkbmap
-    if [[ -r ${primary_HOME}/.Xmodmap ]]; then
-        # TODO why doesn't this seem to work with `reload`?
-        xmodmap ${primary_HOME}/.Xmodmap
-    else
-        echo "WARNING: ${primary_HOME}/.Xmodmap not found!" >&2
+    if [[ -n "${primary_HOME}" ]]; then
+        # Currently using xmodmap instead of xkbmap
+        if [[ -r "${primary_HOME}/.Xmodmap" ]]; then
+            xmodmap "${primary_HOME}/.Xmodmap"
+        else
+            echo "WARNING: ${primary_HOME}/.Xmodmap not found!" >&2
+        fi
     fi
     # TODO check if CAPS is configured, and if so, manually load Xmodmap? (Bug
     # in some WMs...)
