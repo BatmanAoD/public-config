@@ -122,9 +122,7 @@ if ! ${WINDOWS}; then
         # Are we SSH-ing in?
         grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
         # Is this a VM?
-        set +e  # XXX TEMP - WSL exits here with `set -e`. Why?
         grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
-        set -e
         # TODO check for RDP/VNC...but...why would we run 'install' that way?
     }
     check_if_native_linux
