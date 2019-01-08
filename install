@@ -156,6 +156,7 @@ fi
 # `-v` is new in Bash 4.2; see https://stackoverflow.com/a/17538964/1858225
 # if [[ ! -v 1 || $1 != "--tools" ]]; then
 if [[ $# -eq 0 || $1 != "--tools" ]]; then
+    echo "Exiting; arg is $1"
     exit
 fi
 
