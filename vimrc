@@ -116,14 +116,6 @@ else
     set clipboard^=unnamedplus
 endif
 
-function! GenericFile()
-    " is this what I want?
-    setlocal ft=sh
-    " TODO if name is 'README', set ft=markdown
-    " Include - as a 'word' character
-    set iskeyword+=-
-endfunction
-
 function! SetIndentWidth(spaces)
     let &tabstop=a:spaces
     let &shiftwidth=a:spaces
@@ -132,19 +124,18 @@ endfunction
 
 " My Cpp settings
 function! CppFile()
-    " I don't use tabs, but other people do.
-    call SetIndentWidth(2)
+    call SetIndentWidth(4)
     set tw=80
     set fo=tcrqnlj
 endfunction
 
-" why doesn't this work? Is there something similar that might?
-" autocmd FileType "" | :call GenericFile() | endif
+" My markdown settings
+function! MarkdownFile()
+    call SetIndentWidth(2)
+    set syntax=markdown
+endfunction
+
 augroup filetypes
-    " Use `sh` syntax highlighting for unknown filetypes
-    autocmd FileType * if &filetype == ""
-                        \| :call GenericFile()
-                    \| endif
     " The number of indentation columns depends on the language, not on
     " tab usage
     au FileType * if &filetype == "cpp"
@@ -152,9 +143,9 @@ augroup filetypes
                \| else
                    \| :call SetIndentWidth(4)
                \| endif
-    " Use markdown syntax for .txt files
-    au FileType * if &filetype == "text"
-                   \| :set syntax=markdown
+    " Use markdown syntax for .txt files, or files with 'README' in the names
+    au FileType * if &filetype == "text" || &filetype == "markdown" || expand('%:t:r') =~ 'README'
+                   \| :call MarkdownFile()
                 \| endif
 augroup END
 
