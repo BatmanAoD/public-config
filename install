@@ -1,11 +1,12 @@
 #!/bin/bash
 
 set -e
+set -u
 # We use aliases in this script.
 shopt -s expand_aliases
 
 install_tools=false
-while [[ -n "$1" ]]; do
+while [[ ! -z "${1+x}" ]]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
     case $PARAM in
         -t | --tools)
@@ -18,9 +19,6 @@ while [[ -n "$1" ]]; do
     esac
     shift
 done
-
-# Simple arg-parsing above relies on using unset '$1'
-set -u
 
 . ~/public-config/bash_bootstrap
 
