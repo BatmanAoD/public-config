@@ -1,14 +1,31 @@
-#!/bin/bash -i
-# We run in 'interactive' mode so that we can use settings from .bashrc
-# TODO: this causes the weird result that the script actually sources
-# `.bashrc`, if it exists.
-# This may not be desirable.
+#!/bin/bash
 
-set -u
 set -e
+# We use aliases in this script.
+shopt -s expand_aliases
+
+install_tools=false
+while [[ -n "$1" ]]; do
+    PARAM=`echo $1 | awk -F= '{print $1}'`
+    case $PARAM in
+        -t | --tools)
+            install_tools=true
+            ;;
+        *)
+            echo "Usage: $0 [-t|--tools]"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# Simple arg-parsing above relies on using unset '$1'
+set -u
 
 . ~/public-config/bash_bootstrap
 
+# TODO this confirmation should be persistent, and probably should be tied to
+# my list of "known personas" that's currently in `.bash_rcbase`.
 echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
 if [[ -v WINDIR ]]; then
     WINDOWS=true
@@ -43,16 +60,13 @@ link_s () {
     fi
 }
 
-# XXX TODO
-# Check for `private-config`; if it doesn't exist, prompt to see if there's one
-# to clone from Enterprise GitHub (or similar)?
-
 cd ~
 
 shopt -s nullglob
 
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep; do
     echo Installing rc files for ${prog}
+    # TODO Not everything here is an rc file; make an RC-file directory!
     for file in ~/public-config/${prog}* ~/private-config/${prog}*; do
         if [[ -d "${file}" ]]; then continue; fi
         rcname=".$(basename "${file}")"
@@ -74,8 +88,11 @@ if [[ -d "${NVIM_PATH}" ]]; then
     link_s "~/.vimrc" "${NVIM_PATH}/init.vim"
 fi
 
+echo "Installing common options for git"
+# I assume `git` is installed, because that's the easiest way to get a copy of
+# this config directory.
+git config --global include.path ~/public-config/includefile_gitconfig
 # Use .gitignore globally
-# XXX TODO what if git isn't installed yet?
 git config --global core.excludesfile ~/.gitignore
 
 mkdir -p ~/bin
@@ -90,7 +107,7 @@ for prog in ~/public-config/bin/*; do
     fi
 done
 
-set -x	# XXX TEMP
+set -x  # XXX TEMP
 
 if ! ${WINDOWS}; then
     # Taken from bash-RC; move to 'bootstrap' script!
@@ -107,9 +124,9 @@ if ! ${WINDOWS}; then
         # Are we SSH-ing in?
         grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
         # Is this a VM?
-	set +e	# XXX TEMP - WSL exits here with `set -e`. Why?
+        set +e  # XXX TEMP - WSL exits here with `set -e`. Why?
         grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
-	set -e
+        set -e
         # TODO check for RDP/VNC...but...why would we run 'install' that way?
     }
     check_if_native_linux
@@ -155,15 +172,10 @@ fi
 ##############################################################################
 ##############################################################################
 
-# Original condition: checks if `$1` is even set.
-# Dd not work in Windows; not sure why.
-# `-v` is new in Bash 4.2; see https://stackoverflow.com/a/17538964/1858225
-# if [[ ! -v 1 || $1 != "--tools" ]]; then
-if [[ $# -eq 0 || $1 != "--tools" ]]; then
-    echo "Exiting; arg is $1"
+if ! $install_tools; then
     exit
 fi
-set +x	# XXX TEMP
+set +x  # XXX TEMP
 
 echo "bashrc is: " ~/.bashrc
 
