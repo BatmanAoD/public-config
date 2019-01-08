@@ -107,8 +107,6 @@ for prog in ~/public-config/bin/*; do
     fi
 done
 
-set -x  # XXX TEMP
-
 if ! ${WINDOWS}; then
     # Taken from bash-RC; move to 'bootstrap' script!
     LINUX_ANY=false
@@ -175,7 +173,6 @@ fi
 if ! $install_tools; then
     exit
 fi
-set +x  # XXX TEMP
 
 echo "bashrc is: " ~/.bashrc
 
