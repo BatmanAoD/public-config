@@ -43,5 +43,8 @@ if [[ -n $CONFIG_DIR ]]; then
     }
 
     mkdir -p "$notes_dir"
-    print_notes
+    if [[ ! -v notes_printed_on_startup ]]; then
+        print_notes
+        notes_printed_on_startup=true
+    fi
 fi

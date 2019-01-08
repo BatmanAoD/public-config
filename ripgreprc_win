@@ -6,3 +6,14 @@
 # If we're using Bash on Windows, always print Unix-style path separators in ripgrep.
 --path-separator
 /
+
+# Wooooo!
+# TODO: Should we do something 'smart' with the filetype, since files ending in
+# lf only *can* exist on Windows?
+--crlf
+
+--type-add
+xaml:*.xaml
+
+--type-add
+gui:*.xaml,*.qml,*.uiml,*.xul,*.svg,*.fxml
