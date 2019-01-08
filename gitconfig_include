@@ -1,0 +1,52 @@
+# This is *not* a complete git-config, but rather a set of "common" options that are *included* by my git-config.
+
+# Dealing with firewall:
+[url "https://"]
+    insteadOf = git://
+
+# NEVER accidentally push feature branch to origin/master!
+[push]
+    default = current
+
+# Make some commands colored
+[color]
+    ui = true
+
+[alias]
+# Search aliases (from
+# http://stackoverflow.com/documentation/git/337/aliases/1189/list-search-existing-aliases#t=201609141537078558661)
+    aliases = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
+
+# TODO: consider using these: http://haacked.com/archive/2014/07/28/github-flow-aliases/
+# Abort command if wrong number of args (expected # is first arg)
+    nargs = "!f () { \
+        num=$1 ; shift; test $# -eq $num ; \
+        res=$? ; \
+        if [ $res -ne 0 ]; then \
+            echo Wrong number of args! >&2; \
+        fi ;\
+        return $res ; } ; f"
+
+# Current branch name
+    br = "rev-parse --abbrev-ref HEAD"
+
+# Git dir (.git)
+    dir = "rev-parse --git-dir"
+
+# Compare: list files changed from origin
+    cmp = "diff --name-status origin/master"
+
+# Logging
+    lg0 = "log --color --graph --pretty=format:'%Cred%h%Creset \
+        -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' \
+        --abbrev-commit"
+    lg1 = "log --graph --abbrev-commit --decorate --date=relative \
+        --format=format:'%C(bold blue)%h%C(reset) - \
+        %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- \
+        %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+    lg2 = "log --graph --abbrev-commit --decorate \
+        --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) \
+        %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' \
+        %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
+    # Must use ! for meta-alias
+    lg = "!git lg1"
