@@ -221,7 +221,7 @@ augroup insertleave
 augroup END
 " expand tabs even when chars are shown explicitly; also show trailing spaces
 " and end-of-line with 'set list'
-set lcs=tab:»·,trail:¬
+set listchars=tab:Â»Â·,trail:Â¬
 set backspace=indent,eol,start
 " This avoids most (...all?) of the 'press ENTER to continue' messages from
 " simple operations like undo/redo.
@@ -256,8 +256,6 @@ function! Tabcolors()
         let g:jellybeans_overrides.SpecialKey = {'guifg':'444444'}
         let g:jellybeans_overrides.NonText    = {'guifg':'7777CC'}
         colors jellybeans
-    else
-        set lcs=tab:»·,trail:¬
     endif
 endfunction
 function! Nousetabs()
