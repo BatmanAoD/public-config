@@ -268,7 +268,9 @@ if hash nvim 2>/dev/null; then
             # TODO Since this is a bug, it probably isn't reliable...
             export VISUAL=nvim-qt
         else
-            export NEWWINDOW_EDIT_CMD=nvim-qt
+            # Use workaround for https://github.com/equalsraf/neovim-qt/issues/148
+            # ...and a weird VcXsrv issue that causes new windows to be gigantic
+            export NEWWINDOW_EDIT_CMD="nvim-qt --geometry 650x800 -- --"
             # TODO check whether this is supported on Linux yet.
             # export VISUAL="nvim-qt -f"
             export VISUAL=nvim
