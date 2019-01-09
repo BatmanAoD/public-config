@@ -112,18 +112,16 @@ if ! ${WINDOWS}; then
         LINUX_ANY=true
     fi
 
+    set +e  # Logic below relies on command failure
     # Not Windows, not remote, not virtual
-    check_if_native_linux()
-    {
-        LINUX_NATIVE=$LINUX_ANY;
-        $LINUX_NATIVE || return;
-        # Are we SSH-ing in?
-        grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
-        # Is this a VM?
-        grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
-        # TODO check for RDP/VNC...but...why would we run 'install' that way?
-    }
-    check_if_native_linux
+    LINUX_NATIVE=$LINUX_ANY;
+    $LINUX_NATIVE || return;
+    # Are we SSH-ing in?
+    grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
+    # Is this a VM?
+    grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
+    # TODO check for RDP/VNC...but...why would we run 'install' that way?
+    set -e
 
     # Linux-specific
     linux_specific=~/public-config/OS_specific/Linux
@@ -166,7 +164,7 @@ fi
 ##############################################################################
 ##############################################################################
 
-if ! $install_tools; then
+if ! ${install_tools}; then
     exit
 fi
 
