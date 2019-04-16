@@ -105,13 +105,6 @@ alias :q="exit"
 alias :bd="exit"
 alias QQQ="exit"
 
-# avoid accidentally messing up shell with control characters when using
-# cat on binary files
-alias cat='cat -v'
-# this function is...less useful than I'd hoped, because '-A' usually just 
-# looks silly.
-# alias cat=qcat
-
 alias lesspage="export PAGER='less -n -Q' "
 alias tmplesspage="PAGER='less -n -Q' "
 alias more="$PAGER"
@@ -239,6 +232,20 @@ if [[ $? -ne 0 ]]; then
     if [[ $? -eq 0 ]]; then
         alias ack=ack-grep
     fi
+fi
+
+type bat &>/dev/null
+if [[ $? -eq 0 ]]; then
+    alias cat='bat --theme="DarkNeon"'
+    alias mdcat="bat --theme=OneHalfLight --plain"
+else
+    # avoid accidentally messing up shell with control characters when using
+    # cat on binary files
+    alias cat='cat -v'
+    alias mdcat=\cat
+    # this function is...less useful than I'd hoped, because '-A' usually just
+    # looks silly.
+    # alias cat=qcat
 fi
 
 alias save_func=save_function
