@@ -3,18 +3,22 @@
 
 if [[ -n $CONFIG_DIR ]]; then
     notes_dir="$CONFIG_DIR/startup_notes"
-
     print_notes () {
-        # Use a subshell to ensure that `shopt` does not affect current settings.
+        # Use a subshell to ensure that `shopt` and `unalias` do not affect
+        # current settings.
         (
             shopt -s nullglob
+            unalias cat
             say yellow bold "*********************************************************"
             say yellow bold "NOTES:"
             # TODO platform- or env-specific notes?
             for f in "$notes_dir"/*; do
                 say cyan "Notes from '$(basename "$f")':"
-                # Don't use `cat` alias
-                \cat "$f"
+                # XXX TODO need `bat`...
+                # Ideally we should just use `bat`'s decorators, because
+                # they're fairly nice, except when they're difficult to read.
+                # Le sigh
+                mdcat "$f"
                 echo
             done
             say yellow bold "*********************************************************"
