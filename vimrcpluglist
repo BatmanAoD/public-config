@@ -68,7 +68,7 @@ Plug 'coot/CRDispatcher'
 Plug 'coot/EnchantedVim'
 
 " Fork of Gundo with extra features
-Plug 'dsummersl/gundo.vim'
+Plug 'simnalamburt/vim-mundo'
 
 " Asynchronous language server (LSP) client with autocompletion
 Plug 'prabirshrestha/asyncomplete.vim'
@@ -102,7 +102,7 @@ let g:jellybeans_overrides = {
 if executable('rls')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'rls',
-        \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+        \ 'cmd': {server_info->['rls']},
         \ 'whitelist': ['rust'],
         \ })
 endif
@@ -116,7 +116,7 @@ let g:lsp_log_verbose = 1
 let g:pymode_folding = 0
 " This is causing problems
 let g:pymode_rope = 0
-" prevent Pymode and Gundo from messing with the window size
+" prevent Pymode and Mundo from messing with the window size
 set winfixwidth
 set winfixheight
 set guioptions-=L
@@ -144,7 +144,7 @@ set guioptions-=L
 let g:table_mode_corner="|"
 
 " Mappings for use with plugins:
-nnoremap <silent> <F5> :GundoToggle<CR>
+nnoremap <silent> <F5> :MundoToggle<CR>
 " do a diff:
 vnoremap <Leader>ld :Linediff<CR>
 " start a diff and go to end of diff section:
