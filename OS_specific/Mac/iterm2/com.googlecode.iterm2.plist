@@ -63,9 +63,9 @@
 		<integer>1</integer>
 	</dict>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>101 389 796 486 0 0 1680 1027 </string>
+	<string>1882 629 918 512 1680 45 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1991 530 872 741 1680 45 2560 1417 </string>
+	<string>3167 562 949 690 1680 45 2560 1417 </string>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91_selection</key>
@@ -254,7 +254,7 @@
 			<key>Columns</key>
 			<integer>80</integer>
 			<key>Command</key>
-			<string>/usr/local/bin/bash -l</string>
+			<string>/usr/local/bin/bash</string>
 			<key>Cursor Color</key>
 			<dict>
 				<key>Blue Component</key>

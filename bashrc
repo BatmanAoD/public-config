@@ -39,7 +39,9 @@ bash_rcbasefile="${cfg_HOME}/.bash_rcbase"
 # TODO use a strategy more like this: https://www.turnkeylinux.org/blog/generic-shell-hooks
 # Aliases, functions, and site-specific config files
 # Do not source files with multiple '.'s (such as .swp files)
-for bashfile in "$bash_bootstrap" "$bash_rcbasefile" "${cfg_HOME}"/.bash_!(bootstrap|rcbase|profile|history|logout|*.*); do
+# TODO: there are too many special cases. Use a special filename prefix for the
+# files that should be sourced here.
+for bashfile in "$bash_bootstrapfile" "$bash_rcbasefile" "${cfg_HOME}"/.bash_!(bootstrap|rcbase|profile|history|sessions|logout|*.*); do
     echo "Sourcing '$bashfile'"
     # We could skip `.swp` files, but in theory these are technically all
     # symlinks anyway, so the `.swp` files will be elsewhere.
