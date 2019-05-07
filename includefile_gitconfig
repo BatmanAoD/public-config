@@ -1,8 +1,10 @@
 # This is *not* a complete git-config, but rather a set of "common" options that are *included* by my git-config.
 
-# Dealing with firewall:
-[url "https://"]
-    insteadOf = git://
+[url "git@github.com:"]
+	insteadOf = "https://github.com/"
+
+[credential]
+	helper = ""
 
 # NEVER accidentally push feature branch to origin/master!
 [push]

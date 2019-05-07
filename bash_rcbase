@@ -36,6 +36,7 @@ if [[ -n "$primary_HOME" ]]; then
     ensure_on_path "${primary_HOME}/.cargo/bin"
 fi
 
+# TODO move all platform-checking logic to `bootstrap`
 WINDOWS=false
 CYGWIN=false
 WSL=false   # Linux Subsystem on Windows
@@ -96,29 +97,7 @@ if [[ -n "${primary_HOME}" && -n "$CONFIG_DIR" && -d "${primary_HOME}/Public" &&
     rmdir "${primary_HOME}/Public"
 fi
 
-LINUX_ANY=false
-if [[ Linux == "$(uname -s)" ]]; then
-    LINUX_ANY=true
-fi
-
-# Not Windows, not remote, not virtual
-check_if_native_linux()
-{
-    LINUX_NATIVE=$LINUX_ANY;
-    $LINUX_NATIVE || return;
-    # Are we SSH-ing in?
-    grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
-    # Is this a VM?
-    grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
-    # Is it the Linux Subsystem on Windows?
-    $WSL && LINUX_NATIVE=false && return;
-    # Is Xmodmap usage explicitly disabled? (True for TightVNC connection)
-    # TODO any way to check for VNC or RDP protocol automatically?
-    test -n "$XKL_XMODMAP_DISABLE" && LINUX_NATIVE=false && return;
-}
-
-check_if_native_linux
-
+# LINUX_NATIVE is set in the `bootstrap` script
 if $LINUX_NATIVE; then
     if [[ -n "${primary_HOME}" ]]; then
         # Currently using xmodmap instead of xkbmap

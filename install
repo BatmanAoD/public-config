@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# Assumes not `set -e`
+. ~/public-config/bash_bootstrap
 
 set -e
 set -u
@@ -19,8 +22,6 @@ while [[ ! -z "${1+x}" ]]; do
     esac
     shift
 done
-
-. ~/public-config/bash_bootstrap
 
 # TODO this confirmation should be persistent, and probably should be tied to
 # my list of "known personas" that's currently in `.bash_rcbase`.
@@ -105,24 +106,7 @@ for prog in ~/public-config/bin/*; do
     fi
 done
 
-if ! ${WINDOWS}; then
-    # Taken from bash-RC; move to 'bootstrap' script!
-    LINUX_ANY=false
-    if [[ Linux == "$(uname -s)" ]]; then
-        LINUX_ANY=true
-    fi
-
-    set +e  # Logic below relies on command failure
-    # Not Windows, not remote, not virtual
-    LINUX_NATIVE=$LINUX_ANY;
-    $LINUX_NATIVE || return;
-    # Are we SSH-ing in?
-    grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;
-    # Is this a VM?
-    grep -qw hypervisor /proc/cpuinfo && LINUX_NATIVE=false && return;
-    # TODO check for RDP/VNC...but...why would we run 'install' that way?
-    set -e
-
+if ${LINUX_ANY}; then
     # Linux-specific
     linux_specific=~/public-config/OS_specific/Linux
     
@@ -146,6 +130,9 @@ if ! ${WINDOWS}; then
     else
         echo i3 config already installed
     fi
+elif ${MAC_OSX}; then
+    # Currently nothing to do.
+    :
 fi
 
 ##############################################################################
