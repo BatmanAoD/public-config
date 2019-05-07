@@ -6,6 +6,20 @@ id_is_known=false
 primary_local_account=
 primary_HOME=
 
+# Ensure particular dirs are on $PATH if they exist.
+# Logic to ensure path is only added *once* is taken from
+# http://superuser.com/a/39995/199803
+# For more PATH-editing convenience functions:
+# http://superuser.com/a/1001014/199803
+ensure_on_path () {
+    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+}
+
+# Not sure why /usr/local/bin/ isn't included by default on OS X.
+ensure_on_path "/usr/local/bin"
+
 for usrname in $known_ids; do
     if [[ $usrname == $(whoami) ]]; then
         id_is_known=true
@@ -18,23 +32,13 @@ for usrname in $known_ids; do
     fi
 done
 
-# TODO what about when you're *not* using a 'primary' account??
-
 if [[ -n "$primary_HOME" ]]; then
-    # Ensure particular dirs are on $PATH if they exist.
-    # Logic to ensure path is only added *once* is taken from
-    # http://superuser.com/a/39995/199803
-    # For more PATH-editing convenience functions:
-    # http://superuser.com/a/1001014/199803
-    ensure_on_path () {
-        if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
-            export PATH="${PATH:+"$PATH:"}$1"
-        fi
-    }
-
     ensure_on_path "${primary_HOME}/bin"
     ensure_on_path "${primary_HOME}/.cargo/bin"
 fi
+# Either way, add the current-user's binaries
+ensure_on_path "${HOME}/bin"
+ensure_on_path "${HOME}/.cargo/bin"
 
 # TODO move all platform-checking logic to `bootstrap`
 WINDOWS=false
@@ -265,7 +269,8 @@ if hash nvim 2>/dev/null; then
         export VISUAL=nvim
     fi
 elif hash gvim 2>/dev/null; then
-    if [[ -n $DISPLAY ]]; then
+    # Mac may or may not be running X11.
+    if [[ -n $DISPLAY || $MAC_OSX ]]; then
         export NEWWINDOW_EDIT_CMD=gvim
         export EDITOR="gvim -f"
         export VISUAL="gvim -f"
