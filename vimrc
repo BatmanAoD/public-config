@@ -109,11 +109,11 @@ nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
 " TODO: figure out how to make this work...
 " nnoremap <silent> <2-LeftMouse> <LeftMouse>i
 set nostartofline
-if has('win32')
-    set clipboard=unnamed
-else
+if has('x11')
     " XTerm clipboard setting
     set clipboard^=unnamedplus
+else
+    set clipboard=unnamed
 endif
 
 function! SetIndentWidth(spaces)
