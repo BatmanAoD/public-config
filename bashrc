@@ -32,13 +32,14 @@ BASHRC_PATH="${BASH_SOURCE[0]}"
 
 cfg_HOME="$(dirname "${BASHRC_PATH}")"
 
-# Source the rc "base" first.
+# Source the rc "bootstrap" and "base" first.
+bash_bootstrapfile="${cfg_HOME}/.bash_bootstrap"
 bash_rcbasefile="${cfg_HOME}/.bash_rcbase"
 
 # TODO use a strategy more like this: https://www.turnkeylinux.org/blog/generic-shell-hooks
 # Aliases, functions, and site-specific config files
 # Do not source files with multiple '.'s (such as .swp files)
-for bashfile in "$bash_rcbasefile" "${cfg_HOME}"/.bash_!(rcbase|profile|history|logout|*.*); do
+for bashfile in "$bash_bootstrap" "$bash_rcbasefile" "${cfg_HOME}"/.bash_!(bootstrap|rcbase|profile|history|logout|*.*); do
     echo "Sourcing '$bashfile'"
     # We could skip `.swp` files, but in theory these are technically all
     # symlinks anyway, so the `.swp` files will be elsewhere.
