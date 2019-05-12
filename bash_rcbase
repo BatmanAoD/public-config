@@ -6,6 +6,9 @@ id_is_known=false
 primary_local_account=
 primary_HOME=
 
+# Not sure why this isn't done by default for non-login shells on OS X.
+eval $(/usr/libexec/path_helper)
+
 # Ensure particular dirs are on $PATH if they exist.
 # Logic to ensure path is only added *once* is taken from
 # http://superuser.com/a/39995/199803
@@ -16,9 +19,6 @@ ensure_on_path () {
         export PATH="${PATH:+"$PATH:"}$1"
     fi
 }
-
-# Not sure why /usr/local/bin/ isn't included by default on OS X.
-ensure_on_path "/usr/local/bin"
 
 for usrname in $known_ids; do
     if [[ $usrname == $(whoami) ]]; then
