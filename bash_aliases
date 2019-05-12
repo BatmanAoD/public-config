@@ -35,6 +35,9 @@ if $WINDOWS; then
         start "$(cygpath -w "$1")"
     }
     alias open=win-open
+elif $MAC_OSX; then
+    # Mac OS X already has an 'open' command that behaves appropriately.
+    :
 # On *NIX, xdg-open is the most generic and modern
 elif hash xdg-open 2>/dev/null; then
     alias open=xdg-open
