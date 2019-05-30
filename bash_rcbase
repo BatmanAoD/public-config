@@ -354,5 +354,13 @@ fi
 # Load completion function
 if [[ -r /etc/bash_completion ]]; then
      . /etc/bash_completion
-     set completion-ignore-case on
 fi
+if [[ -r /usr/local/etc/profile.d/bash_completion.sh ]]; then
+    . /usr/local/etc/profile.d/bash_completion.sh
+fi
+# XXX TEMP - figure out why OS X doesn't seem to have a standard way to install
+# git-completions w/ Homebrew
+if [[ -r "$HOME/.git-completion.bash" ]]; then
+    . "$HOME/.git-completion.bash"
+fi
+set completion-ignore-case on

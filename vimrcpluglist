@@ -19,7 +19,6 @@ Plug 'terryma/vim-multiple-cursors'
 " wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
 " some slow-down when initiating a search. So I'm disabling it.
 " Plug 'SearchComplete'
-Plug 'sjl/clam.vim'
 Plug 'rkitover/vimpager'
 Plug 'tpope/vim-surround'
 Plug 'AndrewRadev/linediff.vim'
@@ -40,7 +39,7 @@ Plug 'BenBergman/vsearch.vim'
 " http://www.vim.org/scripts/script.php?script_id=4168
 " TODO figure out how to use this
 " pymode
-Plug 'klen/python-mode'
+Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " Er, NVM, I hate this.
 " Plug 'Raimondi/delimitMate'
 " For attempting to debug syntax issues
@@ -75,6 +74,11 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+" Syntax highlighting for Kinesis keyboard layout files
+Plug 'ArjenL/vim-kinesis'
+autocmd BufNewFile,BufRead ?_{qwerty,dvorak}.txt,{qwerty,dvorak}.txt set filetype=advantage2
+autocmd BufNewFile,BufRead layout[123456789].txt set filetype=freestyle
 
 if has('nvim')
     " TODO figure out a viable lldb plugin for gVim, too.
@@ -158,7 +162,8 @@ let g:using_ycm = 0
 " TODO can I use `Plug` after `plug#end()`?
 " TODO apparently this is tricky to get working on Windows, unfortunately.
 " See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
-if !has('win32') && executable('clang++')
+" For now, just...don't use YCM at all.
+if 0 " !has('win32') && executable('clang++')
     Plug 'Valloric/YouCompleteMe'
     let g:ycm_confirm_extra_conf = 0
     let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'

@@ -147,6 +147,9 @@ augroup filetypes
     au FileType * if &filetype == "text" || &filetype == "markdown" || expand('%:t:r') =~ 'README'
                    \| :call MarkdownFile()
                 \| endif
+    au FileType * if &filetype == "scala"
+                    \| :set iskeyword+=?
+                \| endif
 augroup END
 
 

@@ -14,7 +14,9 @@ set convert-meta on
 # Make ESC-ESC do filename completion like in ksh.
 M-ESC: complete
 # Steal from emacs in order to make the 'o' binding below work
-"\C-o": operate-and-get-next
+# XXX not supported by sbt. For now, turn it off everywhere, but ideally, sbt
+# would just ignore `.inputrc` if it can't rse it correctly...
+# "\C-o": operate-and-get-next
 
 # Vim-specific mappings
 set keymap vi-command
@@ -25,3 +27,5 @@ set keymap vi-command
 # same problem; so use the binding from my .vimrc
 "\\r": re-read-init-file
 "foo": "ibar"
+# See https://github.com/sbt/sbt/issues/3128
+set keymap vi-insert
