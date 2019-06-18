@@ -14,6 +14,12 @@ set_title() {
     echo -en "\e]0;${newtitle}\e\\"
 }
 
+here_info() {
+    lsd
+    set_proj    # TODO: make switching projects more intentional?
+    set_title
+}
+
 godir() { 
     if [ "$1" != "" ]
     then
@@ -22,8 +28,7 @@ godir() {
             echo "godir: error! Possibly invalid directory." >&2
             return 1
         fi
-    lsd
-    set_title
+        here_info
     else
         echo "godir: no path given!" >&2
     fi

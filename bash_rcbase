@@ -124,26 +124,40 @@ if $LINUX_NATIVE; then
     fi
 fi
 
-toolsbld_path=${primary_HOME}/ToolsBld
+if $LINUX_NATIVE; then
+    sharedobj_ext=so
+elif $MAC_OSX; then
+    sharedobj_ext=dylib
+elif $WINDOWS; then
+    sharedobj_ext=dll
+else
+    echo "WARNING: Don't know shared-object extension for current platform!" >&2
+    # Not sure what the default should be. This seems sensible.
+    sharedobj_ext=so
+fi
+
+toolsbld_path="${primary_HOME}/ToolsBld"
 
 if $id_is_known; then
-    mkdir -p ${toolsbld_path}
+    mkdir -p "${toolsbld_path}"
 fi
 
-stderred_path=${toolsbld_path}/stderred
+stderred_path="${toolsbld_path}/stderred"
+stderred_so="${stderred_path}/build/libstderred.$sharedobj_ext"
 
-if [[ -d ${stderred_path}  && \
-      -r ${stderred_path}/build/libstderred.so && \
-      ":$LD_PRELOAD:" != *":${stderred_path}:"* ]]; then
-    export LD_PRELOAD="${stderred_path}/build/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"
+# stderred doesn't seem to work on OS X
+if ! $MAC_OSX; then
+    if [[ -d "${stderred_path}"  && \
+        -r "$stderred_so" && \
+        ":$LD_PRELOAD:" != *":${stderred_path}"* ]]; then
+        export LD_PRELOAD="${stderred_so}${LD_PRELOAD:+:$LD_PRELOAD}"
+    fi
+
+    if $MAC_OSX; then
+        export DYLD_INSERT_LIBRARIES="$LD_PRELOAD"
+        unset LD_PRELOAD
+    fi
 fi
-
-# Do profile if asked.  Used when invoking a shell via remsh, since
-# this isnt a bona fide login
-test "${DO_PROFILE}" != "" && . ${primary_HOME}/.bash_profile
-
-## Set up CDPATH; this is interesting, but probably dangerous
-#export CDPATH=".:${primary_HOME}"
 
 # Set information about the history files
 export histchars='!^'  # Get comments saved in history
