@@ -35,7 +35,9 @@ set_proj() {
     # TODO: Use `projname` more widely?
     git_dir="$(git rev-parse --git-dir 2>/dev/null)"
     if [[ $? -eq 0 ]]; then
-        projname="$(basename "$git_dir")"
+        projname="$(abspath "$git_dir")"
+        projname="$(dirname "$projname")"
+        projname="$(basename "$projname")"
     else
         projname="$(basename "$(tildepath "$PWD")")"
     fi
