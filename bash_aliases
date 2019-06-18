@@ -53,6 +53,11 @@ elif hash kde-open 2>/dev/null; then
 # TODO warn if an open utility can't be found?
 fi
 
+# GNU readlink is more feature-rich than BSD's.
+if hash greadlink 2>/dev/null; then
+    alias readlink=greadlink
+fi
+
 # the "-p" option for `history` is a bit like an "eval" for ! events.
 alias histeval='history -p'
 alias heval=histeval
@@ -237,10 +242,28 @@ if [[ $? -ne 0 ]]; then
     fi
 fi
 
+# "recursive search" - pick the best available grep tool
+type rg &>/dev/null
+if [[ $? -eq 0 ]]; then
+    alias rs=rg
+else
+    type ack &>/dev/null
+    if [[ $? -eq 0 ]]; then
+        alias rs=ack
+    fi
+fi
+
+# Find leftover git conflict markers
+alias findconflicts="rs '^<<<<<<|^=======$|^>>>>>>>'"
+
 type bat &>/dev/null
 if [[ $? -eq 0 ]]; then
     alias cat='bat --theme="DarkNeon"'
-    alias mdcat="bat --theme=OneHalfLight --plain"
+    # OneHalfLight and OneHalfDark are the only readable themes on Git-Bash on
+    # Windows.
+    # TODO figure out a way to pick the theme intelligently...
+    # alias mdcat="bat --theme=OneHalfLight --plain"
+    alias mdcat="bat --theme=DarkNeon --plain"
 else
     # avoid accidentally messing up shell with control characters when using
     # cat on binary files

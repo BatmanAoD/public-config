@@ -3,6 +3,17 @@
 
 # generic Bash functions
 
+set_title() {
+    if [[ -n $1 ]]; then
+        newtitle=$1
+    else
+        newtitle="$(curr_proj)"
+    fi
+    # TODO There are apparently some shells that don't set the terminal title
+    # except when `BEL` (\007) is used, so this may not always work.
+    echo -en "\e]0;${newtitle}\e\\"
+}
+
 godir() { 
     if [ "$1" != "" ]
     then
@@ -12,9 +23,29 @@ godir() {
             return 1
         fi
     lsd
+    set_title
     else
         echo "godir: no path given!" >&2
     fi
+}
+
+# TODO `*_proj` functions should probably be in .bash_workspaces
+set_proj() {
+    # TODO: This could be more feature-rich, e.g. handling other VCS systems
+    # TODO: Use `projname` more widely?
+    git_dir="$(git rev-parse --git-dir 2>/dev/null)"
+    if [[ $? -eq 0 ]]; then
+        projname="$(basename "$git_dir")"
+    else
+        projname="$(basename "$(tildepath "$PWD")")"
+    fi
+}
+
+curr_proj() {
+    if [[ -z "$projname" ]]; then
+        set_proj
+    fi
+    echo $projname
 }
 
 up() {
@@ -45,6 +76,25 @@ down() {
     cd $DOWN_DIR
 }
 
+# If the path is under a home dir, replace with the correct ~usrname
+tildepath() {
+    if [[ -n $1 ]]; then
+        targ=$1
+    else
+        targ=$PWD
+    fi
+    # To do this, determine who owns it; presumably, if it's under a
+    # homedir, that user should own it.
+    # NOTE: this will cause an error on nonexistent files.
+    # TODO: Will this work with users that have spaces in their names?
+    tmp_usr="$(ls -l -d $targ | awk '{print $3}')"
+    # Figure out what "readlink" outputs for that user's home dir.
+    home_parent="$(eval readlink -f ~${tmp_usr})"
+    # Do the replacement if possible. Otherwise, assume it's not under
+    # a home dir.
+    echo "${targ/#${home_parent}/~${tmp_usr}}"
+}
+
 # get an absolute path
 abspath() {
     if [[ -n $1 ]]; then
@@ -52,22 +102,16 @@ abspath() {
     else
         targ=$PWD
     fi
+    # TODO: This doesn't work with BSD's `readlink`...if nothing else, I should
+    # at least add `brew install coreutils` to the tools section of the
+    # `install` script.
     tmp_path=$(readlink -f $targ)
     # If on Windows, get a Windows path
     if $WINDOWS; then
         tmp_path=$(cygpath -w $tmp_path)
     # Otherwise, try to substitute out `~<usr>`
     else
-        # If this is under a home dir, replace with the correct ~usrname
-        # To do this, determine who owns it; presumably, if it's under a
-        # homedir, that user should own it.
-        # NOTE: this will cause an error on nonexistent files.
-        tmp_usr=$(ls -l -d $targ | awk '{print $3}')
-        # Figure out what "readlink" outputs for that user's home dir.
-        home_parent=$(eval readlink -f ~${tmp_usr})
-        # Do the replacement if possible. Otherwise, assume it's not under
-        # a home dir.
-        tmp_path=${tmp_path/#${home_parent}/~${tmp_usr}}
+        tmp_path="$(tildepath "$tmp_path")"
     fi
     echo $tmp_path
 }
@@ -486,10 +530,37 @@ global_repl ()
         dirname="."
     fi
     if [[ $# -ne 2 ]]; then
-        echo "USAGE: global_repl [-d <dir>] pattern repl" >&2
+        echo "USAGE: global_repl [-d <dir>] <pattern> <replacement>" >&2
         return
     fi
-    ack -l "$1" "$dirname" | xargs perl -pi -e "s/$1/$2/g"
+    rmbak_gr "$dirname"
+    pattern="$1"
+    replacement="$2"
+    # rs should be aliased to ack or rg
+    rs -l "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s/$pattern/$replacement/g"
+}
+alias gr=global_repl
+
+# Restore global_repl backups
+gr_restore () {
+    topdir='.'
+    if [[ $# -eq 1 ]]; then
+        topdir="$1"
+    fi
+    for i in $(find "$topdir" -name '*.bak_gr'); do
+        mv -f "$i" "${i%.bak_gr}"
+    done
+}
+
+# Remove backup files created by global_repl
+rmbak_gr () {
+    topdir='.'
+    if [[ $# -eq 1 ]]; then
+        topdir="$1"
+    fi
+    for i in $(find "$topdir" -name '*.bak_gr'); do
+        rm "$i"
+    done
 }
 
 # 'echo' with simple 'tput' magic
@@ -569,26 +640,29 @@ if hash sshrc 2>/dev/null; then
     # alias ssh=ssh_sshrc
 fi
 
-if [[ $(whoami) != root ]]; then
-    # This provides a way to become root using ssh instead of `su` or `sudo su`.
-    # It's useful with `sshrc`.
-    # NOTE: It also provides a PASSWORDLESS way to become root! (See below.)
-    # This has some dangers.
-    alias be-root="ssh root@localhost"
-    # NO: this makes autocomplete match two commands, which is annoying.
-    # alias be-su="be-root"
-
-    if [[ -f ~/.ssh/id_rsa.pub ]]; then
-        # XXX for some reason this fails with a 'command not found' error...?
-        be-root -o 'PreferredAuthentications=publickey' "exit" 2>/dev/null 1>/dev/null
-        if [[ $? -eq 255 ]]; then
-            # TODO Make this more interactive. (It's "optional" only in the
-            # sense that it asks for a password and can be canceled at that
-            # stage.)
-            ssh-copy-id root@localhost
-        fi
-    fi
-fi
+# The idea here is to provide a way to use `sshrc` with the *local* root
+# account, which would make operations as root "friendlier". But providing
+# passwordless root access to the user account is not necessarily a good idea.
+# TODO: come up with a better way to use shell configs when operating as root.
+# if [[ $(whoami) != root ]]; then
+#     # This provides a way to become root using ssh instead of `su` or `sudo su`.
+#     # It's useful with `sshrc`.
+#     # NOTE: It also provides a PASSWORDLESS way to become root! (See below.)
+#     # This has some dangers.
+#     alias be-root="ssh root@localhost"
+#     # NO: this makes autocomplete match two commands, which is annoying.
+#     # alias be-su="be-root"
+#
+#     if [[ -f ~/.ssh/id_rsa.pub ]]; then
+#         be-root -o 'PreferredAuthentications=publickey' "exit" 2>/dev/null 1>/dev/null
+#         if [[ $? -eq 255 ]]; then
+#             # TODO Make this more interactive. (It's "optional" only in the
+#             # sense that it asks for a password and can be canceled at that
+#             # stage.)
+#             ssh-copy-id root@localhost
+#         fi
+#     fi
+# fi
 
 # Given a PID, print the number of threads
 numthreads ()
@@ -616,6 +690,9 @@ start_xwin ()
         export DISPLAY=localhost:0
     fi
 }
+
+# Set the title once immediately
+set_title
 
 save_alias () 
 { 

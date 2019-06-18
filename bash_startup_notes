@@ -8,16 +8,14 @@ if [[ -n $CONFIG_DIR ]]; then
         # current settings.
         (
             shopt -s nullglob
-            unalias cat
             say yellow bold "*********************************************************"
             say yellow bold "NOTES:"
             # TODO platform- or env-specific notes?
             for f in "$notes_dir"/*; do
-                say cyan "Notes from '$(basename "$f")':"
-                # XXX TODO need `bat`...
                 # Ideally we should just use `bat`'s decorators, because
                 # they're fairly nice, except when they're difficult to read.
                 # Le sigh
+                say cyan "Notes from '$(basename "$f")':"
                 mdcat "$f"
                 echo
             done
