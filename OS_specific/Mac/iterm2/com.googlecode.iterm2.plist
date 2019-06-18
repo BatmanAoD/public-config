@@ -63,9 +63,15 @@
 		<integer>1</integer>
 	</dict>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>1882 629 918 512 1680 45 2560 1417 </string>
+	<string>101 321 937 514 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>3167 562 949 690 1680 45 2560 1417 </string>
+	<string>1829 360 1186 673 1680 0 2560 1417 </string>
+	<key>NSWindow Frame iTerm Window 1</key>
+	<string>-1531 344 836 690 -2560 0 2560 1417 </string>
+	<key>NSWindow Frame iTerm Window 2</key>
+	<string>2613 12 984 1132 1680 0 2560 1417 </string>
+	<key>NSWindow Frame iTerm Window 3</key>
+	<string>1895 189 886 1030 1680 0 2560 1417 </string>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91_selection</key>
@@ -1259,6 +1265,10 @@
 	</array>
 	<key>NoSyncCommandHistoryHasEverBeenUsed</key>
 	<true/>
+	<key>NoSyncConfirmRunOpenFile</key>
+	<true/>
+	<key>NoSyncConfirmRunOpenFile_selection</key>
+	<integer>0</integer>
 	<key>NoSyncConfirmShellIntegrationCommand</key>
 	<true/>
 	<key>NoSyncConfirmShellIntegrationCommand_selection</key>
@@ -1267,12 +1277,24 @@
 	<true/>
 	<key>NoSyncInstallationId</key>
 	<string>4548C8A8-784D-44C2-AC46-4FA5D93551F4</string>
+	<key>NoSyncLastTipTime</key>
+	<real>579329977.04660904</real>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
 	<integer>0</integer>
+	<key>NoSyncPermissionToShowTip</key>
+	<true/>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
 	<real>578864409.57148898</real>
+	<key>NoSyncTipsDisabled</key>
+	<true/>
+	<key>NoSyncTipsToNotShow</key>
+	<array>
+		<string>000</string>
+		<string>0000</string>
+		<string>0001</string>
+	</array>
 	<key>OnlyWhenMoreTabs</key>
 	<false/>
 	<key>OpenArrangementAtStartup</key>
@@ -1329,13 +1351,17 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-05-06T19:48:30Z</date>
+	<date>2019-06-06T19:15:39Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
+	<key>ShowFullScreenTabBar</key>
+	<true/>
 	<key>StealKeyFocus</key>
 	<true/>
 	<key>WordCharacters</key>
 	<string>/-+\~_.</string>
+	<key>findMode_iTerm</key>
+	<integer>0</integer>
 	<key>iTerm Version</key>
 	<string>3.2.9</string>
 </dict>
