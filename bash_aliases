@@ -148,9 +148,8 @@ alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U'
 alias cls='clear; clear; clear; lsd'
 alias cwd='lsd'
 alias home="godir ~"
-# 'sleep' is to prevent error from being printed after the cmd prompt, which
-# makes it look like the command is hanging.
-alias back="popd > /dev/null 2> >(toerr) && lsd || sleep 0.2"
+# The 'go 
+alias back="popd >/dev/null && here_info"
 
 # lock screen
 alias lockscreen='xlock -mode random'
