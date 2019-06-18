@@ -106,47 +106,17 @@ CATCHTEMPLATE
         g++ $CXX_ARGS -o "${progname}" $objfiles
     }
 
-    # Global search & replace
-    # TODO this isn't C++ specific; move somewhere else
-    acksub () {
-        rmbak_acksub
-        if [[ $# -lt 2 ]]; then
-            echo "Usage: acksub <pattern> <replacement>" >&2
-            return 1
-        fi
-        pattern="$1"
-        replacement="$2"
-        ack -l "$pattern" | xargs perl -pi.bak -E "s/$pattern/$replacement/g"
-    }
-    
-    bakrestore () {
-        for i in $(find . -name '*.bak'); do
-            mv -f $i ${i%.bak};
-        done
-    }
-    
-    # Remove backups created by 'acksub'
-    rmbak_acksub () {
-        topdir='.'
-        if [[ $# -eq 1 ]]; then
-            topdir="$1"
-        fi
-        rm $(find "$topdir" -name '*.bak')
-    }
-    
+    # rs should be aliased to rg or ack
     # Find source files
-    alias findsrc='ack -f --cpp'
-    alias findcpp='findsrc | ack -v "\.h"'
+    alias findsrc='rs -f --cpp'
+    alias findcpp='findsrc | rs -v "\.h"'
     # Assume tests are in a 'Test' dir
-    alias findnontest="findcpp | ack -v '(^|\/)Test\/'"
+    alias findnontest="findcpp | rs -v '(^|\/)Test\/'"
     
     # Run clang's static-analysis tool recursively
     if hash clang-check 2>/dev/null; then
         alias cxxcheck='clang-check -analyze $(findnontest)'
     fi
-    
-    # Find leftover git conflict markers
-    alias findconflicts="ack '^<<<<<<|^=======$|^>>>>>>>'"
 
 }
 
