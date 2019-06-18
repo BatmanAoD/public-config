@@ -4,3 +4,4 @@ lib*.rlib
 .idea
 *.old
 *.pyc
+target/

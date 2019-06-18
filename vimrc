@@ -80,6 +80,9 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
+" Disable modelines, which have a security vulnerability and, in hindsight,
+" are generally just...weird.
+set nomodeline
 " Automatically change to directory of current file
 set autochdir
 " Automatic indent
