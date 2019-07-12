@@ -2,6 +2,7 @@
    * Be sure to try REPL.
  * Miscellaneous "intermediate" vimrc stuff: https://kinbiko.com/vim/my-shiniest-vim-gems
  * Plugins:
+    * https://github.com/sheerun/vim-polyglot
     * sensible.vim -- see vimrc
     * ack.vim -- see above
     * ... others documented in vimrc...

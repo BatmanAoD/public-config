@@ -152,11 +152,12 @@ if ! $MAC_OSX; then
         ":$LD_PRELOAD:" != *":${stderred_path}"* ]]; then
         export LD_PRELOAD="${stderred_so}${LD_PRELOAD:+:$LD_PRELOAD}"
     fi
+fi
 
-    if $MAC_OSX; then
-        export DYLD_INSERT_LIBRARIES="$LD_PRELOAD"
-        unset LD_PRELOAD
-    fi
+# Convert LD_PRELOAD (if any) to the appropriate platform var (if any)
+if $MAC_OSX; then
+    export DYLD_INSERT_LIBRARIES="$LD_PRELOAD"
+    unset LD_PRELOAD
 fi
 
 # Set information about the history files

@@ -2,31 +2,45 @@
 # The shebang is just to ensure that Vim knows how to highlight this file.
 
 alias expand='echo '
-alias expand='xargs '
 
 # Allow aliases with `sudo` and `xargs`
 alias sudo='sudo '
 alias xargs='xargs '
 
-if [[ "$(uname)" = "Linux" ]]
-then
+# GNU utilities are more feature-rich.
+if [[ -n "$CONFIG_DIR" ]]; then
+    while read util; do
+        if hash g$util 2>/dev/null; then
+            alias ${util}=g$util;
+        fi
+    done < "$CONFIG_DIR/coreutils_list"
+fi
+
+if ls --version 2>/dev/null | grep -w GNU -q ; then
    alias ls="ls -F --color --dereference-command-line-symlink-to-dir"
+   alias lsplain="ls --format=single-column --indicator-style=none --color=none"
 else
    alias ls="ls -F"
+   alias lsplain="\ls | column  -c"
 fi
 alias ll="ls -lA"
 alias cp="cp -i"
 alias cpall="cp -av"
 alias mv="mv -i"
-# stderred doesn't work with 'rm' for some reason. Unfortunately, this alias
-# doesn't fix the behavior for uses of 'rm' in scripts.
 alias mkdir="mkdir -p"
-alias rm="tmpnostderred rm"
-alias lsplain="ls --format=single-column --indicator-style=none --color=none"
 alias lf="ls -d "
 alias ldir="ls -d "
 alias chomd=chmod
 alias follow="clear && tail -F -n +0"
+
+# because sometimes preloaded libraries (e.g. stderred) causes bad behavior
+if ! $MAC_OSX; then
+    alias nopreload='LD_PRELOAD= '
+else
+    alias nopreload='DYLD_INSERT_LIBRARIES= '
+fi
+# stderred doesn't work with 'rm' for some reason.
+alias rm="nopreload rm"
 
 # Find a script to generically open files
 if $WINDOWS; then
@@ -53,65 +67,25 @@ elif hash kde-open 2>/dev/null; then
 # TODO warn if an open utility can't be found?
 fi
 
-# GNU readlink is more feature-rich than BSD's.
-if hash greadlink 2>/dev/null; then
-    alias readlink=greadlink
-fi
-
 # the "-p" option for `history` is a bit like an "eval" for ! events.
 alias histeval='history -p'
 alias heval=histeval
 
+if 
 # This is more useful than >&2 when using stderred. (use with | )
 alias toerr="perl -n -e 'print STDERR \$_; \$lines = \$.;' -e 'END { exit \$lines }'"
-
-# because sometimes stderred causes bad behavior
-alias nostderred='export LD_PRELOAD= ; '
-alias norederr='nostderred '
-alias tmpnostderred='LD_PRELOAD= '
-alias tmpnorederr='tmpnostderred '
-
-# import/export history (i.e., write history so far, re-read history file)
-alias savehist=histout
-alias histsave=histout
-alias loadhist=histin
-alias histload=histin
 
 # Overridden by Avago config to have better network awareness
 alias absp=abspath
 
-# because I do this all the time
-alias ignore='grep -v'
-alias ig=ignore
-
-alias quickpgrep='pgrep -fl'
-alias qpgrep=quickpgrep
-alias qpg=qpgrep
-
-alias ff=findfiles
 # default is stupid
 alias find='find -H'
 
-alias psearch=pathsearch
-
 alias cd=godir
-#alias cd='pushd $PWD &> /dev/null; cd'
-
-alias lstmp="ls $TMP"
-alias ltmp="ls $TMP"
-alias rmtmp="test -d $TMP && rm -Rf $TMP/*"
-
-alias listify=" tr ' ' '\n' "
-alias unlistify=" tr '\n' ' ' "
-alias blockify=unlistify
-alias unblockify=listify
 
 # The ongoing quest to standardize my quitting procedure for all applications,
 # allowing me to take advantage of all this muscle memory...
-alias quit="exit"
 alias :q="exit"
-alias :bd="exit"
-alias QQQ="exit"
 
 alias lesspage="export PAGER='less -n -Q' "
 alias tmplesspage="PAGER='less -n -Q' "
@@ -126,66 +100,28 @@ alias mo="$PAGER"
 alias less="$PAGER"
 alias p="$PAGER"
 
-alias ehco=echo
-
-alias goog=google
-alias gsearch=google
-
 alias edit='$NEWWINDOW_EDIT_CMD'
 alias ed=edit
 alias e=edit
-alias v=vim
-alias subed='sublime_text'
-# gview won't work remotely without xauth
-alias gv='gview '
-#overwite after setting up CB funcs
-alias qed=ednew
 
 alias gmake="gmake -s"
 # Use '-U' because otherwise this causes unacceptable slowdown in dirs with
 # lots of entries.
 alias lsd='echo "DIR:" && pwd && echo "*    *    *    *" && ls -U'
 alias cls='clear; clear; clear; lsd'
-alias cwd='lsd'
 alias home="godir ~"
-# The 'go 
 alias back="popd >/dev/null && here_info"
 
-# lock screen
-alias lockscreen='xlock -mode random'
-alias locscr=lockscreen
-alias lockscr=lockscreen
-alias lscr=lockscreen
-
-# because I always forget about repos
-alias yum='yum --enablerepo="*"'
-alias sinstall='sudo yum --enablerepo="*" install'
-alias yuminst=sinstall
-alias yuminstall=sinstall
-alias sudoinstall=sinstall
-
-# editing without tabs -- OLD; current vimrc solution is better
-# alias ednotabs='edit -S <(echo -e "call Nousetabs()\n")'
-# alias ednt=ednotabs
-# alias batchnotabs='$EDITOR -S <(echo -e "call Nousetabs()\n")'
-
-# edit vimrc
+# edit all vimrc-related files
 alias edvi="edit ~/.vimrc*"
-
-# crontab uses VISUAL, but this only works in batch mode.
-alias edcron="VISUAL=\"$EDITOR\" crontab -e"
 
 # convenient way to add/edit bash stuff
 # Note that VISUAL is by default set up to use the -f option,
 # so we don't need to use EDITOR
-alias edrc="$EDITOR ~/.bash_rcbase && reload"
-alias edal="$EDITOR ~/.bash_aliases* && reload"
-alias edfx="$EDITOR ~/.bash_functions* && reload"
-alias edpriv="$EDITOR ~/private-config/bash* && reload"
-
-# configure i3 setup
-# TODO: when I switch to generating this, edit source instead
-alias edi3='edit ~/.i3/config'
+alias edrc="$VISUAL ~/.bash_rcbase && reload"
+alias edal="$VISUAL ~/.bash_aliases* && reload"
+alias edfx="$VISUAL ~/.bash_functions* && reload"
+alias edpriv="$VISUAL ~/private-config/bash* && reload"
 
 # Other config-related aliases
 if [[ -n "$CONFIG_DIR" ]]; then
@@ -195,29 +131,24 @@ if [[ -n "$CONFIG_DIR" ]]; then
 fi
 # TODO consider doing the same for private config
 
-# generic i3 commands
-alias qi=i3-msg
+# TODO: How to check if running i3?
+# ...or, is there a better way to generically interact with a window manager?
+if false; then
+    # generic i3 commands
+    alias qi=i3-msg
 
-# create arbitrary workspace
-alias qwks='i3-msg workspace'
-alias iwks=qwks
-# move to arbitrary workspace
-alias ic='qi workspace'
-alias qc='ic'
-
-# Requires google docs commandline tools to be installed
-alias gdoc='google docs edit --editor="$EDITOR"'
+    # create arbitrary workspace
+    alias qwks='i3-msg workspace'
+    alias iwks=qwks
+    # move to arbitrary workspace
+    alias ic='qi workspace'
+    alias qc='ic'
+fi
 
 # some funcs and aliases aren't immediately loaded. Define these.
 # (Every function that defines new functions should be added to the
 # functions_with_defs variable; these should be separated with semicolons.)
 alias defallfuncs='eval ${functions_with_defs}'
-
-# add $TMP/ex to path, which is where temporary executables are
-# ongoingly
-alias tmppath="export PATH=\$TMP/ex:\$PATH"
-# one-time only
-alias tmpex="PATH=\$TMP/ex:\$PATH "
 
 # make some aliases for "doge"-style git.
 function dogegit() {
@@ -227,9 +158,9 @@ function dogegit() {
     alias very=git
     alias such=git
     alias wow='git status'
-    # These are (currently) BC-specific aliases.
+    # From my gitconfig
     alias amaze='git lg'
-    alias excite='git wfb'
+    alias excite='git lg2'
 }
 
 # If 'ack-grep' is installed, invoke it using `ack`.
