@@ -8,11 +8,12 @@ alias sudo='sudo '
 alias xargs='xargs '
 
 # GNU utilities are more feature-rich.
-# XXX TODO: How can these be used in the aliases below?
 if [[ -n "$CONFIG_DIR" ]]; then
     while read util; do
         if hash g$util 2>/dev/null; then
-            alias ${util}=g$util;
+            # Aliases aren't recursive. So isntead, just reassign the paths!
+            # TODO: would this work in zsh or other shells?
+            hash -p "$(which g$util)" $util
         fi
     done < "$CONFIG_DIR/coreutils_list"
 fi
@@ -53,16 +54,14 @@ if $WINDOWS; then
 elif $MAC_OSX; then
     # Mac OS X already has an 'open' command that behaves appropriately.
     :
-# On *NIX, xdg-open is the most generic and modern
+# Other possibilities are ordered roughly in terms of how generic & modern they
+# are
 elif hash xdg-open 2>/dev/null; then
     alias open=xdg-open
-# Gnome-specific:
-# gvfs-open might be replacing gnome-open...?
 elif hash gvfs-open 2>/dev/null; then
     alias open=gvfs-open
 elif hash gnome-open 2>/dev/null; then
     alias open=gnome-open
-# KDE-specific:
 elif hash kde-open 2>/dev/null; then
     alias open=kde-open
 # TODO warn if an open utility can't be found?
