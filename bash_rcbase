@@ -142,15 +142,16 @@ if $id_is_known; then
     mkdir -p "${toolsbld_path}"
 fi
 
-stderred_path="${toolsbld_path}/stderred"
-stderred_so="${stderred_path}/build/libstderred.$sharedobj_ext"
-
+USING_STDERRED=false
 # stderred doesn't seem to work on OS X
 if ! $MAC_OSX; then
+    stderred_path="${toolsbld_path}/stderred"
+    stderred_so="${stderred_path}/build/libstderred.$sharedobj_ext"
     if [[ -d "${stderred_path}"  && \
         -r "$stderred_so" && \
         ":$LD_PRELOAD:" != *":${stderred_path}"* ]]; then
         export LD_PRELOAD="${stderred_so}${LD_PRELOAD:+:$LD_PRELOAD}"
+        USING_STDERRED=true
     fi
 fi
 

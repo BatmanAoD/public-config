@@ -8,6 +8,7 @@ alias sudo='sudo '
 alias xargs='xargs '
 
 # GNU utilities are more feature-rich.
+# XXX TODO: How can these be used in the aliases below?
 if [[ -n "$CONFIG_DIR" ]]; then
     while read util; do
         if hash g$util 2>/dev/null; then
@@ -71,9 +72,10 @@ fi
 alias histeval='history -p'
 alias heval=histeval
 
-if 
-# This is more useful than >&2 when using stderred. (use with | )
-alias toerr="perl -n -e 'print STDERR \$_; \$lines = \$.;' -e 'END { exit \$lines }'"
+if $USING_STDERRED; then
+    # This is more useful than >&2 when using stderred. (use with | )
+    alias toerr="perl -n -e 'print STDERR \$_; \$lines = \$.;' -e 'END { exit \$lines }'"
+fi
 
 # Overridden by Avago config to have better network awareness
 alias absp=abspath
