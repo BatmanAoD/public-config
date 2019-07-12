@@ -9,9 +9,7 @@ set_title() {
     else
         newtitle="$(curr_proj)"
     fi
-    # TODO There are apparently some shells that don't set the terminal title
-    # except when `BEL` (\007) is used, so this may not always work.
-    echo -en "\e]0;${newtitle}\e\\"
+    echo -en "\e]0;${newtitle}\007"
 }
 
 here_info() {
@@ -23,10 +21,10 @@ here_info() {
 godir() { 
     if [ "$1" != "" ]
     then
-        pushd "$1" &> /dev/null
-        if [[ $? -ne 0 ]]; then
-            echo "godir: error! Possibly invalid directory." >&2
-            return 1
+        pushd "$1" > /dev/null
+        status=$?
+        if [[ $status -ne 0 ]]; then
+            return $status
         fi
         here_info
     else
@@ -38,11 +36,9 @@ godir() {
 set_proj() {
     # TODO: This could be more feature-rich, e.g. handling other VCS systems
     # TODO: Use `projname` more widely?
-    git_dir="$(git rev-parse --git-dir 2>/dev/null)"
+    git_dir="$(git rev-parse --show-toplevel 2>/dev/null)"
     if [[ $? -eq 0 ]]; then
-        projname="$(abspath "$git_dir")"
-        projname="$(dirname "$projname")"
-        projname="$(basename "$projname")"
+        projname="$(basename "$git_dir")"
     else
         projname="$(basename "$(tildepath "$PWD")")"
     fi
@@ -123,91 +119,6 @@ abspath() {
     echo $tmp_path
 }
 
-# set `cat` options based on filetype
-# I...can't remember why I thought '-A' was a good idea.
-# To cat binary files in the default 'cat' style (i.e. without the '-A'
-# option), just use '-u' (which is usually ignored by cat).
-qcat() {
-    # default opt for ASCII files
-    catopts='-v'
-    for file in $@; do
-        # if explicit opts are given, just do the cat.
-        if [[ $file == -* ]]; then
-            catopts=
-            break
-        fi
-        if ! grep -q 'text\|script' <(file -L -p $file); then
-            catopts='-A'
-            # don't break, because *any* options provided should override
-            # mine.
-         fi
-     done
-     \cat $catopts $@
- }
-
-# myglobfunc () {
-#     if [[ -n $1 ]]; then rootdir=$1; else rootdir='.'; fi
-#     if [[ -n $2 ]]; then childdir='-path *$2'; else childdir=''; fi
-#     find -H $rootdir -type f $childdir
-# }
-# because I can't just name a '**', as far as I can tell...
-# disabled for now because I don't actually like this function that much yet.
-# alias '**'=myglobfunc
-
-# Somewhat similar to the above, but use zsh since that's what I really want.
-zeval () {
-    echo $@ | zsh
-}
-alias 'z*'='zeval echo'
-
-# TODO write a function that will watch the timestamp of an exe and wait until
-# it changes.
-# This is useful while waiting for something to compile.
-# use inotifywait--but make sure it's installed before creating this function!
-# comp_wait ()
-# {
-#     if [[ -z $1 ]]; then
-#         exe=trantor;
-#     else
-#         exe=$1;
-#     fi;
-#     alias tmp_do_ll="lsplain -l $(which $exe)"
-#     llstr=$(tmp_do_ll)
-#     if echo $llstr | grep "no $exe in"; then
-#         init="00:00"
-#     else
-#         init=$(echo $llstr | awk '{print $8}');
-#     fi
-#     while [[ $ | awk '{print $8}') == $init ]]; do
-#         sleep 1;
-#     done
-#     unalias tmp_do_ll
-# }
-
-# Old version (see aliases for new version):
-#quickpgrep() {
-#    # for some reason neither $@ and $* works with the {var:1} trick.
-#    argstr=$@
-#    ps -ef | grep "[${1:0:1}]${argstr:1}"
-#}
-
-# Somehow this keeps getting unset. TODO: figure out why. For now,
-# I'll just run this check every time I start a new Bash session or
-# do a 'reload', and if Caps_Lock is set, I'll un-set it. This is
-# terribly hacky.
-fixkeys() {
-    # On the off-chance that the gnome-settings-daemon is what's causing
-    # this problem...
-    ps -ef | grep [g]nome-settings
-    if [[ $? -eq 0 ]]; then
-        echo ".....is a potential culprit for resetting the keyboard"
-        echo "mappings."
-    fi
-    # Return to default layout before making changes.
-    setxkbmap -layout us
-    xmodmap ~/.Xmodmap
-}
-
 swaptwo() {
     local tmpfile
     tmpfile=$(mktemp $TMP/fswapXXXXXXXXX)
@@ -243,15 +154,19 @@ fswap() {
     fi
 }
 
-localize () {
-    while [[ $# -ne 0 ]]; do
-        cat $1 > $1.local && mv -f $1.local $1
-        shift
-    done
-}
-
 if $CYGWIN; then
+    start_xwin ()
+    {
+        if ! pgrep XWin > /dev/null; then
+            startxwin &> $(mktemp /tmp/xwin_stdout_XXXXXX)
+        fi
+        if pgrep XWin > /dev/null; then # Check for success
+            export DISPLAY=localhost:0
+        fi
+    }
+
     # adapted from http://stackoverflow.com/a/12661288/1858225
+    # TODO: Is this still necessary?
     gvim () 
     { 
         opt='';
@@ -267,33 +182,6 @@ if $CYGWIN; then
         cyg-wrapper.sh "C:/Progra~2/Vim/vim74/gvim.exe" --binary-opt=-c,--cmd,-T,-t,--servername,--remote-send,--remote-expr --cyg-verbose --fork=$forknum $opt "$@"
     }
 fi
-
-# This must change if I switch my editor to Emacs or something.
-edline () {
-    # This check is actually mostly just to ensure that our first arg
-    # is actually a number and the second arg is actually a file.
-    # I don't know how to get wc to suppress the file name, so I use awk.
-    # Note that this only works with the single-bracket conditional.
-    if [[ -z $2 ]]; then
-        echo "Must give two args! Usage: edline <lineno> <file>" >&2
-    elif [ $1 -le $(wc -l $2 | awk '{print $1}') ] 2>/dev/null ; then
-        edit +$1 $2
-    else
-        echo "first arg must be an integer <= the number of lines in" >&2
-        echo "the file specified by the second arg" >&2
-    fi
-}
-
-ednew () {
-    touch $1
-    chmod a+x $1
-    edit $1
-}
-
-# edit something on path
-edex () {
-    edit $(which $1)
-}
 
 # edit a bash function in the current session
 # TODO: apparently this doesn't work on home machine...why?
@@ -359,34 +247,6 @@ edvar() {
     rm $TMP/editvar_$1
 }
 
-
-cptmp() {
-    cp $@ $TMP/
-}
-
-mvtmp() {
-    while [[ $# -ne 0 ]]
-    do
-        mv $1 $TMP/
-        shift
-    done
-}
-
-# move a local file to a sandbox location
-tosandbox() {
-    if [[ -n $2 ]]; then
-        sanddir=$2
-    else
-        sanddir=default_backups
-    fi
-    fdir=$(dirname $1)
-    fname=$(basename $1)
-    destdir="~/sandbox/$sanddir/$fdir"
-    mkdir -p $destdir
-    echo "mv $1 $destdir/$fname"
-    mv $1 $destdir/$fname
-}
-
 # check if file $1 contains $2
 # TODO use 'comm' instead.
 contains() {
@@ -400,56 +260,9 @@ contains() {
 
 # print a large notification when command completes
 loud() {
-eval "$@" ; bigresult $?
+    eval "$@" ; bigresult $?
 }
 
-backup() {
-    while [[ $# -ne 0 ]]
-    do
-        cp -a $1 $1.bak
-        shift
-    done
-}
-
-switch() {
-    if [ "$1" == "" ] || [ "$2" == "" ]
-    then
-        echo "not enough args!"
-    else
-        /bin/cp $1 $TMP/switch_$1_$2
-        /bin/cp $2 $1
-        /bin/cp $TMP/switch_$1_$2 $2
-    fi
-}
-
-mkgoodbad() {
-    if [ "$1" == "" ]
-    then
-        echo "not enough args!"
-    else
-        cp $1 $1.good
-        cp $1 $1.bad
-    fi
-}
-
-usegood() {
-    if [ "$1" == "" ]
-    then
-        echo "not enough args!"
-    else
-        /bin/cp $1.good $1
-    fi
-}
-
-usebad() {
-    if [ "$1" == "" ]
-    then
-        echo "not enough args!"
-    else
-        /bin/cp $1.bad $1
-    fi
-}
-    
 mkc() { mkdir "$@" ; cd "$@";}
 
 # Easy extract
@@ -476,11 +289,6 @@ extract () {
   fi
 } 
 
-# google () {
-#     googurl="http://www.google.com/search?q="
-#     firefox $googurl$(echo $@ | sed -e 's/ /\%20/g');
-# }
-
 # import/export history (i.e., write history so far, re-read history file)
 histout () 
 { 
@@ -491,6 +299,7 @@ histout ()
         history -a;
     fi
 }
+
 histin () 
 { 
     # First, save current history in the primary history file.
@@ -504,27 +313,6 @@ histin ()
     if [[ -n $ORIG_HISTFILE ]]; then
         export HISTFILE=$ORIG_HISTFILE
     fi
-}
-
-# Find matching lines among first `n` lines in some set of files
-hdr_match ()
-{
-    if [[ -n "$2" ]]; then
-        numlines=$2
-    else
-        numlines=1
-    fi
-
-    for t in $(find . -type f -name "$1"); do
-        head -$numlines $t
-    done | \
-        grep -v '^\s*\\\\\s*$' | \
-        grep -v '^\s*#\s*$' | \
-        sort |uniq -c | \
-        awk '{if ($1 > 1) print; }' | \
-        sed 's/^\s*//' | \
-        cut -f 2- -d ' ' | \
-        xargs -I{} ack -Q "{}"
 }
 
 # Search-and-replace in multiple files
@@ -547,6 +335,7 @@ global_repl ()
     rs -l "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s/$pattern/$replacement/g"
 }
 alias gr=global_repl
+alias rsub=global_repl
 
 # Restore global_repl backups
 gr_restore () {
@@ -627,6 +416,7 @@ highlight() {
     c_rs=$'\e[0m'
     sed s"/$2/$fg_c\0$c_rs/g"
 }
+
 # If sshrc is installed, use generated rc file for ssh shell.
 # TODO the logic for generating sshrc should really be put in the 'install'
 # script.
@@ -683,23 +473,8 @@ numthreads ()
     cat /proc/${1}/stat | awk '{print $20}'
 }
 
-# Cygwin specific:
-start_xwin ()
-{
-    if ! $CYGWIN; then
-        echo "ERROR: Not running Cygwin! Xwin not started."
-        return 1
-    fi
-    if ! pgrep XWin > /dev/null; then
-        startxwin &> $(mktemp /tmp/xwin_stdout_XXXXXX)
-    fi
-    if pgrep XWin > /dev/null; then # Check for success
-        export DISPLAY=localhost:0
-    fi
-}
-
 # Set the title once immediately
-set_title
+set_title    
 
 save_alias () 
 { 
@@ -718,6 +493,7 @@ save_alias ()
     done;
     alias $tosave >> ~/.bash_aliases$suffix
 }
+
 save_function () 
 { 
     local suffix tosave;
