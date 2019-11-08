@@ -81,18 +81,18 @@ down() {
 
 # If the path is under a home dir, replace with the correct ~usrname
 tildepath() {
-    if [[ -n $1 ]]; then
-        targ=$1
+    if [[ -n "$1" ]]; then
+        targ="$1"
     else
-        targ=$PWD
+        targ="$PWD"
     fi
     # To do this, determine who owns it; presumably, if it's under a
     # homedir, that user should own it.
     # NOTE: this will cause an error on nonexistent files.
     # TODO: Will this work with users that have spaces in their names?
-    tmp_usr="$(ls -l -d $targ | awk '{print $3}')"
+    tmp_usr="$(ls -l -d "$targ" | awk '{print $3}')"
     # Figure out what "readlink" outputs for that user's home dir.
-    home_parent="$(eval readlink -f ~${tmp_usr})"
+    home_parent="$(eval readlink -f ~"${tmp_usr}")"
     # Do the replacement if possible. Otherwise, assume it's not under
     # a home dir.
     echo "${targ/#${home_parent}/~${tmp_usr}}"

@@ -133,6 +133,9 @@ if ${LINUX_ANY}; then
 elif ${MAC_OSX}; then
     # Currently nothing to do.
     :
+    # TODO:
+    # Bash completions dir? (Apparently no standard for this...)
+    # Set up login shell appropriately? https://stackoverflow.com/a/7780055/1858225
 fi
 
 ##############################################################################

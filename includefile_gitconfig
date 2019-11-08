@@ -1,7 +1,7 @@
 # This is *not* a complete git-config, but rather a set of "common" options that are *included* by my git-config.
 
-[url "git@github.com:"]
-	insteadOf = "https://github.com/"
+# [url "git@github.com:"]
+# 	insteadOf = "https://github.com/"
 
 [credential]
 	helper = ""
@@ -17,6 +17,10 @@
 # Woooooo
 [help]
 	autocorrect = 1
+
+# WOOOOOOOOOOOOOOOOO
+[diff]
+	noprefix = true
 
 [alias]
 # Search aliases (from

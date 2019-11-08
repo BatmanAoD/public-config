@@ -25,14 +25,14 @@ else
    alias ls="ls -F"
    alias lsplain="\ls | column  -c"
 fi
+
 alias ll="ls -lA"
+
 alias cp="cp -i"
-alias cpall="cp -av"
 alias mv="mv -i"
 alias mkdir="mkdir -p"
-alias lf="ls -d "
-alias ldir="ls -d "
 alias chomd=chmod
+
 alias follow="clear && tail -F -n +0"
 
 # because sometimes preloaded libraries (e.g. stderred) causes bad behavior
