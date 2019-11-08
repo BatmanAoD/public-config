@@ -69,11 +69,23 @@ Plug 'coot/EnchantedVim'
 " Fork of Gundo with extra features
 Plug 'simnalamburt/vim-mundo'
 
-" Asynchronous language server (LSP) client with autocompletion
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
+" SQL interaction
+Plug 'tpope/vim-dadbod'
+
+" Asynchronous language server (LSP) client
+" Note that there is also a Rust implementation; comparison here:
+" https://github.com/neoclide/coc.nvim/issues/454#issuecomment-465441127
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" TODO: `coc` language support is supported with `:CocInstall`. E.g.:
+" :CocInstall coc-rls
+" :CocInstall coc-git
+" To install from cmd line:
+" # install coc-json & coc-html and exit
+" vim -c 'CocInstall -sync coc-json coc-html|q'
+
+" Recommended by Scala Metals documentation:
+Plug 'derekwyatt/vim-scala'
 
 " Syntax highlighting for Kinesis keyboard layout files
 Plug 'ArjenL/vim-kinesis'
@@ -81,8 +93,8 @@ autocmd BufNewFile,BufRead ?_{qwerty,dvorak}.txt,{qwerty,dvorak}.txt set filetyp
 autocmd BufNewFile,BufRead layout[123456789].txt set filetype=freestyle
 
 if has('nvim')
-    " TODO figure out a viable lldb plugin for gVim, too.
-    Plug 'critiqjo/lldb.nvim'
+    " TODO figure out a viable debugging plugin for gVim, too.
+    Plug 'sakhnik/nvim-gdb'
 endif
 
 call plug#end()
@@ -101,20 +113,6 @@ let g:jellybeans_overrides = {
 \}
 " The ycm groups define YCM warning highlighting; default is 'todo'.
 " Errors match 'error', which....is possibly the same as 'todo'.
-
-" Rust LSP (RLS) integration
-if executable('rls')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'rls',
-        \ 'cmd': {server_info->['rls']},
-        \ 'whitelist': ['rust'],
-        \ })
-endif
-
-" Debug logging for async RLS...
-let g:asyncomplete_log_file = expand('~/asyncomplete.log')
-let g:lsp_log_file = expand('~/vim-lsp.log')
-let g:lsp_log_verbose = 1
 
 " I don't really like folds
 let g:pymode_folding = 0
@@ -157,6 +155,27 @@ vnoremap <Leader>ls :Linediff<CR>`>
 vnoremap <Leader>lc :LinediffReset<CR>
 nnoremap <Leader>lc :LinediffReset<CR>
 
+" Use both ctl-space and tab for coc.nvim completion
+" (Configuration taken from
+" https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources)
+inoremap <silent><expr> <c-space> coc#refresh()
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+inoremap <silent><expr> <Tab>
+            \ pumvisible() ? "\<C-n>" :
+            \ <SID>check_back_space() ? "\<Tab>" :
+            \ coc#refresh()
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" More mappings taken from coc.nvim example config
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
 let g:using_ycm = 0
 " TODO can I use `Plug` after `plug#end()`?

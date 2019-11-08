@@ -80,6 +80,8 @@ set showcmd
 set ruler
 set wildmenu
 set wildmode=longest,list
+" During macro execution, don't redraw the screen.
+set lazyredraw
 " Disable modelines, which have a security vulnerability and, in hindsight,
 " are generally just...weird.
 set nomodeline

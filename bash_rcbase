@@ -42,6 +42,17 @@ fi
 ensure_on_path "${HOME}/bin"
 ensure_on_path "${HOME}/.cargo/bin"
 
+# For Yarn (TODO: do I have some standard way of doing this?)
+ensure_on_path "$HOME/.yarn/bin"
+ensure_on_path "$HOME/.config/yarn/global/node_modules/.bin"
+
+# This modifies PATH. Unfortunately, modifying PATH uncaches values set by
+# `hash`, which I am using for gnu-coreutils on Mac OS, so I need to ensure
+# that all PATH modifications occur before the `hash` caching.
+if [[ -e /Users/kstrand/.nix-profile/etc/profile.d/nix.sh ]]; then
+    . /Users/kstrand/.nix-profile/etc/profile.d/nix.sh
+fi
+
 # TODO move all platform-checking logic to `bootstrap`
 WINDOWS=false
 CYGWIN=false
@@ -294,27 +305,30 @@ bind "set completion-ignore-case on"
 bind "set show-all-if-ambiguous on"
 bind Space:magic-space # ...for some reason this can't come earlier...?
 
-# Set the prompt
-PS1='\h|\W> '    
-# Make it cyan
-PS1="\[\e[0;36m\]${PS1}\[\e[m\]"
-# If root, make that obvious
-if [[ $(whoami) == root ]]; then
-    PS1="\[\e[0;31m\]\u@\[\e[m\]${PS1}"
-elif ! ${id_is_known}; then
-    PS1="\[\e[0;33m\]\u@\[\e[m\]${PS1}"
+if [[ -n "$powerline" ]]; then
+    # TODO currently have `powerline-rs` installed;
+    # it's not well documented, so also check out `powerline-rust`, `silver`,
+    # and `powerline-go`.
+    # I would particuarly like Kubernetes information. See personal-notes/context-items.md
+    # Jeff's setup: https://rms.slack.com/archives/CJJ7EQ285/p1557355726002600
+    prompt() {
+        PS1="$($powerline --shell bash $?)"
+    }
+    export PROMPT_COMMAND=prompt
+else
+    # Set the prompt
+    PS1='\h|\W> '    
+    # Make it cyan
+    PS1="\[\e[0;36m\]${PS1}\[\e[m\]"
+    # If root, make that obvious
+    if [[ $(whoami) == root ]]; then
+        PS1="\[\e[0;31m\]\u@\[\e[m\]${PS1}"
+    elif ! ${id_is_known}; then
+        PS1="\[\e[0;33m\]\u@\[\e[m\]${PS1}"
+    fi
+    export PS1
+    export PROMPT_COMMAND=
 fi
-# TODO adopt some of the tricks used for the default git-bash prompt?
-# Here is the full prompt variable:
-# \[\033]0;$TITLEPREFIX:${PWD//[^[:ascii:]]/?}\007\]\n\[\033[32m\]\u@\h \[\033[35m\]$MSYSTEM \[\033[33m\]\w\[\033[36m\]`__git_ps1`\[\033[0m\]\n$
-# Export it
-export PS1
-
-# Uncomment the following line to share history in all windows.
-# PROMPT_COMMAND="history -a;history -c;history -r"
-
-# For now, don't run a prompt command.
-export PROMPT_COMMAND=
 
 # Make `less` display colors and not clear the screen
 # ....not reeeeeally sure what this does...
@@ -344,10 +358,17 @@ fi
 if [[ -r /usr/local/etc/profile.d/bash_completion.sh ]]; then
     . /usr/local/etc/profile.d/bash_completion.sh
 fi
-# XXX TEMP - figure out why OS X doesn't seem to have a standard way to install
-# git-completions w/ Homebrew
-if [[ -r "$HOME/.git-completion.bash" ]]; then
-    . "$HOME/.git-completion.bash"
+# TODO - figure out why OS X doesn't seem to have a standard way to install
+# Bash completions w/ Homebrew
+if [[ -r "$HOME/.completions" ]]; then
+    for completion in "$HOME/.completions"/*.bash; do
+        . "$completion"
+    done
 fi
 hash kubectl 2>/dev/null && . <(kubectl completion bash)
 set completion-ignore-case on
+
+# Maybe only works on Mac?
+if [[ -x /usr/libexec/java_home ]]; then
+    export JAVA_HOME="$(/usr/libexec/java_home)"
+fi
