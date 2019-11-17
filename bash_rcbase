@@ -46,13 +46,6 @@ ensure_on_path "${HOME}/.cargo/bin"
 ensure_on_path "$HOME/.yarn/bin"
 ensure_on_path "$HOME/.config/yarn/global/node_modules/.bin"
 
-# This modifies PATH. Unfortunately, modifying PATH uncaches values set by
-# `hash`, which I am using for gnu-coreutils on Mac OS, so I need to ensure
-# that all PATH modifications occur before the `hash` caching.
-if [[ -e /Users/kstrand/.nix-profile/etc/profile.d/nix.sh ]]; then
-    . /Users/kstrand/.nix-profile/etc/profile.d/nix.sh
-fi
-
 # TODO move all platform-checking logic to `bootstrap`
 WINDOWS=false
 CYGWIN=false

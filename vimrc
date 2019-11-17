@@ -294,6 +294,10 @@ endfunction
 " courtesy of http://superuser.com/a/668612/199803
 autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
 
+" Set scripts to be executable from the shell
+" courtesy of https://unix.stackexchange.com/a/39995/38050
+au BufWritePost * if getline(1) =~ "^#!" | silent !chmod +x <afile> | endif
+
 function! PickTabUsage()
     if &readonly || ! &modifiable
         set nolist
