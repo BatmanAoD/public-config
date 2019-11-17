@@ -9,8 +9,6 @@
 
  * Tiling windows: https://github.com/fuhsjr00/bug.n/
 
-## Ack & related
+## RipGrep
 
- * http://betterthanack.com/ -- a list of tools related to ack, including:
-    *  ack.vim -- what it says on the tin
-    * Exuberant Ctags -- indexed search
+ * Some ideas for use w/ Vim: http://rkd.me.uk/posts/2019-05-27-code-navigation.html
