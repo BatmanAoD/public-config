@@ -5,19 +5,6 @@
 # Reference to context-switching script on which I based the RMS version:
 # https://github.com/ahmetb/kubectx/issues/12#issuecomment-542177722
 
-# lockfd=$RANDOM    # syntax error in redirect; not sure how to fix
-(
-flock -n 82 || exit
-minikube status &>/dev/null
-if [[ $? -ne 0 ]]; then
-    # Helm verions prior to 2.15 don't work with k8s 1.16:
-    # https://github.com/helm/helm/issues/6374#issuecomment-537185486
-    # 1.15 had a strange problem accessing Consul
-    # This is the version Picas is using as of 11/4/19
-    minikube start --kubernetes-version=1.14.6 --keep-context=true --vm-driver=virtualbox
-fi
-) 82> $TMP/minikube-start-lockfile
-
 addeks () {
     if [[ $# -eq 1 ]]; then
         # Just list all the clusters

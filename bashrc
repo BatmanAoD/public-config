@@ -59,6 +59,7 @@ done
 # offers `refreshenv`, apparently, but we can't call that in Bash.)
 alias reload="unalias -a ; source \"${BASHRC_PATH}\" ; eval \${extraconfigcmds}"
 
+# 'say' is expected to be defined in one of the files sourced above.
 say -n green "Primary local account: "
 say yellow "${primary_local_account}"
 if $id_is_known; then
