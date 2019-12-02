@@ -7,7 +7,9 @@
 # TODO add stuff here from `install` and possibly `.bashrc/.bash_rcbase`, then use it in
 # those scripts
 
-if [[ -v WINDIR ]]; then
+# Using `-z` b/c `-v` is not supported yet in Oil
+if [[ -z "${WINDIR+x}" ]]; then
+    WINDOWS=true
     # Windows linking command based on http://stackoverflow.com/a/25394801/1858225
     # Ideally, in standard bash setup on Windows, this would be an alias for
     # `ln` that uses the `/h` flag if `-s` is not given as an argument.
@@ -38,11 +40,11 @@ if [[ Linux == "$OS_NAME" ]]; then
 elif [[ Darwin == "$OS_NAME" ]]; then
     MAC_OSX=true
 fi
-LINUX_NATIVE=$LINUX_ANY;
 
 # Not Windows, not remote, not virtual
 check_if_native_linux()
 {
+    LINUX_NATIVE=$LINUX_ANY;
     $LINUX_NATIVE || return;
     # Are we SSH-ing in?
     grep -qw 'SSH_CLIENT\|SSH_TTY' <(env) && LINUX_NATIVE=false && return;

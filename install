@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
+    # TODO: There aren't _too_ many things that rely on Bash 4.
+    # But on the other hand, I don't ever plan to use Bash 3 as my primary shell...
+    # ...though maybe having Bash3 compatibility for `sshrc` would be helpful
+    # in case I need to ssh into Macs I don't own.
+    echo "ERROR: Bash version is $BASH_VERSION, but only 4 and above are supported." >&2
+    exit 2
+fi
+
 # Assumes not `set -e`
 . ~/public-config/bash_bootstrap
 
@@ -26,8 +35,7 @@ done
 # TODO this confirmation should be persistent, and probably should be tied to
 # my list of "known personas" that's currently in `.bash_rcbase`.
 echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
-if [[ -v WINDIR ]]; then
-    WINDOWS=true
+if $WINDOWS; then
     # TODO: don't give this warning unless the `public-config` directory's
     # parent is somewhere other than `$HOME`.
     cat <<WIN_HOME_INSTRUCTIONS
@@ -49,7 +57,7 @@ link_s () {
     else
         echo "ERROR: symlink creation requires one or two arguments!" >&2
         # Currently, we *exit* with *error*...because this is a script bug.
-        exit 1
+        exit 64
     fi
     if [[ -h "${new_link}" ]]; then rm "${new_link}"; fi
     if [[ -e "${new_link}" ]]; then
