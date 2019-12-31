@@ -128,7 +128,7 @@ if $LINUX_NATIVE; then
     fi
 fi
 
-if $LINUX_NATIVE; then
+if $LINUX_ANY; then
     sharedobj_ext=so
 elif $MAC_OSX; then
     sharedobj_ext=dylib
