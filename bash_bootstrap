@@ -7,8 +7,8 @@
 # TODO add stuff here from `install` and possibly `.bashrc/.bash_rcbase`, then use it in
 # those scripts
 
-# Using `-z` b/c `-v` is not supported yet in Oil
-if [[ -z "${WINDIR+x}" ]]; then
+# Using `-n` b/c `-v` is not supported yet in Oil
+if [[ -n "${WINDIR+x}" ]]; then
     WINDOWS=true
     # Windows linking command based on http://stackoverflow.com/a/25394801/1858225
     # Ideally, in standard bash setup on Windows, this would be an alias for
@@ -30,6 +30,8 @@ if [[ -z "${WINDIR+x}" ]]; then
             cmd <<< "mklink \"$new_link\" \"$target\"" > /dev/null
         fi
     }
+else
+    WINDOWS=false
 fi
 
 OS_NAME="$(uname -s)"

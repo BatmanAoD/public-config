@@ -44,7 +44,6 @@ it and assign it to '%USERPROFILE%'.
 WIN_HOME_INSTRUCTIONS
     alias universal_symlink=win_symlink
 else
-    WINDOWS=false
     alias universal_symlink='ln -s'
 fi
 read dummy
