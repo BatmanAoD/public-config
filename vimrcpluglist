@@ -75,7 +75,8 @@ Plug 'tpope/vim-dadbod'
 " Asynchronous language server (LSP) client
 " Note that there is also a Rust implementation; comparison here:
 " https://github.com/neoclide/coc.nvim/issues/454#issuecomment-465441127
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" XXX TODO: this seems to screw up the 'file has changed' dialog.
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " TODO: `coc` language support is supported with `:CocInstall`. E.g.:
 " :CocInstall coc-rls

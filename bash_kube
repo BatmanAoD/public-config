@@ -59,6 +59,8 @@ login_if_eks_ctxt () {
     # A nice way to handle this would be have a 'prompt-command-array`.... too
     # bad that's not a built-in feature, but it shouldn't be too hard to do it
     # myself.
+    # Zsh actually does use arrays for its hooks:
+    # http://zsh.sourceforge.net/Doc/Release/Functions.html#Hook-Functions
     PROMPT_COMMAND=refresh_okta
 }
 
