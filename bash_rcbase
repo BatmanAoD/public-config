@@ -296,16 +296,11 @@ bind "set completion-ignore-case on"
 bind "set show-all-if-ambiguous on"
 bind Space:magic-space # ...for some reason this can't come earlier...?
 
-if [[ -n "$powerline" ]]; then
-    # TODO currently have `powerline-rs` installed;
-    # it's not well documented, so also check out `powerline-rust`, `silver`,
-    # and `powerline-go`.
-    # I would particuarly like Kubernetes information. See personal-notes/context-items.md
-    # Jeff's setup: https://rms.slack.com/archives/CJJ7EQ285/p1557355726002600
-    prompt() {
-        PS1="$($powerline --shell bash $?)"
-    }
-    export PROMPT_COMMAND=prompt
+if hash starship 2>/dev/null; then
+    # TODO look into adding Kubernetes information. See
+    # personal-notes/context-items.md Jeff's setup:
+    # https://rms.slack.com/archives/CJJ7EQ285/p1557355726002600
+    eval "$(starship init bash)"
 else
     # Set the prompt
     PS1='\h|\W> '    
@@ -317,9 +312,24 @@ else
     elif ! ${id_is_known}; then
         PS1="\[\e[0;33m\]\u@\[\e[m\]${PS1}"
     fi
-    export PS1
-    export PROMPT_COMMAND=
 fi
+
+add_prompt_command () {
+    # Adapted from how `starship` handles this
+    # A nicer way to handle this would be have a 'prompt-command-array`.... too
+    # bad that's not a built-in feature, but it shouldn't be too hard to do it
+    # myself.
+    # TODO someone has already written this; try it out:
+    # https://github.com/rcaloras/bash-preexec
+    # Zsh actually does use arrays for its hooks:
+    # http://zsh.sourceforge.net/Doc/Release/Functions.html#Hook-Functions
+    if [[ -z "$PROMPT_COMMAND" ]]; then
+        PROMPT_COMMAND="$1"
+    elif [[ "$PROMPT_COMMAND" != *"$1" ]]; then
+        # Remove any trailing semicolon before appending
+        PROMPT_COMMAND="${PROMPT_COMMAND%;};$1;"
+    fi
+}
 
 # Make `less` display colors and not clear the screen
 # ....not reeeeeally sure what this does...
