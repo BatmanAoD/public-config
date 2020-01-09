@@ -169,10 +169,10 @@ fi
 
 echo "bashrc is: " ~/.bashrc
 
-# Be a bit more permissive when running `.bashrc`; it uses unset variables.
+# Be a bit more permissive when running `.bash_rcbase`; it uses unset variables.
 set +u
 set +e
-. ~/.bashrc
+. ~/.bash_rcbase
 set -u
 set -e
 
