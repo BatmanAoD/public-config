@@ -55,13 +55,7 @@ login_if_eks_ctxt () {
         okta_profile=$(aws-okta list | grep -- $aws_acct | head -1 | awk '{print $1}')
         eval $(aws-okta env $okta_profile)
     fi
-    # XXX TODO - don't break existing PROMPT_COMMAND if there is one.
-    # A nice way to handle this would be have a 'prompt-command-array`.... too
-    # bad that's not a built-in feature, but it shouldn't be too hard to do it
-    # myself.
-    # Zsh actually does use arrays for its hooks:
-    # http://zsh.sourceforge.net/Doc/Release/Functions.html#Hook-Functions
-    PROMPT_COMMAND=refresh_okta
+    add_prompt_command refresh_okta
 }
 
 k () {
