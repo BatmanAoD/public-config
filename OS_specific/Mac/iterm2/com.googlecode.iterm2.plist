@@ -82,13 +82,13 @@
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>1882 718 796 486 1680 254 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1863 201 1873 1272 1680 141 2560 1417 </string>
+	<string>1910 303 1579 927 1680 142 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>6 19 1404 980 0 0 1680 1027 </string>
+	<string>1966 249 1530 867 1680 142 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
-	<string>2064 392 928 957 1680 141 2560 1417 </string>
+	<string>3439 615 585 402 1680 142 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
-	<string>-1188 1102 585 402 -2560 160 2560 1417 </string>
+	<string>2187 426 1005 717 1680 133 1920 1057 </string>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91_selection</key>
@@ -98,6 +98,18 @@
 		<dict>
 			<key>ASCII Anti Aliased</key>
 			<true/>
+			<key>AWDS Pane Directory</key>
+			<string></string>
+			<key>AWDS Pane Option</key>
+			<string>Recycle</string>
+			<key>AWDS Tab Directory</key>
+			<string></string>
+			<key>AWDS Tab Option</key>
+			<string>Recycle</string>
+			<key>AWDS Window Directory</key>
+			<string></string>
+			<key>AWDS Window Option</key>
+			<string>No</string>
 			<key>Ambiguous Double Width</key>
 			<false/>
 			<key>Ansi 0 Color</key>
@@ -299,7 +311,7 @@
 			<key>Custom Command</key>
 			<string>Yes</string>
 			<key>Custom Directory</key>
-			<string>Recycle</string>
+			<string>Advanced</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>
@@ -2481,13 +2493,14 @@
 	<key>NoSyncAllAppVersions</key>
 	<array>
 		<string>3.3.6</string>
-		<string>3.3.2</string>
+		<string>3.3.4</string>
 		<string>3.3.1</string>
 		<string>3.3.3</string>
 		<string>3.3.5</string>
-		<string>3.3.0</string>
+		<string>3.3.7</string>
 		<string>3.2.9</string>
-		<string>3.3.4</string>
+		<string>3.3.0</string>
+		<string>3.3.2</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -2513,9 +2526,9 @@
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
 		<key>screenFrame</key>
-		<string>{{1680, 141}, {2560, 1440}}</string>
+		<string>{{1680, 142}, {2560, 1440}}</string>
 		<key>topLeft</key>
-		<string>{2004, 970}</string>
+		<string>{1923, 1015}</string>
 	</dict>
 	<key>NoSyncHaveWarnedAboutIncompatibleSoftware</key>
 	<true/>
@@ -2526,7 +2539,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>579329977.04660904</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>72</integer>
+	<integer>99</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -3253,6 +3266,9 @@
 	</dict>
 	<key>NoSyncSearchHistory2</key>
 	<array>
+		<string>misc_scala</string>
+		<string>core_services_v</string>
+		<string>sudo</string>
 		<string>/shra</string>
 		<string>minhe</string>
 		<string>cancel</string>
@@ -3275,6 +3291,8 @@
 	<false/>
 	<key>OpenTmuxWindowsIn</key>
 	<integer>0</integer>
+	<key>PMPrintingExpandedStateForPrint2</key>
+	<false/>
 	<key>PointerActions</key>
 	<dict>
 		<key>Button,1,1,,</key>
@@ -3310,6 +3328,8 @@
 	</dict>
 	<key>PrefsCustomFolder</key>
 	<string>/Users/kstrand/public-config/OS_specific/Mac/iterm2</string>
+	<key>Print In Black And White</key>
+	<true/>
 	<key>PromptOnQuit</key>
 	<false/>
 	<key>QuitWhenAllWindowsClosed</key>
@@ -3325,7 +3345,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-11-19T17:11:29Z</date>
+	<date>2020-01-07T21:32:10Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
@@ -3343,6 +3363,6 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.6</string>
+	<string>3.3.7</string>
 </dict>
 </plist>
