@@ -274,7 +274,7 @@ elif hash gvim 2>/dev/null; then
 # TODO this seems brittle--there's no particular reason for the Vim installer
 # to always install the batch files to C:\Windows. Re-evaluate the `start`
 # situation and/or try to find another way to search the Windows PATH for gvim.
-elif [[ -e "$(cygpath 'C:\Windows\gvim.bat')" ]]; then
+elif hash cygpath 2>/dev/null && [[ -e "$(cygpath 'C:\Windows\gvim.bat')" ]]; then
     export NEWWINDOW_EDIT_CMD="$(cygpath 'C:\Windows\gvim.bat')"
     export EDITOR="$NEWWINDOW_EDIT_CMD -f"
     export VISUAL="$NEWWINDOW_EDIT_CMD  -f"
