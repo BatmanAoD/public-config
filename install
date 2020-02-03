@@ -61,7 +61,6 @@ link_s () {
     if [[ -h "${new_link}" ]]; then rm "${new_link}"; fi
     if [[ -e "${new_link}" ]]; then
         # XXX TODO: Provide option to force overwrite.
-        # `.bashrc` almost always exists.
         echo "ERROR: Can't overwrite non-symlink file: ${new_link}" >&2
     else
         universal_symlink "${1}" "${new_link}"
@@ -71,6 +70,9 @@ link_s () {
 cd ~
 
 shopt -s nullglob
+
+# `.bashrc` almost always exists.
+rm -f ~/.bashrc
 
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep; do
     echo Installing rc files for ${prog}
