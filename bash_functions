@@ -110,8 +110,10 @@ abspath() {
     # `install` script.
     tmp_path=$(readlink -f $targ)
     # If on Windows, get a Windows path
-    if $WINDOWS; then
-        tmp_path=$(cygpath -w $tmp_path)
+    if $CYGWIN; then
+        tmp_path="$(cygpath -w "$tmp_path")"
+    elif $WSL; then
+        tmp_path="$(wslpath -wa "$tmp_path")"
     # Otherwise, try to substitute out `~<usr>`
     else
         tmp_path="$(tildepath "$tmp_path")"
