@@ -71,3 +71,5 @@ fi
 
 # Print a message
 say green "<- bashrc"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
