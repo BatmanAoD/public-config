@@ -82,9 +82,9 @@
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>1882 718 796 486 1680 254 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1910 303 1579 927 1680 142 2560 1417 </string>
+	<string>-2465 295 1397 732 -2560 160 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>1966 249 1530 867 1680 142 2560 1417 </string>
+	<string>-1256 441 963 627 -2560 160 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>3439 615 585 402 1680 142 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
@@ -97,6 +97,8 @@
 	<array>
 		<dict>
 			<key>ASCII Anti Aliased</key>
+			<true/>
+			<key>ASCII Ligatures</key>
 			<true/>
 			<key>AWDS Pane Directory</key>
 			<string></string>
@@ -2498,8 +2500,8 @@
 		<string>3.3.3</string>
 		<string>3.3.5</string>
 		<string>3.3.7</string>
-		<string>3.2.9</string>
 		<string>3.3.0</string>
+		<string>3.2.9</string>
 		<string>3.3.2</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
@@ -2526,9 +2528,9 @@
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
 		<key>screenFrame</key>
-		<string>{{1680, 142}, {2560, 1440}}</string>
+		<string>{{-2560, 160}, {2560, 1440}}</string>
 		<key>topLeft</key>
-		<string>{1923, 1015}</string>
+		<string>{-2493, 1149}</string>
 	</dict>
 	<key>NoSyncHaveWarnedAboutIncompatibleSoftware</key>
 	<true/>
@@ -2539,7 +2541,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>579329977.04660904</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>99</integer>
+	<integer>103</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -3345,7 +3347,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-07T21:32:10Z</date>
+	<date>2020-01-09T16:45:58Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>

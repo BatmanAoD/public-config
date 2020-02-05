@@ -347,6 +347,8 @@ else
         echo Installing loc
         cargo install loc
     fi
+    # TODO install `broot`? Needs a script, `br`, to be sourced. Just symlink
+    # as `.bash_br`?
     # TODO install a powerline-compatible font and starship?
     # (Starship is just `cargo install`, but installing a font might be harder
     # cross-platform)
