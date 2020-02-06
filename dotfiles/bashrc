@@ -36,10 +36,16 @@ bashfiles="${cfg_HOME}/.bash.d"
 # inspired by: https://www.turnkeylinux.org/blog/generic-shell-hooks
 load_scripts()
 {
+    if [[ $# -eq 0 ]]; then
+        dir="$bashfiles"
+    else
+        dir="$1"
+    fi
     # Skip everything with a dot in the filename, except for the bootstrap and
     # rcbase files
     # TODO: how do we ensure that the bootstrap comes before rcbase?
-    for bashfile in "${bashfiles}"/source_first.* "${bashfiles}"/!(*.*); do
+    # (glob isn't alphabetical, is it?)
+    for bashfile in "${dir}"/source_first.* "${dir}"/!(*.*); do
 
         # skip non-executable snippets
         [[ -x "$bashfile" ]] || continue
@@ -50,6 +56,7 @@ load_scripts()
 }
 
 load_scripts
+load_scripts ~/private-config/bash.d
 
 # This is here, rather than in .bash_aliases, due to how it determines the
 # bashrc path.
@@ -75,4 +82,5 @@ fi
 # Print a message
 say green "<- bashrc"
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# XXX set up fzf without messing up `hash`
+# [ -f ~/.fzf.bash ] && source ~/.fzf.bash
