@@ -6,22 +6,6 @@ id_is_known=false
 primary_local_account=
 primary_HOME=
 
-if [[ -r /usr/libexec/path_helper ]]; then
-    # Not sure why this isn't done by default for non-login shells on OS X.
-    eval $(/usr/libexec/path_helper)
-fi
-
-# Ensure particular dirs are on $PATH if they exist.
-# Logic to ensure path is only added *once* is taken from
-# http://superuser.com/a/39995/199803
-# For more PATH-editing convenience functions:
-# http://superuser.com/a/1001014/199803
-ensure_on_path () {
-    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
-        export PATH="${PATH:+"$PATH:"}$1"
-    fi
-}
-
 for usrname in $known_ids; do
     if [[ $usrname == $(whoami) ]]; then
         id_is_known=true
@@ -34,17 +18,11 @@ for usrname in $known_ids; do
     fi
 done
 
-if [[ -n "$primary_HOME" ]]; then
-    ensure_on_path "${primary_HOME}/bin"
-    ensure_on_path "${primary_HOME}/.cargo/bin"
-fi
-# Either way, add the current-user's binaries
-ensure_on_path "${HOME}/bin"
-ensure_on_path "${HOME}/.cargo/bin"
 
-# For Yarn (TODO: do I have some standard way of doing this?)
-ensure_on_path "$HOME/.yarn/bin"
-ensure_on_path "$HOME/.config/yarn/global/node_modules/.bin"
+if [[ -r /usr/libexec/path_helper ]]; then
+    # Not sure why this isn't done by default for non-login shells on OS X.
+    eval $(/usr/libexec/path_helper)
+fi
 
 # TODO move all platform-checking logic to `bootstrap`
 WINDOWS=false
@@ -217,6 +195,34 @@ fi
 # set -u                # attempting to expand unset variables is an error
 set -o monitor          # enable job control
 set -o vi               # vi command-line editing
+
+# Ensure particular dirs are on $PATH if they exist.
+# Logic to ensure path is only added *once* is taken from
+# http://superuser.com/a/39995/199803
+# For more PATH-editing convenience functions:
+# http://superuser.com/a/1001014/199803
+ensure_on_path () {
+    save_paths="$(mktemp $TMP/hashlistXXXXXXXXX)"
+    hash -l | grep -v 'hash table empty' > "$save_paths"
+    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+    . "$save_paths"
+    rm "$save_paths"
+}
+
+if [[ -n "$primary_HOME" ]]; then
+    ensure_on_path "${primary_HOME}/bin"
+    ensure_on_path "${primary_HOME}/.cargo/bin"
+fi
+# Either way, add the current-user's binaries
+ensure_on_path "${HOME}/bin"
+ensure_on_path "${HOME}/.cargo/bin"
+
+# For Yarn (TODO: do I have some standard way of doing this?)
+ensure_on_path "$HOME/.yarn/bin"
+ensure_on_path "$HOME/.config/yarn/global/node_modules/.bin"
+
 
 # Workaround for a gvim/git-bash oddity.
 # See https://stackoverflow.com/q/31167411/1858225
