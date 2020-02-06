@@ -101,7 +101,6 @@ alias mo="$PAGER"
 alias less="$PAGER"
 alias p="$PAGER"
 
-alias edit='$NEWWINDOW_EDIT_CMD'
 alias ed=edit
 alias e=edit
 
