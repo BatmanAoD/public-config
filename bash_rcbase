@@ -220,18 +220,18 @@ set -o vi               # vi command-line editing
 
 # Workaround for a gvim/git-bash oddity.
 # See https://stackoverflow.com/q/31167411/1858225
-if ! hash gvim 2>/dev/null && type gvim.bat &>/dev/null; then
+if ! $WSL && ! hash gvim 2>/dev/null && type gvim.bat &>/dev/null; then
     alias gvim=gvim.bat
 fi
 # XXX TODO
-# Disable this if I have more problems with neovim!
-# TODO - `nvim`, at least on Windows, launches "headless mode",
-# with no display at all...not really sure how to get nvim in the
-# terminal reliably.
-if hash nvim 2>/dev/null; then
+# How to determine if I want `nvim` or `gvim` as the default?
+# This suggests that my startup scripts should be more configurable on a
+# per-system basis...
+if false; then # hash nvim 2>/dev/null; then
     export EDITOR=nvim
     # Custom script for launcing nvim in a new gnome terminal
-    # TODO the native GUI interface for nvim will make this unnecessary
+    # TODO the native GUI interface for nvim should make this unnecessary
+    # TODO: on WSL: must be `nvim-qt.exe` (probably this applies elsewhere?)
     if hash nvim-qt 2>/dev/null && test -n $DISPLAY; then
         # `nvim-qt` and `gvim` both have an odd problem in git-bash
         # that causes them not to fork appropriately.
@@ -264,6 +264,11 @@ elif hash gvim 2>/dev/null; then
         export EDITOR=vim
         export VISUAL=vim
     fi
+elif $WSL; then
+    # XXX how to figure out the version?
+    NEWWINDOW_EDIT_CMD="$(echo /mnt/c/Program\ Files\ \(x86\)/Vim/vim*/gvim.exe)"
+    export EDITOR="$NEWWINDOW_EDIT_CMD -f"
+    export VISUAL="$NEWWINDOW_EDIT_CMD  -f"
 # On Windows, git-bash will install `/usr/bin/vim` -- which is *NOT* what we
 # want if we have a full Windows gVim install. Ideally, we could use the
 # Windows `start` command to simply check if `gvim` is on the *Windows* PATH,
@@ -285,6 +290,28 @@ else
     export VISUAL=vi
 fi
 
+if $WSL; then
+    # Handle symlinks: workaround for
+    # https://github.com/microsoft/WSL/issues/4868
+    wsl_native_args () { 
+        cmd="$1";
+        shift;
+        args=();
+            for a in "$@"; do
+                if [[ -L "$a" ]]; then
+                    args+=("$(abspath "$a")");
+                else
+                    args+=("$a");
+                fi;
+            done;
+        "$cmd" "${args[@]}"
+    }
+    edit () { 
+        wsl_native_args "$NEWWINDOW_EDIT_CMD" "$@"
+    }
+else
+    edit () { "$NEWWINDOW_EDIT_CMD" "$@" ; }
+fi
 
 export PEDITOR="$EDITOR"
 export EDOVER="$VISUAL"
