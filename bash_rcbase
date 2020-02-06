@@ -323,11 +323,43 @@ bind "set completion-ignore-case on"
 bind "set show-all-if-ambiguous on"
 bind Space:magic-space # ...for some reason this can't come earlier...?
 
+add_prompt_command () {
+    # Adapted from how `starship` handles this
+    # A nicer way to handle this would be have a 'prompt-command-array`.... too
+    # bad that's not a built-in feature, but it shouldn't be too hard to do it
+    # myself.
+    # TODO someone has already written this; try it out:
+    # https://github.com/rcaloras/bash-preexec
+    # Zsh actually does use arrays for its hooks:
+    # http://zsh.sourceforge.net/Doc/Release/Functions.html#Hook-Functions
+    if [[ -z "$PROMPT_COMMAND" ]]; then
+        PROMPT_COMMAND="$1"
+    # TODO this check is not very robust. A better way would be to split the
+    # prompt-command into an array based on `;`, then check each element.
+    elif [[ "$PROMPT_COMMAND" != *"$1"* ]]; then
+        # Remove any trailing semicolon before appending
+        PROMPT_COMMAND="${PROMPT_COMMAND%;};$1;"
+    fi
+}
+
 if hash starship 2>/dev/null; then
     # TODO look into adding Kubernetes information. See
-    # personal-notes/context-items.md Jeff's setup:
+    # personal-notes/context-items.md
+    # Jeff's setup:
     # https://rms.slack.com/archives/CJJ7EQ285/p1557355726002600
+    # TODO `starship init bash` is re-adding the prompt-command, because it
+    # assumes that `starship_precmd` comes _last_.
+    # Submit a bug report for this.
+    # It actually makes some sense to _want_ starship_precmd to come last,
+    # but the init command should _ensure_ that rather than behaving badly if
+    # it doesn't.
+    # So for now, the workaround is... run the init (which generates the
+    # precomd and preexec functions), then restore the previous PROMPT_COMMAND,
+    # then add `starship_precmd`.
+    SAVED_PROMPT_COMMAND="$PROMPT_COMMAND"
     eval "$(starship init bash)"
+    PROMPT_COMMAND="$SAVED_PROMPT_COMMAND"
+    add_prompt_command starship_precmd
 else
     # Set the prompt
     PS1='\h|\W> '    
@@ -340,23 +372,6 @@ else
         PS1="\[\e[0;33m\]\u@\[\e[m\]${PS1}"
     fi
 fi
-
-add_prompt_command () {
-    # Adapted from how `starship` handles this
-    # A nicer way to handle this would be have a 'prompt-command-array`.... too
-    # bad that's not a built-in feature, but it shouldn't be too hard to do it
-    # myself.
-    # TODO someone has already written this; try it out:
-    # https://github.com/rcaloras/bash-preexec
-    # Zsh actually does use arrays for its hooks:
-    # http://zsh.sourceforge.net/Doc/Release/Functions.html#Hook-Functions
-    if [[ -z "$PROMPT_COMMAND" ]]; then
-        PROMPT_COMMAND="$1"
-    elif [[ "$PROMPT_COMMAND" != *"$1" ]]; then
-        # Remove any trailing semicolon before appending
-        PROMPT_COMMAND="${PROMPT_COMMAND%;};$1;"
-    fi
-}
 
 # Make `less` display colors and not clear the screen
 # ....not reeeeeally sure what this does...
