@@ -31,22 +31,25 @@ shopt -s extglob
 BASHRC_PATH="${BASH_SOURCE[0]}"
 
 cfg_HOME="$(dirname "${BASHRC_PATH}")"
+bashfiles="${cfg_HOME}/.bash.d"
 
-# Source the rc "bootstrap" and "base" first.
-bash_bootstrapfile="${cfg_HOME}/.bash_bootstrap"
-bash_rcbasefile="${cfg_HOME}/.bash_rcbase"
+# inspired by: https://www.turnkeylinux.org/blog/generic-shell-hooks
+load_scripts()
+{
+    # Skip everything with a dot in the filename, except for the bootstrap and
+    # rcbase files
+    # TODO: how do we ensure that the bootstrap comes before rcbase?
+    for bashfile in "${bashfiles}"/source_first.* "${bashfiles}"/!(*.*); do
 
-# TODO use a strategy more like this: https://www.turnkeylinux.org/blog/generic-shell-hooks
-# Aliases, functions, and site-specific config files
-# Do not source files with multiple '.'s (such as .swp files)
-# TODO: there are too many special cases. Use a special filename prefix for the
-# files that should be sourced here.
-for bashfile in "$bash_bootstrapfile" "$bash_rcbasefile" "${cfg_HOME}"/.bash_!(bootstrap|rcbase|profile|history|sessions|logout|*.*); do
-    echo "Sourcing '$bashfile'"
-    # We could skip `.swp` files, but in theory these are technically all
-    # symlinks anyway, so the `.swp` files will be elsewhere.
-    . "${bashfile}"
-done
+        # skip non-executable snippets
+        [[ -x "$bashfile" ]] || continue
+
+        echo "Sourcing '$bashfile'"
+        . "$bashfile"
+    done
+}
+
+load_scripts
 
 # This is here, rather than in .bash_aliases, due to how it determines the
 # bashrc path.
