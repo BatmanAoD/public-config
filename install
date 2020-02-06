@@ -362,12 +362,10 @@ fi
 
 cd ~/bin
 
-# Install sshrc
-if ! hash sshrc 2>/dev/null; then
-    echo Installing sshrc
-    wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc &&
-        chmod +x sshrc
-fi
+# The original sshrc repo apparently no longer exists. I have found forks, but
+# they are pretty old.
+# I should reconsider whether I actually want this functionality, and/or if
+# there's a better way to accomplish something similar.
 
 # TODO: install how2? (Not sure how useful it is yet; requires nodejs and some
 # fiddling to make it work; specifically, how2 assumes nodejs executable is
