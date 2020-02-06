@@ -267,8 +267,10 @@ elif hash gvim 2>/dev/null; then
 elif $WSL; then
     # XXX how to figure out the version?
     NEWWINDOW_EDIT_CMD="$(echo /mnt/c/Program\ Files\ \(x86\)/Vim/vim*/gvim.exe)"
-    export EDITOR="$NEWWINDOW_EDIT_CMD -f"
-    export VISUAL="$NEWWINDOW_EDIT_CMD  -f"
+    # XXX having spaces in the path doesn't work...
+    # Maybe I just need a custom script in ~/bin/
+    export EDITOR="vim -f"
+    export VISUAL="vim -f"
 # On Windows, git-bash will install `/usr/bin/vim` -- which is *NOT* what we
 # want if we have a full Windows gVim install. Ideally, we could use the
 # Windows `start` command to simply check if `gvim` is on the *Windows* PATH,
