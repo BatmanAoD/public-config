@@ -1,0 +1,16 @@
+wsl_native_args is a function
+wsl_native_args () 
+{ 
+    cmd="$1";
+    shift;
+    args=();
+    for a in "$@";
+    do
+        if [[ -e "$a" ]]; then
+            args+="$(abspath "$a")";
+        else
+            args+="$a";
+        fi;
+    done;
+    $cmd "${args[@]}"
+}

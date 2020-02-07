@@ -2,15 +2,13 @@
 
 if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
     # TODO: There aren't _too_ many things that rely on Bash 4.
-    # But on the other hand, I don't ever plan to use Bash 3 as my primary shell...
-    # ...though maybe having Bash3 compatibility for `sshrc` would be helpful
-    # in case I need to ssh into Macs I don't own.
+    # But on the other hand, I don't ever plan to use Bash 3 as my primary shell.
     echo "ERROR: Bash version is $BASH_VERSION, but only 4 and above are supported." >&2
     exit 2
 fi
 
 # Assumes not `set -e`
-. ~/public-config/bash_bootstrap
+. ~/public-config/dotfiles/bash.d/source_first.bootstrap
 
 set -e
 set -u
@@ -38,6 +36,8 @@ echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
 if $WINDOWS; then
     # TODO: don't give this warning unless the `public-config` directory's
     # parent is somewhere other than `$HOME`.
+    # (Note: this whole script appears to assume the location of the
+    # `public-config` dir...)
     cat <<WIN_HOME_INSTRUCTIONS
 To set the HOME variable to your user-profile directory, manually create
 it and assign it to '%USERPROFILE%'.
@@ -60,6 +60,7 @@ link_s () {
     fi
     if [[ -h "${new_link}" ]]; then rm "${new_link}"; fi
     if [[ -e "${new_link}" ]]; then
+        # XXX TODO: Provide option to force overwrite.
         echo "ERROR: Can't overwrite non-symlink file: ${new_link}" >&2
     else
         universal_symlink "${1}" "${new_link}"
@@ -70,11 +71,12 @@ cd ~
 
 shopt -s nullglob
 
+# `.bashrc` almost always exists.
+rm -f ~/.bashrc
+
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep; do
     echo Installing rc files for ${prog}
-    # TODO Not everything here is an rc file; make an RC-file directory!
-    for file in ~/public-config/${prog}* ~/private-config/${prog}*; do
-        if [[ -d "${file}" ]]; then continue; fi
+    for file in ~/public-config/dotfiles/${prog}* ~/private-config/dotfiles/${prog}*; do
         rcname=".$(basename "${file}")"
         link_s "${file}" ${rcname}
     done
@@ -100,6 +102,7 @@ echo "Installing common options for git"
 git config --global include.path ~/public-config/includefile_gitconfig
 # Use .gitignore globally
 git config --global core.excludesfile ~/.gitignore
+# TODO Set username and email now?
 
 mkdir -p ~/bin
 cd ~/bin
@@ -184,26 +187,26 @@ set -e
 
 ##############################################################################
 # Install Vim plugin manager
-# (Only if we've installed a nice version of vim--assume that the existence
-# of gvim means that this is done.)
+# TODO: how can we determine if the installed vim feature-set is sufficient for
+# the plugins I'm using? (`vim --version | grep <something>`?)
 vim_plug=autoload/plug.vim
 vim_plugin_mgr=~/.vim/${vim_plug}
-# For some reason `hash gvim` can't find gvim on Windows in Git Bash, so
-# try `where` as well.
-if hash gvim 2>/dev/null || where gvim &>/dev/null; then
+# For some reason `hash` doesn't always work on Windows in Git Bash, so try
+# `where` as well.
+if hash vim 2>/dev/null || where vim &>/dev/null; then
     if [[ ! -a "${vim_plugin_mgr}" ]]; then
         if hash curl 2>/dev/null; then
             echo Installing Vim plugins
             curl -fLo "${vim_plugin_mgr}" --create-dirs \
                 https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-            gvim "+PlugInstall"
+            vim "+PlugInstall"
         else
             echo "'curl' not installed; not installing Vim-Plug."
         fi
     fi
 else
     # TODO `vim-gtk` seems pretty good, generally; just install that?
-    echo "WARNING: gvim not installed"
+    echo "WARNING: vim not installed"
 fi
 
 # TODO Somehow automatically perform no-extension file-association?
@@ -219,6 +222,7 @@ fi
 # TODO: other package managers
 # XXX TODO: On Windows, install Chocolatey! This seems like a no-brainer
 # obvious win now that I'm working more with Windows.
+# TODO: `brew` for Mac?
 installusingchoco=false
 installusingapt=false
 if ${WINDOWS}; then
@@ -349,16 +353,23 @@ else
         echo Installing loc
         cargo install loc
     fi
+    # TODO install `broot`? Needs a script, `br`, to be sourced. Just symlink
+    # as `.bash_br`?
+    # TODO install a powerline-compatible font and starship?
+    # (Starship is just `cargo install`, but installing a font might be harder
+    # cross-platform)
+    # Other tools:
+    # * https://github.com/lotabout/skim (replace fzf, or do they work together?)
+    # * https://github.com/mookid/diffr
+
 fi
 
 cd ~/bin
 
-# Install sshrc
-if ! hash sshrc 2>/dev/null; then
-    echo Installing sshrc
-    wget https://raw.githubusercontent.com/Russell91/sshrc/master/sshrc &&
-        chmod +x sshrc
-fi
+# The original sshrc repo apparently no longer exists. I have found forks, but
+# they are pretty old.
+# I should reconsider whether I actually want this functionality, and/or if
+# there's a better way to accomplish something similar.
 
 # TODO: install how2? (Not sure how useful it is yet; requires nodejs and some
 # fiddling to make it work; specifically, how2 assumes nodejs executable is
