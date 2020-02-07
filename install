@@ -292,6 +292,11 @@ else
     fi
 fi
 
+if $installusingapt; then
+    echo Installing xclip using apt
+    sudo apt-get install xclip
+fi
+
 # Install fzf
 if [[ ! -d ~/.fzf ]]; then
     echo Installing fzf
