@@ -88,7 +88,6 @@ if ${WINDOWS}; then
     # in Explorer:
     # http://stackoverflow.com/a/8110982/1858225
     link_s .vim vimfiles
-    link_s .vimrcbundles _vimrcbundles 
     NVIM_PATH=~/AppData/Local/nvim
 fi
 
