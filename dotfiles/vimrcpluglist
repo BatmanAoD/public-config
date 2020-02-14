@@ -10,6 +10,9 @@
 
 call plug#begin('~/.vim/plugged')
 
+" Lotsa langauges
+Plug 'sheerun/vim-polyglot'
+
 Plug 'gmarik/Vundle.vim'
 
 " Put new plugins here
