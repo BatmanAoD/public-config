@@ -118,10 +118,10 @@ alias edvi="edit ~/.vimrc*"
 # convenient way to add/edit bash stuff
 # Note that VISUAL is by default set up to use the -f option,
 # so we don't need to use EDITOR
-alias edrc="$VISUAL ~/.bash_rcbase && reload"
-alias edal="$VISUAL ~/.bash_aliases* && reload"
-alias edfx="$VISUAL ~/.bash_functions* && reload"
-alias edpriv="$VISUAL ~/private-config/bash* && reload"
+alias edrc="$VISUAL ~/.bash.d/*.rcbase && reload"
+alias edal="$VISUAL ~/.bash.d/aliases* && reload"
+alias edfx="$VISUAL ~/.bash.d/functions* && reload"
+alias edpriv="$VISUAL ~/private-config/bash.d/* && reload"
 
 # Other config-related aliases
 if [[ -n "$CONFIG_DIR" ]]; then

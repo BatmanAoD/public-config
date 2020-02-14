@@ -6,6 +6,8 @@
 	<true/>
 	<key>AppleAntiAliasingThreshold</key>
 	<integer>1</integer>
+	<key>ApplePressAndHoldEnabled</key>
+	<false/>
 	<key>AppleScrollAnimationEnabled</key>
 	<integer>0</integer>
 	<key>AppleSmoothFixedFontsSizeThreshold</key>
@@ -82,13 +84,13 @@
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>1882 718 796 486 1680 254 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-2465 295 1397 732 -2560 160 2560 1417 </string>
+	<string>118 240 1312 687 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>-1256 441 963 627 -2560 160 2560 1417 </string>
+	<string>150 401 570 402 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
-	<string>3439 615 585 402 1680 142 2560 1417 </string>
+	<string>48 443 570 402 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
-	<string>2187 426 1005 717 1680 133 1920 1057 </string>
+	<string>1702 158 1341 822 1680 133 1920 1057 </string>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91_selection</key>
@@ -2495,14 +2497,15 @@
 	<key>NoSyncAllAppVersions</key>
 	<array>
 		<string>3.3.6</string>
-		<string>3.3.4</string>
+		<string>3.3.8</string>
+		<string>3.3.2</string>
 		<string>3.3.1</string>
 		<string>3.3.3</string>
 		<string>3.3.5</string>
 		<string>3.3.7</string>
 		<string>3.3.0</string>
 		<string>3.2.9</string>
-		<string>3.3.2</string>
+		<string>3.3.4</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -2541,7 +2544,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>579329977.04660904</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>103</integer>
+	<integer>112</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -2916,6 +2919,14 @@
 			</dict>
 			<dict>
 				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>currentTab.currentSession.lastCommand</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
 				<false/>
 				<key>name</key>
 				<string>currentTab</string>
@@ -3266,15 +3277,6 @@
 			</dict>
 		</array>
 	</dict>
-	<key>NoSyncSearchHistory2</key>
-	<array>
-		<string>misc_scala</string>
-		<string>core_services_v</string>
-		<string>sudo</string>
-		<string>/shra</string>
-		<string>minhe</string>
-		<string>cancel</string>
-	</array>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
 	<real>578864409.57148898</real>
 	<key>NoSyncTipsDisabled</key>
@@ -3347,7 +3349,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-09T16:45:58Z</date>
+	<date>2020-02-07T17:28:17Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
@@ -3365,6 +3367,6 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.7</string>
+	<string>3.3.8</string>
 </dict>
 </plist>

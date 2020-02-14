@@ -4,9 +4,6 @@
 # Functions and other setup used by other public-config scripts, *including*
 # `install`, *and* sourced by `.bashrc`.
 
-# TODO add stuff here from `install` and possibly `.bashrc/.bash_rcbase`, then use it in
-# those scripts
-
 # Using `-n` b/c `-v` is not supported yet in Oil
 if [[ -n "${WINDIR+x}" ]]; then
     WINDOWS=true
