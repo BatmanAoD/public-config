@@ -32,7 +32,7 @@ godir() {
     fi
 }
 
-# TODO `*_proj` functions should probably be in .bash_workspaces
+# TODO `*_proj` functions should probably be in .bash.d/workspaces
 set_proj() {
     # TODO: This could be more feature-rich, e.g. handling other VCS systems
     # TODO: Use `projname` more widely?
@@ -493,7 +493,7 @@ save_alias ()
             ;;
         esac;
     done;
-    alias $tosave >> ~/.bash_aliases$suffix
+    alias $tosave >> ~/.bash.d/aliases$suffix
 }
 
 save_function () 
@@ -511,6 +511,6 @@ save_function ()
             ;;
         esac;
     done;
-    declare -f $tosave >> ~/.bash_functions$suffix
+    declare -f $tosave >> ~/.bash.d/functions$suffix
 }
 # Functions defined by 'save_function'
