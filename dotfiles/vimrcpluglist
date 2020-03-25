@@ -64,6 +64,7 @@ Plug 'tpope/vim-dispatch'
 Plug 'BatmanAoD/pruss-vim'
 " Table mode
 Plug 'dhruvasagar/vim-table-mode'
+Plug 'salsifis/vim-transpose'
 
 " These should take care of all the 'very magic' nonsense
 Plug 'coot/CRDispatcher'

@@ -4,6 +4,8 @@
 <dict>
 	<key>AggressiveFocusFollowsMouse</key>
 	<true/>
+	<key>AlternateMouseScroll</key>
+	<true/>
 	<key>AppleAntiAliasingThreshold</key>
 	<integer>1</integer>
 	<key>ApplePressAndHoldEnabled</key>
@@ -84,11 +86,11 @@
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>1882 718 796 486 1680 254 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>118 240 1312 687 0 0 1680 1027 </string>
+	<string>2292 214 1271 942 1680 133 1920 1057 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>150 401 570 402 0 0 1680 1027 </string>
+	<string>183 449 1327 402 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
-	<string>48 443 570 402 0 0 1680 1027 </string>
+	<string>1738 237 1558 762 1680 133 1920 1057 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
 	<string>1702 158 1341 822 1680 133 1920 1057 </string>
 	<key>NeverWarnAboutShortLivedSessions_22278AB8-6AA3-4E32-A45E-099BAE059E91</key>
@@ -2498,14 +2500,15 @@
 	<array>
 		<string>3.3.6</string>
 		<string>3.3.8</string>
-		<string>3.3.2</string>
+		<string>3.3.4</string>
 		<string>3.3.1</string>
 		<string>3.3.3</string>
 		<string>3.3.5</string>
 		<string>3.3.7</string>
-		<string>3.3.0</string>
+		<string>3.3.9</string>
 		<string>3.2.9</string>
-		<string>3.3.4</string>
+		<string>3.3.2</string>
+		<string>3.3.0</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -2544,7 +2547,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>579329977.04660904</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>112</integer>
+	<integer>125</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -3349,13 +3352,13 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-02-07T17:28:17Z</date>
+	<date>2020-03-06T20:33:53Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
 	<false/>
 	<key>ShowFullScreenTabBar</key>
-	<true/>
+	<false/>
 	<key>SoundForEsc</key>
 	<false/>
 	<key>StealKeyFocus</key>
@@ -3367,6 +3370,6 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.8</string>
+	<string>3.3.9</string>
 </dict>
 </plist>
