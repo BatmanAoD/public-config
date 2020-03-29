@@ -198,7 +198,7 @@ if $WSL; then
             # any existing file arguments are transformed to their absolute
             # paths. Unfortunately, this won't happen for new files (b/c they
             # don't exist yet).
-            if [[ -e "$a" ]];
+            if [[ -e "$a" ]]; then
                 args+=("$(abspath "$a")");
             else
                 args+=("$a");
