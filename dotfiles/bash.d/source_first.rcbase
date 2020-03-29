@@ -319,15 +319,15 @@ if $WSL; then
         args=();
         for a in "$@"; do
             if is_symlink "$a"; then
-                args+=("$(wslpath -wa "$a")");
+                args+=("$(abspath "$a")");
             else
                 args+=("$a");
             fi;
         done;
-        # `cmd.exe` prints an error message and change the working directory
+        # `cmd.exe` prints an error message and changes the working directory
         # if started in a WSL directory.
         (
-            start_in="$(wslpath -wa "$PWD")";
+            start_in="$(abspath "$PWD")";
             cd /mnt/c;
             cmd.exe /c pushd "$start_in" "&&" "${args[@]}"
         )
