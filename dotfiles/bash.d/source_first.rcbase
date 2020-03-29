@@ -228,9 +228,10 @@ is_symlink () {
     if [[ -L "$1" ]]; then
         return 0
     fi
-    parent="$(dirname "$1")"
-    if [[ "$parent" = "$1" ]]; then
-        # Reached the "top level" (not root unless we had an abspath)
+    parent="$(dirname -- "$1")"
+    if [[ ! -e "$parent" || "$parent" = "$1" ]]; then
+        # This is not actually a file argument, or we have reached the "top
+        # level" (not root unless we had an abspath)
         return 1
     fi
     is_symlink "$parent"
