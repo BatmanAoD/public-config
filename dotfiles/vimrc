@@ -669,6 +669,14 @@ augroup RelativeFocus
     endif
 augroup END
 
+" In Windows, when opening a file on a network drive,
+" default to unix lineendings
+augroup UncDrive
+    if has('win32')
+        autocmd BufEnter,BufRead //* :set fileformat=unix
+    endif
+augroup END
+
 " using logic from http://stackoverflow.com/a/9528322/1858225
 if exists("+undofile")
     " Doesn't work if `$VIMFILES` has a space.
