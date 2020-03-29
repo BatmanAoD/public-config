@@ -193,6 +193,11 @@ if $WSL; then
         args=();
         for a in "$@"; do
             # if is_symlink "$a"; then
+            # XXX
+            # For now, we don't preserve the working directory (see below), so
+            # any existing file arguments are transformed to their absolute
+            # paths. Unfortunately, this won't happen for new files (b/c they
+            # don't exist yet).
             if [[ -e "$a" ]];
                 args+=("$(abspath "$a")");
             else
