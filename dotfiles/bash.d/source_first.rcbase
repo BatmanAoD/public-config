@@ -311,34 +311,6 @@ else
     export VISUAL=vi
 fi
 
-if $WSL; then
-    # For symlinks, use their Windows absolute path.
-    # Workaround for https://github.com/microsoft/WSL/issues/4868
-    # Surround all arguments in quotes before passing to cmd.exe.
-    wsl_batch () { 
-        args=();
-        for a in "$@"; do
-            if is_symlink "$a"; then
-                args+=("$(abspath "$a")");
-            else
-                args+=("$a");
-            fi;
-        done;
-        # `cmd.exe` prints an error message and changes the working directory
-        # if started in a WSL directory.
-        (
-            start_in="$(abspath "$PWD")";
-            cd /mnt/c;
-            cmd.exe /c pushd "$start_in" "&&" "${args[@]}"
-        )
-    }
-    edit () { 
-        wsl_batch "$NEWWINDOW_EDIT_CMD" "$@"
-    }
-else
-    edit () { "$NEWWINDOW_EDIT_CMD" "$@" ; }
-fi
-
 export PEDITOR="$EDITOR"
 export EDOVER="$VISUAL"
 set -o ignoreeof          # do not let CNTL-D exit the shell
