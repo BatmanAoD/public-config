@@ -316,19 +316,21 @@ if $WSL; then
     # Workaround for https://github.com/microsoft/WSL/issues/4868
     # Surround all arguments in quotes before passing to cmd.exe.
     wsl_batch () { 
-        cmd="$1";
-        shift;
         args=();
         for a in "$@"; do
             if is_symlink "$a"; then
-                args+=("$(abspath "$a")");
+                args+=("$(wslpath -wa "$a")");
             else
                 args+=("$a");
             fi;
         done;
         # `cmd.exe` prints an error message and change the working directory
         # if started in a WSL directory.
-        (start_in="$(absp "$PWD")"; cd /mnt/c; cmd.exe /c pushd "$start_in" "&&" "$cmd" "${args[@]}")
+        (
+            start_in="$(wslpath -wa "$PWD")";
+            cd /mnt/c;
+            cmd.exe /c pushd "$start_in" "&&" "${args[@]}"
+        )
     }
     edit () { 
         wsl_batch "$NEWWINDOW_EDIT_CMD" "$@"
