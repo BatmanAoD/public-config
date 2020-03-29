@@ -223,6 +223,18 @@ ensure_on_path "${HOME}/.cargo/bin"
 ensure_on_path "$HOME/.yarn/bin"
 ensure_on_path "$HOME/.config/yarn/global/node_modules/.bin"
 
+# Returns 0 if the file path *or any parent dirs* is a symlink
+is_symlink () {
+    if [[ -L "$1" ]]; then
+        return 0
+    fi
+    parent="$(dirname "$1")"
+    if [[ "$parent" = "$1" ]]; then
+        # Reached the "top level" (not root unless we had an abspath)
+        return 1
+    fi
+    is_symlink "$parent"
+}
 
 # Workaround for a gvim/git-bash oddity.
 # See https://stackoverflow.com/q/31167411/1858225
@@ -271,10 +283,10 @@ elif hash gvim 2>/dev/null; then
         export VISUAL=vim
     fi
 elif $WSL; then
-    # XXX how to figure out the version?
-    NEWWINDOW_EDIT_CMD="$(echo /mnt/c/Program\ Files\ \(x86\)/Vim/vim*/gvim.exe)"
-    # XXX having spaces in the path doesn't work...
-    # Maybe I just need a custom script in ~/bin/
+    # These will be called with `cmd.exe`; see `wsl_batch`
+    export NEWWINDOW_EDIT_CMD=gvim
+    # It's unclear how to use the `edit` function in these variables; it
+    # probably requires a standalone script.
     export EDITOR="vim -f"
     export VISUAL="vim -f"
 # On Windows, git-bash will install `/usr/bin/vim` -- which is *NOT* what we
@@ -299,23 +311,26 @@ else
 fi
 
 if $WSL; then
-    # Handle symlinks: workaround for
-    # https://github.com/microsoft/WSL/issues/4868
-    wsl_native_args () { 
+    # For symlinks, use their Windows absolute path.
+    # Workaround for https://github.com/microsoft/WSL/issues/4868
+    # Surround all arguments in quotes before passing to cmd.exe.
+    wsl_batch () { 
         cmd="$1";
         shift;
         args=();
-            for a in "$@"; do
-                if [[ -L "$a" ]]; then
-                    args+=("$(abspath "$a")");
-                else
-                    args+=("$a");
-                fi;
-            done;
-        "$cmd" "${args[@]}"
+        for a in "$@"; do
+            if is_symlink "$a"; then
+                args+=("$(abspath "$a")");
+            else
+                args+=("$a");
+            fi;
+        done;
+        # `cmd.exe` prints an error message and change the working directory
+        # if started in a WSL directory.
+        (start_in="$(absp "$PWD")"; cd /mnt/c; cmd.exe /c pushd "$start_in" "&&" "$cmd" "${args[@]}")
     }
     edit () { 
-        wsl_native_args "$NEWWINDOW_EDIT_CMD" "$@"
+        wsl_batch "$NEWWINDOW_EDIT_CMD" "$@"
     }
 else
     edit () { "$NEWWINDOW_EDIT_CMD" "$@" ; }

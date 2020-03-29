@@ -46,11 +46,20 @@ alias rm="nopreload rm"
 
 # Find a script to generically open files
 if $WINDOWS; then
-    # TODO: handle multiple files, other args?
-    win-open () {
-        start "$(cygpath -w "$1")"
-    }
-    alias open=win-open
+    if hash wsl-open 2>/dev/null; then
+        # TODO use xdg-open, which should call wsl-open? (Mailcap must be
+        # configured for this)
+        alias open=wsl-open
+        # XXX TODO for files without an extension:
+        # https://superuser.com/q/13653
+    else
+        # TODO: handle multiple files, other args?
+        # See 'wsl_batch' function
+        win-open () {
+            start "$(cygpath -w "$1")"
+        }
+        alias open=win-open
+    fi
 elif $MAC_OSX; then
     # Mac OS X already has an 'open' command that behaves appropriately.
     :
