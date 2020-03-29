@@ -100,15 +100,15 @@ tildepath() {
 
 # get an absolute path
 abspath() {
-    if [[ -n $1 ]]; then
-        targ=$1
+    if [[ -n "$1" ]]; then
+        targ="$1"
     else
-        targ=$PWD
+        targ="$PWD"
     fi
     # TODO: This doesn't work with BSD's `readlink`...if nothing else, I should
     # at least add `brew install coreutils` to the tools section of the
     # `install` script.
-    tmp_path=$(readlink -f $targ)
+    tmp_path="$(readlink -f "$targ")"
     # If on Windows, get a Windows path
     if $CYGWIN; then
         tmp_path="$(cygpath -w "$tmp_path")"
