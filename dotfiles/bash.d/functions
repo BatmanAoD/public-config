@@ -191,22 +191,24 @@ if $WSL; then
     # Surround all arguments in quotes before passing to cmd.exe.
     wsl_batch () { 
         args=();
-            for a in "$@"; do
-                if is_symlink "$a"; then
-                    args+=("$(abspath "$a")");
-                else
-                    args+=("$a");
-                fi;
-            done;
-            # `cmd.exe` prints an error message and changes the working directory
-            # if started in a WSL directory.
-            (
-            start_in="$(abspath "$PWD")";
+        for a in "$@"; do
+            # if is_symlink "$a"; then
+            if [[ -e "$a" ]];
+                args+=("$(abspath "$a")");
+            else
+                args+=("$a");
+            fi;
+        done;
+        # `cmd.exe` prints an error message and changes the working directory
+        # if started in a WSL directory.
+        (
+            # WSL_PWD="$(abspath "$PWD")";
             \cd /mnt/c;
-            # XXX TODO `pushd` only mounts the directory temporarily; I suspect
-            # `start` will ensure the directory stays mounted while the process
-            # is running...not sure how to use it though.
-            cmd.exe /c pushd "$start_in" "&&" "${args[@]}"
+            # TODO `pushd` only mounts the directory temporarily; additionally,
+            # the mount seems that the mount can become corrupted somehow.
+            # So for now, simply don't even try to preserve the working directory.
+            # cmd.exe /c pushd "$WSL_PWD" "&&" "${args[@]}"
+            cmd.exe /c "${args[@]}"
         )
     }
     edit () { 
