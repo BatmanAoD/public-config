@@ -185,6 +185,38 @@ if $CYGWIN; then
     }
 fi
 
+if $WSL; then
+    # For symlinks, use their Windows absolute path.
+    # Workaround for https://github.com/microsoft/WSL/issues/4868
+    # Surround all arguments in quotes before passing to cmd.exe.
+    wsl_batch () { 
+        args=();
+            for a in "$@"; do
+                if is_symlink "$a"; then
+                    args+=("$(abspath "$a")");
+                else
+                    args+=("$a");
+                fi;
+            done;
+            # `cmd.exe` prints an error message and changes the working directory
+            # if started in a WSL directory.
+            (
+            start_in="$(abspath "$PWD")";
+            cd /mnt/c;
+            # XXX TODO `pushd` only mounts the directory temporarily; I suspect
+            # `start` will ensure the directory stays mounted while the process
+            # is running...not sure how to use it though.
+            cmd.exe /c start pushd "$start_in" "&&" "${args[@]}"
+        )
+    }
+    edit () { 
+        wsl_batch "$NEWWINDOW_EDIT_CMD" "$@"
+    }
+else
+    edit () { "$NEWWINDOW_EDIT_CMD" "$@" ; }
+fi
+
+
 # edit a bash function in the current session
 # TODO: apparently this doesn't work on home machine...why?
 # TODO: on Cygwin, this apparently doesn't catch the case where the function
