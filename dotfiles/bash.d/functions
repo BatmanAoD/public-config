@@ -202,11 +202,11 @@ if $WSL; then
             # if started in a WSL directory.
             (
             start_in="$(abspath "$PWD")";
-            cd /mnt/c;
+            \cd /mnt/c;
             # XXX TODO `pushd` only mounts the directory temporarily; I suspect
             # `start` will ensure the directory stays mounted while the process
             # is running...not sure how to use it though.
-            cmd.exe /c start pushd "$start_in" "&&" "${args[@]}"
+            cmd.exe /c pushd "$start_in" "&&" "${args[@]}"
         )
     }
     edit () { 
