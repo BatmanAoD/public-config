@@ -413,3 +413,9 @@ set completion-ignore-case on
 if [[ -x /usr/libexec/java_home ]]; then
     export JAVA_HOME="$(/usr/libexec/java_home)"
 fi
+
+# Adding wsl-open as a browser for Bash for Windows
+if $WSL; then
+    export BROWSER=wsl-open
+fi
+

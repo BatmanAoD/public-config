@@ -84,13 +84,3 @@ say green "<- bashrc"
 
 # XXX set up fzf without messing up `hash`
 # [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-          # Adding wsl-open as a browser for Bash for Windows
-          if [[ $(uname -r) =~ (m|M)icrosoft ]]; then
-            if [[ -z $BROWSER ]]; then
-              export BROWSER=wsl-open
-            else
-              export BROWSER=$BROWSER:wsl-open
-            fi
-          fi
-          
