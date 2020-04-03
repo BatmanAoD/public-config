@@ -170,9 +170,9 @@ set undolevels=90000
 " Note: in comma-separated font lists, the fonts are tried in order until an
 " available font is found.
 if has('win32')
-    " TODO use ligatures in Windows?
-    " https://github.com/tonsky/FiraCode/issues/462
     silent! set guifont=Fira_Code:h10:cANSI:Consolas:h10:cANSI
+    " Enable ligatures
+    set renderoptions=type:directx
 " elseif has('win32unix') " Cygwin
 "     " This font is not good.
 "     set guifont=Fixed\ 8
