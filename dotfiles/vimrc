@@ -165,20 +165,19 @@ augroup END
 set incsearch
 " This limit exists to limit memory consuption.
 set undolevels=90000
-" For NeoVim, use ~/.config/nvim/ginit.vim.
+" TODO For NeoVim, use ~/.config/nvim/ginit.vim.
 " See https://github.com/equalsraf/neovim-qt/issues/213
-" TODO this needs to be...better. It would be nice to automatically detect
-" fonts, construct them from a list of preferred fonts and info about what's
-" available and what the DPI is, etc...
+" Note: in comma-separated font lists, the fonts are tried in order until an
+" available font is found.
 if has('win32')
-    silent! set guifont=Consolas:h11:cANSI
-    " set guifont=Anonymous_Pro:h8:cANSI
+    " TODO use ligatures in Windows?
+    " https://github.com/tonsky/FiraCode/issues/462
+    silent! set guifont=Fira_Code:h10:cANSI:Consolas:h10:cANSI
 " elseif has('win32unix') " Cygwin
-"     " TODO get a better Cygwin font!
+"     " This font is not good.
 "     set guifont=Fixed\ 8
 else
-    set guifont=DejaVu\ Sans\ Mono\ 8
-    " set guifont=Liberation\ Mono\ 10
+    set guifont=DejaVu\ Sans\ Mono\ 8,Liberation\ Mono\ 10
 endif
 
 " Don't use this; makes file recovery impossible

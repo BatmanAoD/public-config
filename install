@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+# XXX TODO: for 'TODO' items, it would be nice to print a message explaining
+# what's not already automated, prompting the user to do it manually.
+
 if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
-    # TODO: There aren't _too_ many things that rely on Bash 4.
+    # There aren't _too_ many things that rely on Bash 4.
     # But on the other hand, I don't ever plan to use Bash 3 as my primary shell.
     echo "ERROR: Bash version is $BASH_VERSION, but only 4 and above are supported." >&2
     exit 2
@@ -300,6 +303,14 @@ if $installusingapt; then
     sudo apt-get install xclip
 fi
 
+# TODO: install FiraCode font: https://github.com/tonsky/FiraCode
+# On Windows, with Scoop:
+# ```
+# scoop bucket add nerd-fonts
+# scoop install FiraCode
+# ```
+# Related: install Scoop?
+
 # Install fzf
 if [[ ! -d ~/.fzf ]]; then
     echo Installing fzf
@@ -348,15 +359,19 @@ else
 #         echo Installing racer
 #         cargo install racer
 #     fi
-    if ! hash loc 2>/dev/null; then
-        echo Installing loc
-        cargo install loc
+    if ! hash tokei 2>/dev/null; then
+        echo Installing tokei
+        cargo install tokei
+    fi
+    if ! hash bat 2>/dev/null; then
+        echo Installing bat
+        cargo install bat
     fi
     # TODO install `broot`? Needs a script, `br`, to be sourced. Just symlink
-    # as `.bash_br`?
+    # as `.bash.d/br`?
     # TODO install a powerline-compatible font and starship?
-    # (Starship is just `cargo install`, but installing a font might be harder
-    # cross-platform)
+    # (Starship is just `cargo install`, but it needs libssl-dev and
+    # pkg-config, as well as a Powerline compatible font such as FiraCode.)
     # Other tools:
     # * https://github.com/lotabout/skim (replace fzf, or do they work together?)
     # * https://github.com/mookid/diffr
