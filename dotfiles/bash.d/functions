@@ -90,9 +90,9 @@ tildepath() {
     # homedir, that user should own it.
     # NOTE: this will cause an error on nonexistent files.
     # TODO: Will this work with users that have spaces in their names?
-    tmp_usr="$(ls -l -d "$targ" | awk '{print $3}')"
+    tmp_usr="$(ls -l -d -- "$targ" | awk '{print $3}')"
     # Figure out what "readlink" outputs for that user's home dir.
-    home_parent="$(eval readlink -f ~"${tmp_usr}")"
+    home_parent="$(eval readlink -f -- ~"${tmp_usr}")"
     # Do the replacement if possible. Otherwise, assume it's not under
     # a home dir.
     echo "${targ/#${home_parent}/~${tmp_usr}}"
@@ -108,12 +108,12 @@ abspath() {
     # TODO: This doesn't work with BSD's `readlink`...if nothing else, I should
     # at least add `brew install coreutils` to the tools section of the
     # `install` script.
-    tmp_path="$(readlink -f "$targ")"
+    tmp_path="$(readlink -f -- "$targ")"
     # If on Windows, get a Windows path
     if $CYGWIN; then
-        tmp_path="$(cygpath -w "$tmp_path")"
+        tmp_path="$(cygpath -w -- "$tmp_path")"
     elif $WSL; then
-        tmp_path="$(wslpath -wa "$tmp_path")"
+        tmp_path="$(wslpath -wa -- "$tmp_path")"
     # Otherwise, try to substitute out `~<usr>`
     else
         tmp_path="$(tildepath "$tmp_path")"
@@ -198,7 +198,7 @@ if $WSL; then
             # any existing file arguments are transformed to their absolute
             # paths. Unfortunately, this won't happen for new files (b/c they
             # don't exist yet).
-            if [[ -e "$a" ]]; then
+            if [[ -e "$a" || ("$a" = */* && "$a" != *=*/* ) ]]; then
                 args+=("$(abspath "$a")");
             else
                 args+=("$a");
@@ -356,6 +356,23 @@ histin ()
     fi
 }
 
+if hash sd 2>/dev/null; then
+    global_repl_impl ()
+    {
+        # Assume ripgrep is installed
+        rg --files "$1" | xargs sd "$2" "$3"
+    }
+else
+    global_repl_impl ()
+    {
+        rmbak_gr "$1"
+        pattern="$2"
+        replacement="$3"
+        # rs should be aliased to ack or rg
+        rs -l "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s/$pattern/$replacement/g"
+    }
+fi
+
 # Search-and-replace in multiple files
 global_repl ()
 {
@@ -369,11 +386,7 @@ global_repl ()
         echo "USAGE: global_repl [-d <dir>] <pattern> <replacement>" >&2
         return
     fi
-    rmbak_gr "$dirname"
-    pattern="$1"
-    replacement="$2"
-    # rs should be aliased to ack or rg
-    rs -l "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s/$pattern/$replacement/g"
+    global_repl_impl "$dirname" "$1" "$2"
 }
 alias gr=global_repl
 alias rsub=global_repl
