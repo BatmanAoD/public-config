@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [[ -d /usr/local/go/bin ]]; then
+    ensure_on_path /usr/local/go/bin
+fi
