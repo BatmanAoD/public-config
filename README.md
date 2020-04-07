@@ -45,8 +45,8 @@ other TODO items
 -----------
  * use local variables in Bash functions!
  * file or set of files just containing variables for options that should be
-    easy to change without digging through code and adjusting multiple things 
-    (e.g. setting primary editor to be Vim, Emacs, or Sublime)
+   easy to change without digging through code and adjusting multiple things
+   (e.g. setting primary editor to be Vim, Emacs, or Sublime)
  * Refactor .vimrc to give it some organization
  * Sandbox setup with makefile, inspired by http://stackoverflow.com/a/32485029/1858225
    * To check whether c++14, etc is supported:
