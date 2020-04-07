@@ -294,7 +294,7 @@ autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 
 
 " Set scripts to be executable from the shell
 " courtesy of https://unix.stackexchange.com/a/39995/38050
-au BufWritePost * if getline(1) =~ "^#!" | silent !chmod +x <afile> | endif
+au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent execute "!chmod a+x <afile>" | endif | endif
 
 function! PickTabUsage()
     if &readonly || ! &modifiable

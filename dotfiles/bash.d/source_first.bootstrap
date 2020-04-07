@@ -57,3 +57,52 @@ check_if_native_linux()
 }
 
 check_if_native_linux
+
+known_ids="kjstrand kstrand BatmanAoD batmanaod"
+id_is_known=false
+primary_local_account=
+primary_HOME=
+
+for usrname in $known_ids; do
+    if [[ $usrname == $(whoami) ]]; then
+        id_is_known=true
+        primary_local_account=$usrname
+        primary_HOME=${HOME}
+        break
+    elif [[ -d $(eval echo ~${usrname} ) ]]; then
+        primary_local_account=$usrname
+        primary_HOME="$(eval echo ~${usrname})";
+    fi
+done
+
+WINDOWS=false
+CYGWIN=false
+WSL=false   # Linux Subsystem on Windows
+# See https://stackoverflow.com/a/43618657/1858225
+if grep -qE "(Microsoft|WSL)" /proc/version &>/dev/null; then
+    # TODO set WINDOWS=true?
+    WSL=true
+    # TODO check if X11 server is running somehow? (xset? not installed by
+    # default...)
+    export DISPLAY=:0.0
+    # Alternate:
+    # if grep -q '_NT-' <(uname -s); then
+elif [[ -d "$WINDIR" ]]; then
+    WINDOWS=true
+    # Cygwin-specific oddities
+    if grep -q Cygwin <(uname -o); then
+        CYGWIN=true
+        # Don't get fooled by the carriage-return character.
+        export SHELLOPTS
+        set -o igncr
+        CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
+    fi
+    # TODO: if using Git-Bash, fix `ln`!! (See `install` script)
+fi
+
+toolsbld_path="${primary_HOME}/ToolsBld"
+# stderred doesn't seem to work on OS X
+if ! $MAC_OSX; then
+    stderred_path="${toolsbld_path}/stderred"
+fi
+
