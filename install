@@ -34,7 +34,7 @@ while [[ ! -z "${1+x}" ]]; do
 done
 
 # TODO this confirmation should be persistent, and probably should be tied to
-# my list of "known personas" that's currently in `.bash_rcbase`.
+# my list of "known personas" that's currently in my 'base' bash rc file.
 echo '$HOME' " is currently $HOME. Press any key to continue or Ctl-C to quit."
 if $WINDOWS; then
     # TODO: don't give this warning unless the `public-config` directory's
@@ -170,25 +170,13 @@ if ! ${install_tools}; then
     exit
 fi
 
-echo "bashrc is: " ~/.bashrc
-
-# Be a bit more permissive when running `.bash_rcbase`; it uses unset variables.
-set +u
-set +e
-. ~/.bash_rcbase
-set -u
-set -e
+##############################################################################
+# Misc TODO
+##############################################################################
+# XXX TODO automatically generate SSH ID and send to G:
+# https://gist.github.com/zentralwerkstatt/9e6c83e757cdfe430d6710585b2275c7
 
 ##############################################################################
-##############################################################################
-# Other git stuff
-##############################################################################
-##############################################################################
-# XXX TODO automatically generate SSH ID and send to GitHub?
-##############################################################################
-
-##############################################################################
-# Install Vim plugin manager
 # TODO: how can we determine if the installed vim feature-set is sufficient for
 # the plugins I'm using? (`vim --version | grep <something>`?)
 vim_plug=autoload/plug.vim
@@ -399,6 +387,15 @@ cd ~/bin
 
 # TODO: automatically install windows tools?
 
+# Currently, We only need the 'bootstrap' file to find the stderred directory.
+# Be a bit more permissive when running bash setup scripts; they use unset
+# variables.
+set +u
+set +e
+# . ~/.bash.d/source_first.bootstrap
+set -u
+set -e
+
 # Install stderred
 skipstderred=false
 if ${WINDOWS}; then
@@ -419,7 +416,7 @@ if ! $skipstderred; then
     if [[ ! -d "${stderred_path}" ]]; then
         echo Installing stderred
         cd $(dirname "${stderred_path}")
-        git clone  https://github.com/sickill/stderred.git
+        git clone https://github.com/sickill/stderred.git
         cd stderred
         make
     fi
