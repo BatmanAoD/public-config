@@ -79,7 +79,7 @@ WINDOWS=false
 CYGWIN=false
 WSL=false   # Linux Subsystem on Windows
 # See https://stackoverflow.com/a/43618657/1858225
-if grep -qE "(Microsoft|WSL)" /proc/version &>/dev/null; then
+if grep -qE "([Mm]icrosoft|WSL)" /proc/version &>/dev/null; then
     # TODO set WINDOWS=true?
     WSL=true
     # TODO check if X11 server is running somehow? (xset? not installed by
