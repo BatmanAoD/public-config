@@ -45,7 +45,7 @@ fi
 alias rm="nopreload rm"
 
 # Find a script to generically open files
-if $WINDOWS; then
+if $WSL || $WINDOWS; then
     if hash wsl-open 2>/dev/null; then
         # TODO use xdg-open, which should call wsl-open? (Mailcap must be
         # configured for this)
@@ -53,11 +53,18 @@ if $WINDOWS; then
         # XXX TODO for files without an extension:
         # https://superuser.com/q/13653
     else
-        # TODO: handle multiple files, other args?
-        # See 'wsl_batch' function
-        win-open () {
-            start "$(cygpath -w "$1")"
-        }
+        # In git-bash, etc
+        if hash start 2>/dev/null; then
+            # TODO: handle multiple files, other args?
+            # See 'wsl_batch' function
+            win-open () {
+                start "" "$(absp "$1")"
+            }
+        else
+            win-open () {
+                wsl_batch start "$@"
+            }
+        fi
         alias open=win-open
     fi
 elif $MAC_OSX; then
@@ -73,7 +80,11 @@ elif hash gnome-open 2>/dev/null; then
     alias open=gnome-open
 elif hash kde-open 2>/dev/null; then
     alias open=kde-open
-# TODO warn if an open utility can't be found?
+else
+    no-open () {
+        echo "No 'open' utility found!"
+    }
+    alias open=no-open
 fi
 
 # the "-p" option for `history` is a bit like an "eval" for ! events.

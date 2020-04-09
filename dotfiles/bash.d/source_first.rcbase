@@ -370,7 +370,7 @@ if [[ -x /usr/libexec/java_home ]]; then
     export JAVA_HOME="$(/usr/libexec/java_home)"
 fi
 
-# Adding wsl-open as a browser for Bash for Windows
+# Adding wsl-open as a browser for WSL
 if $WSL; then
     export BROWSER=wsl-open
 fi
