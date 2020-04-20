@@ -109,8 +109,8 @@ abspath() {
     # at least add `brew install coreutils` to the tools section of the
     # `install` script.
     tmp_path="$(readlink -f -- "$targ")"
-    # If on Windows, get a Windows path
-    if $CYGWIN; then
+    # If on Windows, try to get a Windows path
+    if $WINDOWS && hash cygpath 2>/dev/null; then
         tmp_path="$(cygpath -w -- "$tmp_path")"
     elif $WSL; then
         tmp_path="$(wslpath -wa -- "$tmp_path")"
