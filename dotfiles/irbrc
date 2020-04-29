@@ -5,7 +5,7 @@ require 'rubygems'  # for 1.8
 begin
     require 'wirble'
 
-    # XXX doesn't work....???
+    # doesn't work....???
     # wirble_opts = {
     #     # override some of the default colors (because blue on black
     #     # is essentially unreadable, and yellow symbols are hideous)

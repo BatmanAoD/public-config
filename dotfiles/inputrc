@@ -14,7 +14,7 @@ set convert-meta on
 # Make ESC-ESC do filename completion like in ksh.
 M-ESC: complete
 # Steal from emacs in order to make the 'o' binding below work
-# XXX not supported by sbt, so it prints a warning.
+# NOTE: not supported by sbt, so it prints a warning.
 "\C-o": operate-and-get-next
 
 # Vim-specific mappings
