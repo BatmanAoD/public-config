@@ -86,7 +86,7 @@ bindsym $mod+a focus parent
 #bindcode $mod+d focus child
 
 # workspace -> screen assignment
-# XXX TODO this must be generated...
+# TODO this must be generated somehow...
 # workspace 2 output VBOX0
 # workspace 4 output VBOX0
 # workspace 6 output VBOX0
