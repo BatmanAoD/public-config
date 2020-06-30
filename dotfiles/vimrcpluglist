@@ -32,6 +32,8 @@ Plug 'peterhoeg/vim-qml'
 Plug 'rust-lang/rust.vim'
 " TODO only enable this is Racer is installed
 " Plug 'phildawes/racer'
+" " Pest syntax highlighting
+Plug 'pest-parser/pest.vim'
 " TODO find a plugin that works for tailing
 " Plug 'Tail-Bundle'
 Plug 'vim-scripts/Rename'
