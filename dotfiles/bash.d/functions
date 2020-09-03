@@ -113,7 +113,13 @@ abspath() {
     if $CYGWIN; then
         tmp_path="$(cygpath -w -- "$tmp_path")"
     elif $WSL; then
-        tmp_path="$(wslpath -wa -- "$tmp_path")"
+        # If the file does not yet exist, wslpath will fail. Split off the
+        # filename so that wslpath only fails if the directory does not yet
+        # exist.
+        dirname="$(dirname "$tmp_path")"
+        basename="$(basename "$tmp_path")"
+        tmp_path="$(wslpath -wa -- "$dirname")"
+        tmp_path="$tmp_path"'\'"$basename"
     # Otherwise, try to substitute out `~<usr>`
     else
         tmp_path="$(tildepath "$tmp_path")"
@@ -216,9 +222,14 @@ if $WSL; then
             cmd.exe /c "${args[@]}"
         )
     }
-    edit () { 
-        wsl_batch "$NEWWINDOW_EDIT_CMD" "$@"
-    }
+    if [[ -x "$gvim_launch_script" ]]; then
+        # Don't use `cmd.exe` for gvim; see https://github.com/microsoft/WSL/issues/5811
+        edit () { "$NEWWINDOW_EDIT_CMD" "$@" ; }
+    else
+        edit () { 
+            wsl_batch "$NEWWINDOW_EDIT_CMD" "$@"
+        }
+    fi
 else
     edit () { "$NEWWINDOW_EDIT_CMD" "$@" ; }
 fi
@@ -356,24 +367,30 @@ histin ()
     fi
 }
 
-if hash sd 2>/dev/null; then
+REGEX_SEP=/
+
+# Don't use `sd`. It does not support backreferences in the substitution and
+# does not create backups of the originals.
+# if hash sd 2>/dev/null; then
+#     global_repl_impl ()
+#     {
+#         # Assume ripgrep is installed
+#         rg --files "$1" | xargs sd "$2" "$3"
+#     }
+# else
     global_repl_impl ()
     {
-        # Assume ripgrep is installed
-        rg --files "$1" | xargs sd "$2" "$3"
-    }
-else
-    global_repl_impl ()
-    {
-        rmbak_gr "$1"
         pattern="$2"
         replacement="$3"
         # rs should be aliased to ack or rg
-        rs -l "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s/$pattern/$replacement/g"
+        rs -g '!*.bak_gr' -l "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s${REGEX_SEP}${pattern}${REGEX_SEP}${replacement}${REGEX_SEP}g"
     }
-fi
+# fi
 
 # Search-and-replace in multiple files
+# TODO consider interactive version using vim:
+# https://github.com/BurntSushi/ripgrep/issues/74#issuecomment-625440008
+# Also, the `ruplacer` crate appears to generate valid patch output.
 global_repl ()
 {
     if [[ "$1" == "-d" ]]; then
