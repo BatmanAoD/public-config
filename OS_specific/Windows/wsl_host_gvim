@@ -17,21 +17,21 @@
 GVIM_HOST_PATH='C:\Program Files (x86)\Vim\vim82\gvim.exe'
 GVIM_WSL_PATH='/mnt/c/Program Files (x86)/Vim/vim82/gvim.exe'
 
-# Arguments need to be re-quoted to work with PowerShell's `Start-Process`.
-ps_argstring=
-if [[ $# -gt 0 ]]; then
-    # Yep, it's an insane mess, taken essentially from https://stackoverflow.com/a/2317171
-    sep='`"", "`"'
-    ps_argstring="$(printf "${sep}%s" "$@")"
-    ps_argstring='"`"'"${ps_argstring:${#sep}}"'`""'
-fi
-
 
 if [[ "$@" == *"--nofork"* ]]; then
     # The `gvim.bat` file removes the argument before launching the executable,
     # but the executable ignores the argument anyway.
     "$GVIM_WSL_PATH" "$@"
 else
+    # Arguments need to be re-quoted to work with PowerShell's `Start-Process`.
+    ps_argstring=
+    if [[ $# -gt 0 ]]; then
+        # Yep, it's an insane mess, taken essentially from https://stackoverflow.com/a/2317171
+        sep='`"", "`"'
+        ps_argstring="$(printf "${sep}%s" "$@")"
+        ps_argstring='"`"'"${ps_argstring:${#sep}}"'`""'
+    fi
+
     # Powershell does not have the same bug as cmd.exe.
     powershell.exe start '"'$GVIM_HOST_PATH'"' $ps_argstring
 fi
