@@ -75,7 +75,9 @@ cd ~
 shopt -s nullglob
 
 # `.bashrc` almost always exists.
-rm -f ~/.bashrc
+# XXX on Windows, don't have permission to do symlinks by default.
+# *CHECK* that symlink creation doesn't fail, *THEN* remove bashrc!
+# rm -f ~/.bashrc
 
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep; do
     echo Installing rc files for ${prog}
@@ -343,11 +345,10 @@ else
         echo Installing ripgrep
         cargo install ripgrep
     fi
-    # Racer is being superceded by RLS
-#     if ! hash racer 2>/dev/null; then
-#         echo Installing racer
-#         cargo install racer
-#     fi
+    if ! hash fd 2>/dev/null; then
+        echo Installing fd
+        cargo install fd-find
+    fi
     if ! hash tokei 2>/dev/null; then
         echo Installing tokei
         cargo install tokei

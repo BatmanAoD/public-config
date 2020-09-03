@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if $WSL; then
+    sudo "$CONFIG_DIR"/OS_specific/Windows/wsl_daemon_start docker
+fi

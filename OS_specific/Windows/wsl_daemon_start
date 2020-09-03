@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This is an easy way to give passwordless sudo permission to start services
+# without giving arbitrary `service` permissions.
+# It's under 'OS specific' because this should generally only be useful for
+# WSL, where there's no standard way to run services on startup.
+
+#XXX add something to 'install' to add this to `sudoers`!
+# Permit starting services without a password in WSL.
+# "$USER" ALL = NOPASSWD: "$CONFIG_DIR"/OS_specific/Windows/wsl_daemon_start
+
+if [[ "$USER" != root ]]; then
+    echo "Error $(basename "$0"): must be root!" >&2
+    exit 1
+fi
+
+for s in $@; do
+    service $s start &>/dev/null
+done

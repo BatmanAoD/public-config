@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# This script is a workaround for https://github.com/microsoft/WSL/issues/5811.
+# It permits calling gvim without `gvim.bat`, which only has two advantages
+# over invoking the gvim.exe executable directly:
+# * It knows the full path of the executable, because the version number is
+#   hardcoded
+# * It forks unless `--nofork` is provided, because the Windows executable does
+#   not fork
+
+# The Vim location is hardcoded for simplicity & speed.
+# TODO: If WSL issue 5811 is not fixed soonish, make this file a "template" add
+# a step to the install script to generate the "real" version with the
+# hardcoded vim path. This would simply require grepping `gvim.bat` for the
+# first instance of `set VIM_EXE_DIR` and verifying that the executable exists
+# at that path.
+GVIM_HOST_PATH='C:\Program Files (x86)\Vim\vim82\gvim.exe'
+GVIM_WSL_PATH='/mnt/c/Program Files (x86)/Vim/vim82/gvim.exe'
+
+# Arguments need to be re-quoted to work with PowerShell's `Start-Process`.
+ps_argstring=
+if [[ $# -gt 0 ]]; then
+    # Yep, it's an insane mess, taken essentially from https://stackoverflow.com/a/2317171
+    sep='`"", "`"'
+    ps_argstring="$(printf "${sep}%s" "$@")"
+    ps_argstring='"`"'"${ps_argstring:${#sep}}"'`""'
+fi
+
+
+if [[ "$@" == *"--nofork"* ]]; then
+    # The `gvim.bat` file removes the argument before launching the executable,
+    # but the executable ignores the argument anyway.
+    "$GVIM_WSL_PATH" "$@"
+else
+    # Powershell does not have the same bug as cmd.exe.
+    powershell.exe start '"'$GVIM_HOST_PATH'"' $ps_argstring
+fi

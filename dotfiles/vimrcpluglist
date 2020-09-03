@@ -32,6 +32,8 @@ Plug 'rust-lang/rust.vim'
 " Plug 'phildawes/racer'
 " Gleam (Erlang BEAM language) support
 Plug 'gleam-lang/gleam.vim'
+" " Pest syntax highlighting
+Plug 'pest-parser/pest.vim'
 " TODO find a plugin that works for tailing
 " Plug 'Tail-Bundle'
 Plug 'vim-scripts/Rename'
