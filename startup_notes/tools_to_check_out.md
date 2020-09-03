@@ -7,7 +7,7 @@
 
 ## Windows
 
- * Tiling windows: https://github.com/fuhsjr00/bug.n/
+ * Tiling windows: https://github.com/microsoft/PowerToys/tree/master/src/modules/fancyzones
 
 ## RipGrep
 
