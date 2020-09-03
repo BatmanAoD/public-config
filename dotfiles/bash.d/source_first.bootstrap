@@ -12,9 +12,8 @@ if [[ -n "${WINDIR+x}" ]]; then
     # `ln` that uses the `/h` flag if `-s` is not given as an argument.
     win_symlink() {
         if [[ $# -ne 2 ]]; then
-            echo "ERROR: 'win_symlink' requires *two* arguments!" >&2
-            # Currently, we *exit* with *error*...because this is a script bug.
-            exit 1
+            echo "Usage: win_symlink <target> <new_link>" >&2
+            return 1
         fi
         target="$(cygpath -w "${1}")"
         new_link="$(cygpath -w "${2}")"
@@ -58,7 +57,8 @@ check_if_native_linux()
 
 check_if_native_linux
 
-known_ids="kjstrand kstrand BatmanAoD batmanaod"
+# TODO this is dumb. Just figure out where *this bootstrap script* lives.
+known_ids="kjstrand kstrand kyle.strand BatmanAoD batmanaod"
 id_is_known=false
 primary_local_account=
 primary_HOME=
