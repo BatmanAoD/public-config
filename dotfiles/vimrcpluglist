@@ -12,10 +12,8 @@ call plug#begin('~/.vim/plugged')
 
 " Lotsa langauges
 Plug 'sheerun/vim-polyglot'
-
-Plug 'gmarik/Vundle.vim'
-
-" Put new plugins here
+" respect `.editorconfi`, which GitHub also respects
+Plug 'editorconfig/editorconfig-vim'
 Plug 'nanotech/jellybeans.vim'
 Plug 'terryma/vim-multiple-cursors'
 " This remaps '/', which makes it no longer a simple movement, which
@@ -32,6 +30,8 @@ Plug 'peterhoeg/vim-qml'
 Plug 'rust-lang/rust.vim'
 " TODO only enable this is Racer is installed
 " Plug 'phildawes/racer'
+" Gleam (Erlang BEAM language) support
+Plug 'gleam-lang/gleam.vim'
 " " Pest syntax highlighting
 Plug 'pest-parser/pest.vim'
 " TODO find a plugin that works for tailing
