@@ -215,7 +215,7 @@ if [[ $? -eq 0 ]]; then
     # Windows.
     # TODO figure out a way to pick the theme intelligently...
     # alias mdcat="bat --theme=OneHalfLight --plain"
-    alias mdcat="bat --theme=DarkNeon --plain"
+    alias mdcat="bat --paging=never --theme=DarkNeon --plain"
 else
     # avoid accidentally messing up shell with control characters when using
     # cat on binary files

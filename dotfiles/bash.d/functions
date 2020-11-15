@@ -367,7 +367,7 @@ histin ()
     fi
 }
 
-REGEX_SEP=/
+REGEX_SEP='!'
 
 # Don't use `sd`. It does not support backreferences in the substitution and
 # does not create backups of the originals.

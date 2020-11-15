@@ -45,14 +45,13 @@ load_scripts()
     # rcbase files
     # TODO: how do we ensure that the bootstrap comes before rcbase?
     # (glob isn't alphabetical, is it?)
+    shopt -s nullglob
     for bashfile in "${dir}"/source_first.* "${dir}"/!(*.*); do
-
-        # skip non-executable snippets
-        [[ -x "$bashfile" ]] || continue
 
         echo "Sourcing '$bashfile'"
         . "$bashfile"
     done
+    shopt -u nullglob
 }
 
 load_scripts
