@@ -212,8 +212,7 @@ fi
 
 # Install dev tools (Debian-based only)
 # TODO: other package managers
-# XXX TODO: On Windows, install Chocolatey! This seems like a no-brainer
-# obvious win now that I'm working more with Windows.
+# XXX TODO: Windows now has 'winget' (in preview)! Use that.
 # TODO: `brew` for Mac?
 installusingchoco=false
 installusingapt=false
@@ -299,7 +298,9 @@ fi
 # scoop bucket add nerd-fonts
 # scoop install FiraCode
 # ```
-# Related: install Scoop?
+# ...actually, Consolas, the default Alacritty font on Windows, seems to
+# include most or all of the characters used by Starship.
+# Related: install Scoop and/or WinGet?
 
 # Install fzf
 if [[ ! -d ~/.fzf ]]; then
@@ -308,6 +309,8 @@ if [[ ! -d ~/.fzf ]]; then
     # TODO currently, this fails on Windows with MinGW (no prebuilt binary found)
     ~/.fzf/install
 fi
+
+# TODO: consider installing `zk` (which requires `sqlite3` as well): https://github.com/sirupsen/zk
 
 # Create installers directory
 mkdir -p ~/Installers

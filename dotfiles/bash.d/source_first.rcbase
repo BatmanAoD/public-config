@@ -56,9 +56,9 @@ if $LINUX_NATIVE; then
     fi
     # TODO check if CAPS is configured, and if so, manually load Xmodmap? (Bug
     # in some WMs...)
-    if [[ -f ${primary_HOME}/.Xkbmap ]]; then
+    if [[ -f "${primary_HOME}/.Xkbmap" ]]; then
         echo "WARNING: Use of ${primary_HOME}/.Xkbmap is deprecated!" >&2
-        if [[ -n $CONFIG_DIR ]]; then
+        if [[ -n "$CONFIG_DIR" ]]; then
             echo "Latest keymapping customizations can be found" >&2
             echo "in $CONFIG_DIR/.Xmodmap" >&2
         fi
@@ -179,6 +179,9 @@ ensure_on_path "${HOME}/.cargo/bin"
 ensure_on_path "$HOME/.yarn/bin"
 ensure_on_path "$HOME/.config/yarn/global/node_modules/.bin"
 
+# TODO other possible brew paths?
+ensure_on_path "/home/linuxbrew/.linuxbrew/bin"
+
 # Returns 0 if the file path *or any parent dirs* is a symlink
 is_symlink () {
     if [[ -L "$1" ]]; then
@@ -240,8 +243,16 @@ elif hash gvim 2>/dev/null; then
         export VISUAL=vim
     fi
 elif $WSL; then
-    # These will be called with `cmd.exe`; see `wsl_batch`
-    export NEWWINDOW_EDIT_CMD=gvim
+    gvim_launch_script="$CONFIG_DIR/OS_specific/Windows/wsl_host_gvim"
+    if [[ -x "$gvim_launch_script" ]]; then
+        export NEWWINDOW_EDIT_CMD="$gvim_launch_script"
+    else
+        # This should be called with `cmd.exe`; see `wsl_batch`
+        # XXX in recent (Aug/Sept 2020) insider builds, wsl_batch is essentially
+        # broken: https://github.com/microsoft/WSL/issues/5811
+        # .... hence the `wsl_host_gvim` script above.
+        export NEWWINDOW_EDIT_CMD=gvim
+    fi
     # It's unclear how to use the `edit` function in these variables; it
     # probably requires a standalone script.
     export EDITOR="vim -f"
@@ -370,8 +381,8 @@ if [[ -x /usr/libexec/java_home ]]; then
     export JAVA_HOME="$(/usr/libexec/java_home)"
 fi
 
-# Adding wsl-open as a browser for WSL
 if $WSL; then
+    # Adding wsl-open as a browser
     export BROWSER=wsl-open
 fi
 

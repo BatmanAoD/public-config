@@ -5,3 +5,4 @@ lib*.rlib
 *.old
 *.pyc
 target/
+*.ignore

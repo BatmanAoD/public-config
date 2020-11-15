@@ -5,76 +5,80 @@
 # Reference to context-switching script on which I based the RMS version:
 # https://github.com/ahmetb/kubectx/issues/12#issuecomment-542177722
 
-addeks () {
-    if [[ $# -eq 1 ]]; then
-        # Just list all the clusters
-        aws-okta exec $1 -- aws eks list-clusters
-        return
-    fi
-    if [[ $# -ne 2 ]]; then
-        echo "Usage: addeks <aws-account> <cluster-name>"
-        echo "(without <cluster-name>, all clusters in that account will be listed)"
-        return 1
-    fi
-    # Make sure the new configuration goes in the primary kubeconfig file.
-    local OLDKCFG="$KUBECONFIG"
-    unset KUBECONFIG
-    aws-okta exec $1 -- aws eks update-kubeconfig --name $2
-    if [[ -n "$OLDKCFG" ]]; then
-        export KUBECONFIG="$OLDKCFG"
-    fi
-    # TODO: parse output of `kubectx` to figure out what the new context is
-    # called and reassign it
-    # kubectx $2=
-}
+if hash kubectl 2>/dev/null; then
 
-okta_check_timeout () {
-    if [[ -n "$AWS_OKTA_SESSION_EXPIRATION" ]]; then
-        test $(date +%s) -gt $AWS_OKTA_SESSION_EXPIRATION
-        return $?
-    else
-        return 1
-    fi
-}
-
-refresh_okta () {
-    okta_check_timeout
-    if [[ $? -eq 0 ]]; then
-        login_if_eks_ctxt
-    fi
-}
-
-login_if_eks_ctxt () {
-    kube_ctxt="$(kubectl config current-context)"
-    aws_acct=$(kubectl config get-contexts | grep -w $kube_ctxt | grep -Eo ':[[:digit:]]+:' | uniq)
-    if [[ -z "$aws_acct" ]]; then
-        :
-        # Probably not necessary: `kb` is not for doing `docker` stuff
-        # eval $(minikube docker-env)
-    else
-        okta_profile=$(aws-okta list | grep -- $aws_acct | head -1 | awk '{print $1}')
-        eval $(aws-okta env $okta_profile)
-    fi
-    add_prompt_command refresh_okta
-}
-
-k () {
-    login_if_eks_ctxt
-    "$@"
-}
-
-# Custom script I wrote
-if hash set-kcontext.sh &>/dev/null; then
-    kcx () {
-        . set-kcontext.sh "$@"
-        login_if_eks_ctxt
+    addeks () {
+        if [[ $# -eq 1 ]]; then
+            # Just list all the clusters
+            aws-okta exec $1 -- aws eks list-clusters
+            return
+        fi
+        if [[ $# -ne 2 ]]; then
+            echo "Usage: addeks <aws-account> <cluster-name>"
+            echo "(without <cluster-name>, all clusters in that account will be listed)"
+            return 1
+        fi
+        # Make sure the new configuration goes in the primary kubeconfig file.
+        local OLDKCFG="$KUBECONFIG"
+        unset KUBECONFIG
+        aws-okta exec $1 -- aws eks update-kubeconfig --name $2
+        if [[ -n "$OLDKCFG" ]]; then
+            export KUBECONFIG="$OLDKCFG"
+        fi
+        # TODO: parse output of `kubectx` to figure out what the new context is
+        # called and reassign it
+        # kubectx $2=
     }
-else
-    kcx () {
-        kubectx "$@"
-        login_if_eks_ctxt
+
+    okta_check_timeout () {
+        if [[ -n "$AWS_OKTA_SESSION_EXPIRATION" ]]; then
+            test $(date +%s) -gt $AWS_OKTA_SESSION_EXPIRATION
+            return $?
+        else
+            return 1
+        fi
     }
+
+    refresh_okta () {
+        okta_check_timeout
+        if [[ $? -eq 0 ]]; then
+            login_if_eks_ctxt
+        fi
+    }
+
+    login_if_eks_ctxt () {
+        kube_ctxt="$(kubectl config current-context)"
+        aws_acct=$(kubectl config get-contexts | grep -w $kube_ctxt | grep -Eo ':[[:digit:]]+:' | uniq)
+        if [[ -z "$aws_acct" ]]; then
+            :
+            # Probably not necessary: `kb` is not for doing `docker` stuff
+            # eval $(minikube docker-env)
+        else
+            okta_profile=$(aws-okta list | grep -- $aws_acct | head -1 | awk '{print $1}')
+            eval $(aws-okta env $okta_profile)
+        fi
+        add_prompt_command refresh_okta
+    }
+
+    k () {
+        login_if_eks_ctxt
+        "$@"
+    }
+
+    # Custom script I wrote
+    if hash set-kcontext.sh &>/dev/null; then
+        kcx () {
+            . set-kcontext.sh "$@"
+            login_if_eks_ctxt
+        }
+    else
+        kcx () {
+            kubectx "$@"
+            login_if_eks_ctxt
+        }
+    fi
+
+    alias kb="k kubectl"
+    alias k9="k k9s"
+
 fi
-
-alias kb="k kubectl"
-alias k9="k k9s"
