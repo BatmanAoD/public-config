@@ -1,4 +1,8 @@
-#Tools to check out
+# Tools to check out
+
+## Windows
+
+* Force-resize windows: https://www.howtogeek.com/howto/11799/turn-non-resizeable-windows-into-rezieable-windows/
 
 ## Shell
 
