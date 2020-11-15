@@ -142,6 +142,7 @@ endfunction
 augroup filetypes
     " The number of indentation columns depends on the language, not on
     " tab usage
+    " XXX why doesn't the tabstop of 4 apply to new files?
     au FileType * if &filetype == "cpp"
                    \| :call CppFile()
                \| else
@@ -156,6 +157,16 @@ augroup filetypes
                 \| endif
 augroup END
 
+" Quick manual indent-with control
+nnoremap <Leader>i1 :call SetIndentWidth(1)<cr>
+nnoremap <Leader>i2 :call SetIndentWidth(2)<cr>
+nnoremap <Leader>i3 :call SetIndentWidth(3)<cr>
+nnoremap <Leader>i4 :call SetIndentWidth(4)<cr>
+nnoremap <Leader>i5 :call SetIndentWidth(5)<cr>
+nnoremap <Leader>i6 :call SetIndentWidth(6)<cr>
+nnoremap <Leader>i7 :call SetIndentWidth(7)<cr>
+nnoremap <Leader>i8 :call SetIndentWidth(8)<cr>
+nnoremap <Leader>i9 :call SetIndentWidth(9)<cr>
 
 " Single ~ acts like g~ by allowing motion commands
 "   (so ~l acts like ~ does with notildeop)
@@ -449,11 +460,14 @@ nnoremap <silent> S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count
 nnoremap Y y$
 
 " When `put`ing text, automatically auto-indent it
-" TODO: verify that this consistently works 'well enough.' In particular, I
-" never want tabs to mysteriously appear in files that previously had no tabs.
 " See http://vi.stackexchange.com/q/3452/1060
-nnoremap p pV`]=
-nnoremap P PV`]=
+" This is nice for preventing tabs from mysteriously appearing in files
+" that previously had no tabs.
+" However, it's terribly in yaml.
+" TODO: Assign to a autocommand for formats with 'obvious' indenting rules
+" (e.g. Rust, Go)
+" nnoremap p pV`]=
+" nnoremap P PV`]=
 
 " For using visual mode to swap chunks of text:
 " Delete one piece of text (using any kind of 'd' command), then visually
