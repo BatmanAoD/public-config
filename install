@@ -298,6 +298,8 @@ fi
 # scoop bucket add nerd-fonts
 # scoop install FiraCode
 # ```
+# ...actually, Consolas, the default Alacritty font on Windows, seems to
+# include most or all of the characters used by Starship.
 # Related: install Scoop and/or WinGet?
 
 # Install fzf
