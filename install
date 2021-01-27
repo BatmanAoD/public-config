@@ -103,7 +103,7 @@ fi
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
 # this config directory.
-git config --global include.path ~/public-config/includefile_gitconfig
+git config --global --add include.path ~/public-config/includefile_gitconfig
 # Use .gitignore globally
 git config --global core.excludesfile ~/.gitignore
 # TODO Set username and email now?
