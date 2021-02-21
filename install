@@ -183,6 +183,7 @@ fi
 # the plugins I'm using? (`vim --version | grep <something>`?)
 vim_plug=autoload/plug.vim
 vim_plugin_mgr=~/.vim/${vim_plug}
+# XXX this... doesn't work at all on Windows...?
 # For some reason `hash` doesn't always work on Windows in Git Bash, so try
 # `where` as well.
 if hash vim 2>/dev/null || where vim &>/dev/null; then
