@@ -43,8 +43,9 @@ load_scripts()
     fi
     # Skip everything with a dot in the filename, except for the bootstrap and
     # rcbase files
-    # TODO: how do we ensure that the bootstrap comes before rcbase?
-    # (glob isn't alphabetical, is it?)
+    # Note: glob expansion is guaranteed to be alphabetical
+    # (https://serverfault.com/a/122743)
+    # So use that to determine the `source_first` order.
     shopt -s nullglob
     for bashfile in "${dir}"/source_first.* "${dir}"/!(*.*); do
 

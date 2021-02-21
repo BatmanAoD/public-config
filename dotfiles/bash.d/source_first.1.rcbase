@@ -167,21 +167,6 @@ ensure_on_path () {
     rm "$save_paths"
 }
 
-if [[ -n "$primary_HOME" ]]; then
-    ensure_on_path "${primary_HOME}/bin"
-    ensure_on_path "${primary_HOME}/.cargo/bin"
-fi
-# Either way, add the current-user's binaries
-ensure_on_path "${HOME}/bin"
-ensure_on_path "${HOME}/.cargo/bin"
-
-# For Yarn (TODO: do I have some standard way of doing this?)
-ensure_on_path "$HOME/.yarn/bin"
-ensure_on_path "$HOME/.config/yarn/global/node_modules/.bin"
-
-# TODO other possible brew paths?
-ensure_on_path "/home/linuxbrew/.linuxbrew/bin"
-
 # Returns 0 if the file path *or any parent dirs* is a symlink
 is_symlink () {
     if [[ -L "$1" ]]; then
