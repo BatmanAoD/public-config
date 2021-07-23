@@ -133,6 +133,12 @@ if ${LINUX_ANY}; then
             echo "Xmodmap already exists; not overwriting"
         fi
     fi
+
+    # TODO: if WSL, set WSL hostname in `/etc/wsl.conf`:
+    # ```toml
+    # [network]
+    # hostname = <name>
+    # ```
     
     # Install .i3 config
     mkdir -p ~/.i3

@@ -381,9 +381,9 @@ REGEX_SEP='!'
     global_repl_impl ()
     {
         pattern="$2"
-        replacement="$3"
-        # rs should be aliased to ack or rg
-        rs -g '!*.bak_gr' -l "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s${REGEX_SEP}${pattern}${REGEX_SEP}${replacement}${REGEX_SEP}g"
+        replacement="${3//\$/\\\$}"
+        # rs is aliased to ack or rg
+        rs -g '!*.bak_gr' -l -- "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s${REGEX_SEP}${pattern}${REGEX_SEP}${replacement}${REGEX_SEP}g"
     }
 # fi
 
