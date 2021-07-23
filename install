@@ -11,7 +11,7 @@ if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
 fi
 
 # Assumes not `set -e`
-. ~/public-config/dotfiles/bash.d/source_first.bootstrap
+. ~/public-config/dotfiles/bash.d/source_first.0.bootstrap
 
 set -e
 set -u
@@ -403,7 +403,7 @@ cd ~/bin
 # variables.
 set +u
 set +e
-# . ~/.bash.d/source_first.bootstrap
+# . ~/.bash.d/source_first.0.bootstrap
 set -u
 set -e
 
