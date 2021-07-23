@@ -1,3 +1,4 @@
+* Camel- and Snake- case motion: https://github.com/bkad/CamelCaseMotion
 * Rust: https://startupsventurecapital.com/rust-ide-repl-in-vim-11daa921a2c4
   * Be sure to try REPL.
 * Miscellaneous "intermediate" vimrc stuff: https://kinbiko.com/vim/my-shiniest-vim-gems

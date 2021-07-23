@@ -6,3 +6,4 @@ lib*.rlib
 *.pyc
 target/
 *.ignore
+*.bak_gr

@@ -68,6 +68,9 @@ build:build.rs
 --type-add
 build:*akefile
 
+--type-add
+build:go.mod
+
 # Ignore Golang 'vendor' dirs
 -g
 !vendor/
