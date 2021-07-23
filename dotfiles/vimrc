@@ -148,6 +148,9 @@ augroup filetypes
                \| else
                    \| :call SetIndentWidth(4)
                \| endif
+    au FileType * if &filetype == "make"
+                   \| :call Usetabs()
+               \| endif
     " Use markdown syntax for .txt files, or files with 'README' in the names
     au FileType * if &filetype == "text" || &filetype == "markdown" || expand('%:t:r') =~ 'README'
                    \| :call MarkdownFile()

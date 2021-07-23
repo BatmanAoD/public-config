@@ -28,6 +28,8 @@ Plug 'vim-scripts/LargeFile'
 Plug 'peterhoeg/vim-qml'
 " Rust syntax highlighting and autocompletion
 Plug 'rust-lang/rust.vim'
+" JSON5 (permits trailing commas)
+Plug 'GutenYe/json5.vim'
 " TODO only enable this is Racer is installed
 " Plug 'phildawes/racer'
 " Gleam (Erlang BEAM language) support
@@ -67,6 +69,8 @@ Plug 'BatmanAoD/pruss-vim'
 " Table mode
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'salsifis/vim-transpose'
+" CSV
+Plug 'chrisbra/csv.vim'
 
 " These should take care of all the 'very magic' nonsense
 Plug 'coot/CRDispatcher'
@@ -149,7 +153,7 @@ set guioptions-=L
 "     autocmd BufEnter *.cpp :call SetCppDispatchCmd()
 " augroup END
 
-" Use markdown-style tables
+" Use Git-flavored-markdown style tables
 let g:table_mode_corner="|"
 
 " Mappings for use with plugins:
