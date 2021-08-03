@@ -185,11 +185,10 @@ set undolevels=90000
 " available font is found.
 if has('win32')
     silent! set guifont=Fira_Code:h10:cANSI,Consolas:h10:cANSI
-    " Enable ligatures
-    set renderoptions=type:directx
-" elseif has('win32unix') " Cygwin
-"     " This font is not good.
-"     set guifont=Fixed\ 8
+    if !has('nvim')
+        " Enable ligatures
+        set renderoptions=type:directx
+    endif
 else
     set guifont=DejaVu\ Sans\ Mono\ 8,Liberation\ Mono\ 10
 endif
