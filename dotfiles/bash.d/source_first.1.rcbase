@@ -228,9 +228,9 @@ elif hash gvim 2>/dev/null; then
         export VISUAL=vim
     fi
 elif $WSL; then
-    gvim_launch_script="$CONFIG_DIR/OS_specific/Windows/wsl_host_gvim"
-    if [[ -x "$gvim_launch_script" ]]; then
-        export NEWWINDOW_EDIT_CMD="$gvim_launch_script"
+    editor_launch_script="$CONFIG_DIR/OS_specific/Windows/wsl_edit"
+    if [[ -x "$editor_launch_script" ]]; then
+        export NEWWINDOW_EDIT_CMD="$editor_launch_script"
     else
         # This should be called with `cmd.exe`; see `wsl_batch`
         # XXX in recent (Aug/Sept 2020) insider builds, wsl_batch is essentially
@@ -367,7 +367,9 @@ if [[ -x /usr/libexec/java_home ]]; then
 fi
 
 if $WSL; then
-    # Adding wsl-open as a browser
-    export BROWSER=wsl-open
+    if hash wsl-open 2>/dev/null; then
+        # Adding wsl-open as a browser
+        export BROWSER=wsl-open
+    fi
 fi
 

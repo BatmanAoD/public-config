@@ -1,11 +1,13 @@
 # This is *not* a complete git-config, but rather a set of "common" options that are *included* by my git-config.
 
-# [url "git@github.com:"]
-#   insteadOf = "https://github.com/"
+# TODO consider merge.conflictstyle = diff3
 
 # NEVER accidentally push feature branch to origin/master!
 [push]
     default = current
+
+[merge]
+    conflictstyle = diff3
 
 # Make some commands colored
 [color]
