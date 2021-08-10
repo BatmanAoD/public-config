@@ -96,11 +96,12 @@ if ${WINDOWS}; then
     # in Explorer:
     # http://stackoverflow.com/a/8110982/1858225
     link_s .vim vimfiles
-    NVIM_PATH=~/AppData/Local/nvim
+    NVIM_PATH="$LOCALAPPDATA/nvim"
 fi
 
-if [[ -d "${NVIM_PATH}" ]]; then
-    link_s "~/.vimrc" "${NVIM_PATH}/init.vim"
+if hash nvim 2>/dev/null; then
+    mkdir -p "${NVIM_PATH}"
+    link_s ~/public-config/dotfiles/nvim "${NVIM_PATH}/init.vim"
 fi
 
 echo "Installing common options for git"
@@ -182,6 +183,8 @@ fi
 # INSTALL 3RD-PARTY TOOLS
 ##############################################################################
 ##############################################################################
+
+# XXX it would be great to be able to grab bits and pieces of this, piecemeal.
 
 if ! ${install_tools}; then
     exit

@@ -341,13 +341,13 @@
 # The value `0.0` is completely transparent and `1.0` is opaque.
 #background_opacity: 1.0
 
-#selection:
+selection:
   # This string contains all characters that are used as separators for
   # "semantic words" in Alacritty.
   #semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
 
   # When set to `true`, selected text will be copied to the primary clipboard.
-  #save_to_clipboard: false
+  save_to_clipboard: true
 
 #cursor:
   # Cursor style
@@ -402,13 +402,18 @@
 #   - (Linux/BSD) user login shell
 #   - (Windows) powershell
 shell:
-  program: "C:\\Windows\\System32\\bash.exe"
+  program: bash.exe
+  args:
+    - --login
 
 # Startup directory
 #
 # Directory the shell is started in. If this is unset, or `None`, the working
 # directory of the parent process will be used.
-#working_directory: 
+# TODO generate this - also, is there a way to avoid the 'directory does not
+# exist' error when WSL isn't yet running?
+# See https://github.com/alacritty/alacritty/issues/4995
+# working_directory: '\\wsl$\Ubuntu\home\batmanaod'
 
 # Send ESC (\x1b) before characters when alt is pressed.
 #alt_send_esc: true
