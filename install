@@ -101,6 +101,10 @@ if hash nvim 2>/dev/null; then
     link_s ~/public-config/dotfiles/nvim "${NVIM_PATH}/init.vim"
 fi
 
+# TODO: PowerShell profile:
+# PowerShell has `$POWERSHELL` variable
+# The version here is `dotfiles/Microsoft.PowerShell_profile.ps1`
+
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
 # this config directory.
