@@ -184,7 +184,7 @@ set undolevels=90000
 " Note: in comma-separated font lists, the fonts are tried in order until an
 " available font is found.
 if has('win32')
-    silent! set guifont=Fira_Code:h10:cANSI,Consolas:h10:cANSI
+    silent! set guifont="Fira Code:h10:cANSI,Consolas:h10:cANSI"
     if !has('nvim')
         " Enable ligatures
         set renderoptions=type:directx
@@ -323,6 +323,7 @@ function! PickTabUsage()
 endfunction
 
 " hm....is this actually a good idea?
+" YES, it was
 nnoremap <Space> :
 
 " every time I change buffers or reload file, check if I need to use tabs
