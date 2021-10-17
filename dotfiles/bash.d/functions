@@ -172,59 +172,31 @@ if $CYGWIN; then
             export DISPLAY=localhost:0
         fi
     }
-
-    # adapted from http://stackoverflow.com/a/12661288/1858225
-    # TODO: Is this still necessary?
-    gvim () 
-    { 
-        opt='';
-        if [ `expr "$*" : '.*tex\>'` -gt 0 ]; then
-            opt='--servername LATEX ';
-        fi;
-        # TODO add support for "--nofork" as synonym for "-f"
-        if [ `expr "$*" : '.*-f\>'` -gt 0 ]  ; then
-            forknum=0
-        else
-            forknum=2
-        fi
-        cyg-wrapper.sh "C:/Progra~2/Vim/vim74/gvim.exe" --binary-opt=-c,--cmd,-T,-t,--servername,--remote-send,--remote-expr --cyg-verbose --fork=$forknum $opt "$@"
-    }
 fi
 
 if $WSL; then
     # For symlinks, use their Windows absolute path.
     # Workaround for https://github.com/microsoft/WSL/issues/4868
-    # Surround all arguments in quotes before passing to cmd.exe.
-    wsl_batch () { 
-        args=();
+    # Surround all arguments in quotes before passing to powershell.exe.
+    make_wsl_args () {
+        wsl_host_args=();
         for a in "$@"; do
-            # if is_symlink "$a"; then
-            # XXX
-            # For now, we don't preserve the working directory (see below), so
-            # any existing file arguments are transformed to their absolute
-            # paths. Unfortunately, this won't happen for new files (b/c they
-            # don't exist yet).
-            if [[ -e "$a" || ("$a" = */* && "$a" != *=*/* ) ]]; then
-                args+=("$(abspath "$a")");
+            if is_symlink "$a"; then
+                wsl_host_args+=("$(abspath "$a")");
             else
-                args+=("$a");
+                wsl_host_args+=("$a");
             fi;
         done;
-        # `cmd.exe` prints an error message and changes the working directory
-        # if started in a WSL directory.
-        (
-            # WSL_PWD="$(abspath "$PWD")";
-            \cd /mnt/c;
-            # TODO `pushd` only mounts the directory temporarily; additionally,
-            # the mount seems that the mount can become corrupted somehow.
-            # So for now, simply don't even try to preserve the working directory.
-            # cmd.exe /c pushd "$WSL_PWD" "&&" "${args[@]}"
-            cmd.exe /c "${args[@]}"
-        )
     }
-    if [[ -x "$gvim_launch_script" ]]; then
+    wsl_batch () { 
+        make_wsl_args "$@"
+    # Use powershell; `cmd.exe` doesn't handle WSL working directories.
+        powershell.exe -windowstyle hidden "${wsl_host_args[@]}"
+    }
+    # TODO this check is not great, as changing the variable name breaks it.
+    if [[ -x "$editor_launch_script" ]]; then
         # Don't use `cmd.exe` for gvim; see https://github.com/microsoft/WSL/issues/5811
-        edit () { "$NEWWINDOW_EDIT_CMD" "$@" ; }
+        edit () { make_wsl_args "$@"; "$NEWWINDOW_EDIT_CMD" "${wsl_host_args[@]}" ; }
     else
         edit () { 
             wsl_batch "$NEWWINDOW_EDIT_CMD" "$@"

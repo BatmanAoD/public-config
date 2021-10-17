@@ -79,6 +79,9 @@ shopt -s nullglob
 # *CHECK* that symlink creation doesn't fail, *THEN* remove bashrc!
 # rm -f ~/.bashrc
 
+# TODO: consider using a dotfiles manager; probably either toml-bombadil or chezmoi
+# TODO: on Windows, OS_specific/Windows/alacritty.yml should be symlinked to
+# %APPDATA%\alacritty\alacritty.yml
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/dotfiles/${prog}* ~/private-config/dotfiles/${prog}*; do
@@ -112,6 +115,12 @@ git config --global --add include.path ~/public-config/includefile_gitconfig
 # Use .gitignore globally
 git config --global core.excludesfile ~/.gitignore
 # TODO Set username and email now?
+
+# TODO: WSL using credential manager:
+# find `git-credential-manager-core.exe` and use it:
+# git config --global credential.helper "/mnt/c/Program\ Files/Git/mingw64/libexec/git-core/git-credential-manager-core.exe"
+# For Scoop, this path was:
+# ~/scoop/apps/git/2.32.0.windows.2/mingw64/libexec/git-core/<exe>
 
 mkdir -p ~/bin
 cd ~/bin
@@ -352,6 +361,9 @@ else
     rustup update
 fi
 
+# XXX TEMP
+echo "finished Rust updates"
+
 # Just in case the above didn't work
 if ! hash cargo 2>/dev/null; then
     echo "Can't install rust tools; cargo not installed!" >&2
@@ -382,9 +394,20 @@ else
     # * https://github.com/lotabout/skim (replace fzf, or do they work together?)
     # * https://github.com/mookid/diffr
 
+    # TODO restore default toolchain?
+
 fi
 
 cd ~/bin
+
+if $WSL; then
+    if ! hash wsl-open 2>/dev/null; then
+        echo "installing wsl-open"
+        # Install wsl-open
+        curl -o ~/bin/wsl-open https://raw.githubusercontent.com/4U6U57/wsl-open/master/wsl-open.sh
+        chmod a+x ~/bin/wsl-open
+    fi
+fi
 
 # The original sshrc repo apparently no longer exists. I have found forks, but
 # they are pretty old.
