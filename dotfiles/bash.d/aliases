@@ -206,7 +206,7 @@ else
 fi
 
 # Find leftover git conflict markers
-alias findconflicts="rs '^<<<<<<|^=======$|^>>>>>>>'"
+alias findconflicts="rs '^<<<<<<<|^\|{7}|^=======$|^>>>>>>>'"
 
 type bat &>/dev/null
 if [[ $? -eq 0 ]]; then
