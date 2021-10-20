@@ -82,19 +82,6 @@ Plug 'simnalamburt/vim-mundo'
 " SQL interaction
 Plug 'tpope/vim-dadbod'
 
-" Asynchronous language server (LSP) client
-" Note that there is also a Rust implementation; comparison here:
-" https://github.com/neoclide/coc.nvim/issues/454#issuecomment-465441127
-" XXX TODO: this seems to screw up the 'file has changed' dialog.
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" TODO: `coc` language support is supported with `:CocInstall`. E.g.:
-" :CocInstall coc-rls
-" :CocInstall coc-git
-" To install from cmd line:
-" # install coc-json & coc-html and exit
-" vim -c 'CocInstall -sync coc-json coc-html|q'
-
 " Recommended by Scala Metals documentation:
 Plug 'derekwyatt/vim-scala'
 
@@ -103,9 +90,22 @@ Plug 'ArjenL/vim-kinesis'
 autocmd BufNewFile,BufRead ?_{qwerty,dvorak}.txt,{qwerty,dvorak}.txt set filetype=advantage2
 autocmd BufNewFile,BufRead layout[123456789].txt set filetype=freestyle
 
+" YCM, coc, and probably other plugins provide LSP support in Vim8. Since I'm
+" on NeoVim for now, and my config for these was old and broken, I'm just
+" deleting that material.
+
 if has('nvim')
-    " TODO figure out a viable debugging plugin for gVim, too.
     Plug 'sakhnik/nvim-gdb'
+    Plug 'neovim/nvim-lspconfig' " common config for built-in LSP support
+    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'nvim-lua/plenary.nvim' " needed for Telescope
+    Plug 'nvim-telescope/telescope.nvim'
+    " TODO: figure out what this for and how to actually install the fzy binary:
+    " Plug 'nvim-telescope/telescope-fzy-native.nvim'
+    Plug 'folke/which-key.nvim'
+    " completions; see note above about completions in Vim8
+    " TODO: figure out if this also supports refactoring (YCM, coc, et. al do)
+    Plug 'hrsh7th/nvim-cmp'
 endif
 
 call plug#end()
@@ -119,11 +119,7 @@ let g:jellybeans_overrides = {
 \   'SpecialKey':   { 'guifg': 'FFFA00' },
 \   'NonText':      { 'guifg': '444499' },
 \   'Todo':         { 'guibg': '772222' },
-\   'YcmWarningSign'    : { 'guibg': '774444' },
-\   'YcmWarningSection' : { 'guibg': '774444' },
 \}
-" The ycm groups define YCM warning highlighting; default is 'todo'.
-" Errors match 'error', which....is possibly the same as 'todo'.
 
 " I don't really like folds
 let g:pymode_folding = 0
@@ -135,23 +131,6 @@ set winfixheight
 set guioptions-=L
 
 " Other plugin settings:
-
-" TODO determine how best to use vim-dispatch
-" function! SetCppDispatchCmd()
-"     " Check if my BC infrastructure suite is available and that I'm in a directory
-"     " that can use it....
-"     silent call system('findpdirs')
-"     if ! v:shell_error
-"         let b:dispatch = 'build'
-"     " Otherwise, use my generic 
-"     else
-"         let b:dispatch = 'qg++'
-"     endif
-" endfunction
-" 
-" augroup CppDispatch
-"     autocmd BufEnter *.cpp :call SetCppDispatchCmd()
-" augroup END
 
 " Use Git-flavored-markdown style tables
 let g:table_mode_corner="|"
@@ -165,67 +144,6 @@ vnoremap <Leader>ls :Linediff<CR>`>
 " clear diff:
 vnoremap <Leader>lc :LinediffReset<CR>
 nnoremap <Leader>lc :LinediffReset<CR>
-
-" Use both ctl-space and tab for coc.nvim completion
-" (Configuration taken from
-" https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources)
-inoremap <silent><expr> <c-space> coc#refresh()
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-inoremap <silent><expr> <Tab>
-            \ pumvisible() ? "\<C-n>" :
-            \ <SID>check_back_space() ? "\<Tab>" :
-            \ coc#refresh()
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" More mappings taken from coc.nvim example config
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-let g:using_ycm = 0
-" TODO can I use `Plug` after `plug#end()`?
-" TODO apparently this is tricky to get working on Windows, unfortunately.
-" See https://github.com/Valloric/YouCompleteMe/wiki/Windows-Installation-Guide
-" For now, just...don't use YCM at all.
-if 0 " !has('win32') && executable('clang++')
-    Plug 'Valloric/YouCompleteMe'
-    let g:ycm_confirm_extra_conf = 0
-    let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
-    let g:using_ycm = 1
-    " Use YouCompleteMe instead of ctags-style taglist
-    " (Note: YouCompleteMe can also be configured to read the tagslist generated
-    " by 'Exuberant Ctags', but that will slow it down.)
-    nnoremap <C-]> :YcmCompleter GoTo<CR>
-    " Open definition in new window
-    nnoremap <C-W><C-]> :vsplit<CR>:YcmCompleter GoTo<CR>
-endif
-
-" " YCM and/or LSP should do everything Syntastic would do, so there should be no
-" " reason to use Syntastic.
-" if !g:using_ycm && executable('g++')
-"     Plug 'scrooloose/syntastic'
-"     " TODO figure out a way to generically figure out the 'best' compiler to use
-"     let g:syntastic_cpp_compile = "g++"
-"     " TODO figure out a way to define flags per-project, e.g. by reading CMake
-"     " files
-"     let g:syntastic_cpp_compiler_options = "-std=c++14 -Wall -Wextra -Wpedantic -static-libstdc++"
-"     " TODO re-evaluate these after reading the syntastic manual
-"     set statusline+=%#warningmsg#
-"     set statusline+=%{SyntasticStatuslineFlag()}
-"     set statusline+=%*
-"
-"     " TODO consider just...getting rid of syntastic.
-"     " let g:syntastic_always_populate_loc_list = 1
-"     " let g:syntastic_auto_loc_list = 1
-"     " let g:syntastic_check_on_open = 1
-"     " let g:syntastic_check_on_wq = 1
-" endif
 
 function! Disenchant()
 let g:VeryMagic = 0

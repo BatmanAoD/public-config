@@ -23,6 +23,7 @@ endif
 if !has('nvim')
     " make sure runtimepath has default value
     set rtp&
+    set inccommand=nosplit
 endif
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
