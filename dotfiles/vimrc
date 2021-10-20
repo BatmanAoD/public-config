@@ -23,8 +23,8 @@ endif
 if !has('nvim')
     " make sure runtimepath has default value
     set rtp&
-    set inccommand=nosplit
 endif
+
 " create a variable to generically reference the location of vim files
 let $VIMFILES=split(&rtp,",")[0]
 
@@ -39,11 +39,10 @@ function! EscapeFilename(fname)
 endfunction
 
 " Setup plugin manager and load plugins
-let pluginfile = EscapeFilename("~/.vimrcplugins")
-if filereadable(pluginfile)
-    " Should plugins only be loaded once?
-    " if !exists("g:pluginmgr_setup") && filereadable(pluginfile)
-    exec ":source " . pluginfile
+let plugin_mgr = EscapeFilename($VIMFILES . '/autoload/plug.vim')
+let plug_listfile = EscapeFilename("~/.vimrcpluglist")
+if filereadable(plugin_mgr) && filereadable(plug_listfile)
+    exec ":source " . plug_listfile
 endif
 
 " Colors and mouse settings (use jellybeans only if it's loaded as plugin;
@@ -62,21 +61,16 @@ else
     set mouse=
 endif
 
-set noerrorbells t_vb=
-set hidden
-syntax enable
-" TEMPORARY fix for marco highlighting issue; see
-" http://chat.stackexchange.com/rooms/21448/discussion-between-kyle-strand-and-josh-petrie
-hi link cCppOut2 PreProc
-" fancier % matching
-runtime macros/matchit.vim
-" TODO: consider adding one of these as well:
-" * https://github.com/nelstrom/vim-textobj-rubyblock
-" * https://github.com/rhysd/vim-textobj-ruby
-set hlsearch
+" These should be the default, right?
+" set noerrorbells t_vb=
+
 " TODO: there's a fair amount of 'trivial' setup here. Consider using this:
 " https://github.com/tpope/vim-sensible
+set hidden
+syntax enable
+set hlsearch
 set nocompatible
+set nostartofline
 set showcmd
 set ruler
 set wildmenu
@@ -92,6 +86,8 @@ set autochdir
 filetype plugin indent on
 " All indentation levels should be rounded to a multiple of shiftwidth
 set shiftround
+
+" 'virtual' shenanigans:
 " switch back to 'block' if this is too open-ended.
 " alternatively, only set to 'all' if I'm editing a file with tabs.
 " This would be easy since I already have the 'PickTabUsage' function.
@@ -109,12 +105,12 @@ nnoremap <silent> <LeftMouse> :call TempNonVirtual()<CR><LeftMouse>:call Restore
 " This works for most things, but is kind of stupid when the last character in
 " the line is a tab.
 nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
+
 " TODO: figure out a way to only enter insert mode if cursor is past
 " end-of-line (something like getpos > col('$')), and to do the standard
 " visual-mode word-highlight otherwise.
 " TODO: figure out how to make this work...
 " nnoremap <silent> <2-LeftMouse> <LeftMouse>i
-set nostartofline
 if has('x11')
     set clipboard^=unnamedplus
 else
@@ -127,6 +123,8 @@ function! SetIndentWidth(spaces)
     let &softtabstop=a:spaces
 endfunction
 
+" TODO move file-specific settings to `ftplugin`
+" (https://vim.fandom.com/wiki/Keep_your_vimrc_file_clean)
 " My Cpp settings
 function! CppFile()
     call SetIndentWidth(4)
@@ -178,6 +176,9 @@ nnoremap <Leader>i9 :call SetIndentWidth(9)<cr>
 " letter rather frequently.
 " set tildeop
 set incsearch
+if has('nvim')
+    set inccommand=nosplit
+endif
 " This limit exists to limit memory consuption.
 set undolevels=90000
 " TODO For NeoVim, use ~/.config/nvim/ginit.vim.
@@ -214,25 +215,11 @@ set fo+=j
 set ww=h,l,<,>
 " start scrolling 5 lines from edge of screen
 set scrolloff=5
-" after leaving insert mode, move cursor one position to the right.
-" From http://unix.stackexchange.com/a/79083/38050
-" Note: this is controversial. See
-" http://unix.stackexchange.com/a/11403/38050.
-" Also, this will put the cursor past the end of the line if virtualedit is
-" on--which, in my setup, it is.
-" Also also, after leaving an insert, 'p' will insert the text one character
-" to the right of what's expected.
-" This must be in a group with 'autocmd!' because otherwise it's cumulative
-" every time this file is reloaded.
-" ....sigh...finally, this doesn't work with vim-multiple-cursors. So, for
-" now, just...don't use it.
-augroup insertleave
-    autocmd!
-    " au InsertLeave * if (getpos('.')[2] > 1) | call cursor([getpos('.')[1], getpos('.')[2]+1])
-augroup END
+"
 " expand tabs even when chars are shown explicitly; also show trailing spaces
 " and end-of-line with 'set list'
 set listchars=tab:»·,trail:¬
+" legacy; default in nvim. See https://vi.stackexchange.com/a/2163/1060
 set backspace=indent,eol,start
 " This avoids most (...all?) of the 'press ENTER to continue' messages from
 " simple operations like undo/redo.
@@ -242,7 +229,6 @@ if ! has('win32')
 endif
 
 set nobackup
-set nowritebackup
 set nu
 set relativenumber
 
@@ -302,14 +288,6 @@ function! Untab()
   retab
 endfunction
 
-" exit vim when exiting last buffer
-" courtesy of http://superuser.com/a/668612/199803
-autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
-
-" Set scripts to be executable from the shell
-" courtesy of https://unix.stackexchange.com/a/39995/38050
-au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent execute "!chmod a+x <afile>" | endif | endif
-
 function! PickTabUsage()
     if &readonly || ! &modifiable
         set nolist
@@ -323,14 +301,22 @@ function! PickTabUsage()
     endif
 endfunction
 
-" hm....is this actually a good idea?
-" YES, it was
-nnoremap <Space> :
-
 " every time I change buffers or reload file, check if I need to use tabs
 augroup autotabs
     autocmd BufEnter,BufRead * :call PickTabUsage()
 augroup END
+
+" exit vim when exiting last buffer
+" courtesy of http://superuser.com/a/668612/199803
+autocmd BufDelete * if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 2 | quit | endif
+
+" Set scripts to be executable from the shell
+" courtesy of https://unix.stackexchange.com/a/39995/38050
+au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent execute "!chmod a+x <afile>" | endif | endif
+
+" hm....is this actually a good idea?
+" YES, it was
+nnoremap <Space> :
 
 " map ctrl-Y to copy into system register
 nnoremap <C-Y> "+y
@@ -454,12 +440,6 @@ endfunction
 nnoremap <silent> s :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
 nnoremap <silent> S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
-" somehow I got it into my head that these were the defaults anyway.
-" nnoremap B _
-" nnoremap E g_
-" vnoremap B _
-" vnoremap E g_
-
 " for consistency with D and C
 nnoremap Y y$
 
@@ -497,10 +477,6 @@ command! Wd :call WriteAndDelete()
 " save/quitting should be deliberate, and NEVER accidental
 nnoremap ZZ <nop>
 nnoremap ZQ <nop>
-" harder to do accidentally, hopefully:
-" use three Q's to avoid trying to start a recording w/ qq and accidentally
-" using caps
-nnoremap QQQ :bd!<cr>
 " because I often try to quit after highlighting/selecting
 vnoremap :q <Esc>:q
 vnoremap :WQ <Esc>:WQ<cr>
@@ -509,43 +485,6 @@ vnoremap QQQ <Esc>:bd!<cr>
 command! WQ :wqa
 command! Q :qa
 
-" for multi-cursor mode
-nnoremap <C-m> :MultipleCursorsFind 
-" not sure why this is necessary...why is this being mapped??
-unmap <CR>
-" TODO: open an issue in the vim-multiple-cursors repository
-
-" always make your regex 'very magic'
-" currently using this plugin instead:
-" http://www.vim.org/scripts/script.php?script_id=4849
-" TODO: since that plugin only works with 7.4+, enable these mappings for 
-" earlier versions of Vim
-" note that these remappings interfere with search-history
-" nnoremap / /\v
-" vnoremap / /\v
-" cnoremap %s/ %smagic/
-" cnoremap >s/ >smagic/
-" nnoremap :g/ :g/\v
-" nnoremap :g// :g//
-
-" Vim's VeryMagic patterns treat '=' as a synonym for `?`. This is stupid.
-" .....however, there's still no way to do a 'pattern-only' remapping...
-" .....so this is too annoying to use.
-" cnoremap = \=
-
-" 'Fix' the weird \n vs \r discrepancy
-" (credit: http://superuser.com/a/743087/199803 
-" .....but the fancy regex is mine)
-" Replaced by the 'VeryMagicSubstituteNormalise' option in EnchantedVim
-" function! TranslateBackslashN()
-"     if getcmdtype() ==# ':' && getcmdline() =~#
-"       \ '[%>]s\([um]\w*\)\?\(.\).\{-}\(\\\)\@<!\2.*\\$'
-"         return getcmdline() . 'r'
-"     endif
-"     return getcmdline() . 'n'
-" endfunction
-" cnoremap n <C-\>eTranslateBackslashN()<CR>
-
 " quick filewide search and replace; recursive to take advantage of 'magic'
 " remapping
 " TODO: should I make this non-recursive now that I'm using the 'enchanted'
@@ -553,6 +492,7 @@ unmap <CR>
 nmap <C-s> :%s/
 " quick selection search and replace
 vmap <C-s> :s/
+
 " quick word count
 nnoremap <C-c> :%s///n<cr>
 vnoremap <C-c> :%s///n<cr>
@@ -678,6 +618,7 @@ augroup RelativeFocus
         " With XWin, 'focus lost' apparently only occurs when a *different*
         " X window gains focus. So here's a lame but hopefully good-enough
         " alternative.
+        " TODO: if gWSL doesn't need this, get rid of it.
         au CursorHold * :set norelativenumber
         au CursorMoved * :set relativenumber
     else
@@ -688,6 +629,7 @@ augroup END
 
 " In Windows, when opening a file on a network drive,
 " default to unix lineendings
+" TODO: determine if this still works as expected
 augroup UncDrive
     if has('win32')
         autocmd BufEnter,BufRead //* :set fileformat=unix

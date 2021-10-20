@@ -12,7 +12,7 @@ call plug#begin('~/.vim/plugged')
 
 " Lotsa langauges
 Plug 'sheerun/vim-polyglot'
-" respect `.editorconfi`, which GitHub also respects
+" respect `.editorconfig`, which GitHub also respects
 Plug 'editorconfig/editorconfig-vim'
 Plug 'nanotech/jellybeans.vim'
 Plug 'terryma/vim-multiple-cursors'
@@ -30,8 +30,6 @@ Plug 'peterhoeg/vim-qml'
 Plug 'rust-lang/rust.vim'
 " JSON5 (permits trailing commas)
 Plug 'GutenYe/json5.vim'
-" TODO only enable this is Racer is installed
-" Plug 'phildawes/racer'
 " Gleam (Erlang BEAM language) support
 Plug 'gleam-lang/gleam.vim'
 " " Pest syntax highlighting
@@ -45,7 +43,6 @@ Plug 'BenBergman/vsearch.vim'
 " TODO syntax highlighting for different filetypes within the same file:
 " http://www.vim.org/scripts/script.php?script_id=4168
 " TODO figure out how to use this
-" pymode
 Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " Er, NVM, I hate this.
 " Plug 'Raimondi/delimitMate'
@@ -139,14 +136,17 @@ lua <<EOF
     })
 
     -- Setup lspconfig.
-    -- XXX figure out what `%YOUR_LSP_SERVER%` is supposed to be...
-    -- ...or just switch to nvim-compe? I chose `nvim-cmp` because `compe` was
-    -- recommended in a blog post (https://crispgm.com/page/neovim-is-overpowering.html),
-    -- but the README there says that `compe` is deprecated and `cmp` is the replacement.
-    -- But the configurations look very different.
-    -- require('lspconfig')[%YOUR_LSP_SERVER%].setup {
-    --    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-    -- }
+    local servernames = {
+        "bashls", "csharp_ls", "dockerls", "gopls", "graphql",
+        "jsonls", "powershell_es", "pyright", "rust_analyzer",
+        "yamlls"
+    }
+    local lspcfg = require('lspconfig')
+    for i, server in ipairs(servernames) do
+        lspcfg[server].setup {
+            capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+        }
+    end
 EOF
 
 " which-key config
@@ -179,6 +179,9 @@ set winfixheight
 set guioptions-=L
 
 " Other plugin settings:
+
+" for multi-cursor mode
+nnoremap <C-m> :MultipleCursorsFind 
 
 " Use Git-flavored-markdown style tables
 let g:table_mode_corner="|"
