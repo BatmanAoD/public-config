@@ -94,21 +94,69 @@ autocmd BufNewFile,BufRead layout[123456789].txt set filetype=freestyle
 " on NeoVim for now, and my config for these was old and broken, I'm just
 " deleting that material.
 
+" TODO: figure out if snips are useful. `nvim-cmp` mentions vsnip, luasnip,
+" and ultisnips.
+
 if has('nvim')
     Plug 'sakhnik/nvim-gdb'
     Plug 'neovim/nvim-lspconfig' " common config for built-in LSP support
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'nvim-lua/plenary.nvim' " needed for Telescope
     Plug 'nvim-telescope/telescope.nvim'
-    " TODO: figure out what this for and how to actually install the fzy binary:
+    " TODO: figure out what these are for and how to actually install them,
+    " and pick one:
+    " Plug 'nvim-telescope/telescope-fzf-native.nvim'
     " Plug 'nvim-telescope/telescope-fzy-native.nvim'
     Plug 'folke/which-key.nvim'
     " completions; see note above about completions in Vim8
     " TODO: figure out if this also supports refactoring (YCM, coc, et. al do)
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/nvim-cmp'
 endif
 
 call plug#end()
+
+if has('nvim')
+" `nvim-cmp` config, copied from README minus the snippet stuff
+    set completeopt=menu,menuone,noselect
+lua <<EOF
+    -- Setup nvim-cmp.
+    local cmp = require'cmp'
+
+    cmp.setup({
+        mapping = {
+            ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+            ['<C-f>'] = cmp.mapping.scroll_docs(4),
+            ['<C-Space>'] = cmp.mapping.complete(),
+            ['<C-e>'] = cmp.mapping.close(),
+            ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        },
+        sources = {
+            { name = 'nvim_lsp' },
+            { name = 'buffer' },
+        }
+    })
+
+    -- Setup lspconfig.
+    -- XXX figure out what `%YOUR_LSP_SERVER%` is supposed to be...
+    -- ...or just switch to nvim-compe? I chose `nvim-cmp` because `compe` was
+    -- recommended in a blog post (https://crispgm.com/page/neovim-is-overpowering.html),
+    -- but the README there says that `compe` is deprecated and `cmp` is the replacement.
+    -- But the configurations look very different.
+    -- require('lspconfig')[%YOUR_LSP_SERVER%].setup {
+    --    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    -- }
+EOF
+
+" which-key config
+lua << EOF
+    require("which-key").setup {
+        -- TODO figure out what to do here:
+        -- https://github.com/folke/which-key.nvim#-setup
+    }
+EOF
+endif
 
 " Jellybeans settings:
 " TODO check first if jellybeans was successfully turned on?
