@@ -210,20 +210,17 @@ alias findconflicts="rs '^<<<<<<<|^\|{7}|^=======$|^>>>>>>>'"
 
 type bat &>/dev/null
 if [[ $? -eq 0 ]]; then
-    alias cat='bat --theme="DarkNeon"'
+    alias cat='bat -P --theme="DarkNeon"'
     # OneHalfLight and OneHalfDark are the only readable themes on Git-Bash on
     # Windows.
     # TODO figure out a way to pick the theme intelligently...
     # alias mdcat="bat --theme=OneHalfLight --plain"
-    alias mdcat="bat --paging=never --theme=DarkNeon --plain"
+    alias mdcat="bat -P --theme=DarkNeon --plain"
 else
     # avoid accidentally messing up shell with control characters when using
     # cat on binary files
     alias cat='cat -v'
     alias mdcat=\cat
-    # this function is...less useful than I'd hoped, because '-A' usually just
-    # looks silly.
-    # alias cat=qcat
 fi
 
 alias save_func=save_function

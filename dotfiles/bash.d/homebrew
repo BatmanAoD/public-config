@@ -1,0 +1,4 @@
+brew=/home/linuxbrew/.linuxbrew/bin/brew
+if [[ -x "${brew}" ]]; then
+  eval $("${brew}" shellenv)
+fi

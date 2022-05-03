@@ -106,13 +106,8 @@ nnoremap <silent> <LeftMouse> :call TempNonVirtual()<CR><LeftMouse>:call Restore
 " the line is a tab.
 nnoremap <silent> a :call TempNonVirtual()<CR>:call RestoreVirtual()<CR>a
 
-" TODO: figure out a way to only enter insert mode if cursor is past
-" end-of-line (something like getpos > col('$')), and to do the standard
-" visual-mode word-highlight otherwise.
-" TODO: figure out how to make this work...
-" nnoremap <silent> <2-LeftMouse> <LeftMouse>i
-if has('x11')
-    set clipboard^=unnamedplus
+if has('x11') || system('uname -r') =~ "microsoft"
+    set clipboard=unnamedplus
 else
     set clipboard=unnamed
 endif
