@@ -19,9 +19,6 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 # more PATH stuff
-if [ -d "$HOME/.cargo" ]; then
-    . "$HOME/.cargo/env"
-fi
 if [ -d "$HOME/public-config/dotfiles/sh.d" ]; then
     for s in "$HOME/public-config/dotfiles/sh.d/"*; do
         . "$s"

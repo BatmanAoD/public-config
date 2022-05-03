@@ -3,9 +3,15 @@
 # This should be POSIX so it works with a wide variety of shells. It is
 # designed simply to set up the PATH variable.
 
+# Common path setup:
+# OS X
 if [ -r /usr/libexec/path_helper ]; then
     # Not sure why this isn't done by default for non-login shells on OS X.
     eval `/usr/libexec/path_helper`
+fi
+# Rust
+if [ -d "$HOME/.cargo" ]; then
+    . "$HOME/.cargo/env"
 fi
 
 # Ensure particular dirs are on $PATH if they exist.
