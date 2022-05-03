@@ -181,7 +181,8 @@ set guioptions-=L
 " Other plugin settings:
 
 " for multi-cursor mode
-nnoremap <C-m> :MultipleCursorsFind 
+" XXX figure out why this make startup weird in WSL
+" nnoremap <C-m> :MultipleCursorsFind 
 
 " Use Git-flavored-markdown style tables
 let g:table_mode_corner="|"

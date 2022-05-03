@@ -174,7 +174,8 @@ if $CYGWIN; then
     }
 fi
 
-if $WSL; then
+# Special handling if the editor runs on the host
+if $WSL && [[ "$(which $NEWWINDOW_EDIT_CMD)" == /mnt/* ]]; then
     # For symlinks, use their Windows absolute path.
     # Workaround for https://github.com/microsoft/WSL/issues/4868
     # Surround all arguments in quotes before passing to powershell.exe.
@@ -341,8 +342,10 @@ histin ()
 
 REGEX_SEP='!'
 
-# Don't use `sd`. It does not support backreferences in the substitution and
-# does not create backups of the originals.
+# WARNING: `sd` does not create backups, so `gr_restore` won't work.
+# See https://github.com/chmln/sd/issues/4
+# Also, there are some gotchas with captures:
+# https://github.com/chmln/sd/issues/44
 # if hash sd 2>/dev/null; then
 #     global_repl_impl ()
 #     {
