@@ -82,7 +82,7 @@ shopt -s nullglob
 # TODO: consider using a dotfiles manager; probably either toml-bombadil or chezmoi
 # TODO: on Windows, OS_specific/Windows/alacritty.yml should be symlinked to
 # %APPDATA%\alacritty\alacritty.yml
-for prog in bash input gdb irb vim zsh git ack ycm ripgrep profile; do
+for prog in bash input gdb irb vim zsh git ack ycm ripgrep profile sh; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/dotfiles/${prog}* ~/private-config/dotfiles/${prog}*; do
         rcname=".$(basename "${file}")"
