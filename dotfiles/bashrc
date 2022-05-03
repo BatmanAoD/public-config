@@ -1,3 +1,4 @@
+#!/usr/bin/bash
 ################################################################################
 # File:             .bashrc
 # Description:      Bash shell environment file; should be target of symlink
@@ -27,20 +28,10 @@ echo -e "$(tput setaf 2)-> bashrc$(tput sgr0)"
 # Needed to find additional rcfiles
 shopt -s extglob
 
-# DO NOT 'readlink' here--that will point to 'bashrc' in public-config!
-BASHRC_PATH="${BASH_SOURCE[0]}"
-
-cfg_HOME="$(dirname "${BASHRC_PATH}")"
-bashfiles="${cfg_HOME}/.bash.d"
-
 # inspired by: https://www.turnkeylinux.org/blog/generic-shell-hooks
 load_scripts()
 {
-    if [[ $# -eq 0 ]]; then
-        dir="$bashfiles"
-    else
-        dir="$1"
-    fi
+    dir="$1"
     # Skip everything with a dot in the filename, except for the bootstrap and
     # rcbase files
     # Note: glob expansion is guaranteed to be alphabetical
@@ -55,7 +46,11 @@ load_scripts()
     shopt -u nullglob
 }
 
-load_scripts
+# DO NOT 'readlink' here--that will point to 'bashrc' in public-config!
+BASHRC_PATH="${BASH_SOURCE[0]}"
+cfg_HOME="$(dirname "${BASHRC_PATH}")"
+load_scripts "${cfg_HOME}/.sh.d"
+load_scripts "${cfg_HOME}/.bash.d"
 load_scripts ~/private-config/bash.d
 
 # This is here, rather than in .bash_aliases, due to how it determines the
