@@ -25,23 +25,26 @@ if [ -d "$HOME/public-config/dotfiles/sh.d" ]; then
     done
 fi
 if [ -d "$HOME/private-config/sh.d" ]; then
-    echo "found private config"
     for s in "$HOME/private-config/sh.d/"*; do
-        echo "found $s"
         . "$s"
     done
 fi
 
-# FOR NOW, use nushell as the default WITHOUT `chsh` by just running it here.
+# TODO - nushell has a variety of blockers for me.
+# Continue trying it occasionally.
+# - No support at all for background tasks: https://github.com/nushell/nushell/issues/247 
+# - can't suppress path-expansion even when it makes no sense:
+#   https://github.com/nushell/nushell/issues/5196
+
+# This enables using nushell as the default shell WITHOUT `chsh` by just running it here.
 # This is *only* for interactive sessions.
-# See https://github.com/microsoft/vscode-remote-release/issues/6615
-case "$-" in
-    *i*)
-        if hash nu 2>/dev/null; then
-            exec nu;
-        fi ;;
-    *) ;;
-esac
+# case "$-" in
+#     *i*)
+#         if hash nu 2>/dev/null; then
+#             exec nu;
+#         fi ;;
+#     *) ;;
+# esac
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
