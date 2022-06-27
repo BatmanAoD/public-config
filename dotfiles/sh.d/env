@@ -52,3 +52,7 @@ ensure_on_path_if_exists "/home/linuxbrew/.linuxbrew/bin"
 
 # pip (and maybe others?) use this
 ensure_on_path_if_exists "${HOME}/.local/bin"
+
+### other env stuff
+# TODO consider porting over the Bash logic, instead
+export EDITOR=vi
