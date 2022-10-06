@@ -13,8 +13,8 @@
 # HOST_PATH='C:\tools\neovim\Neovim\bin\nvim-qt.exe'
 # WSL_PATH='/mnt/c/tools/neovim/Neovim/bin/nvim-qt.exe'
 # As long as the `exe` is on the path, this should work.
-HOST_PATH=nvim-qt.exe
-WSL_PATH=nvim-qt.exe
+HOST_PATH=neovide.exe
+WSL_PATH=neovide.exe
 
 # if [[ ! -x "$WSL_PATH" ]]; then
 #     echo "Cannot find application: '$WSL_PATH'" >&2

@@ -1,0 +1,4 @@
+# XXX set up fzf without messing up `hash`
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+[ -f ~/.asdf/asdf.sh ] && source ~/.asdf/asdf.sh
+[ -f ~/.asdf/completions/asdf.bash ] && source ~/.asdf/completions/asdf.bash

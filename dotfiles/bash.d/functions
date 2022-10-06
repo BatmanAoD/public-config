@@ -352,7 +352,12 @@ REGEX_SEP='!'
 #         # Assume ripgrep is installed
 #         rg --files "$1" | xargs sd "$2" "$3"
 #     }
-# else
+if hash fastmod 2>/dev/null; then
+    global_repl_impl ()
+    {
+        fastmod --accept-all "$2" "$3" "$1"
+    }
+else
     global_repl_impl ()
     {
         pattern="$2"
@@ -360,7 +365,7 @@ REGEX_SEP='!'
         # rs is aliased to ack or rg
         rs -g '!*.bak_gr' -l -- "$pattern" "$dirname" | xargs perl -pi.bak_gr -E "s${REGEX_SEP}${pattern}${REGEX_SEP}${replacement}${REGEX_SEP}g"
     }
-# fi
+fi
 
 # Search-and-replace in multiple files
 # TODO consider interactive version using vim:
