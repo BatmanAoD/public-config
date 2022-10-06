@@ -1,0 +1,4 @@
+alias flvd='cargo build --manifest-path="$HOME/personal/fluvio/Cargo.toml" --bin fluvio-run && \
+    cargo run --manifest-path="$HOME/personal/fluvio/Cargo.toml" --bin fluvio --'
+
+export FLUVIO_BUILD_LLD=lld-13
