@@ -9,13 +9,24 @@ alias xargs='xargs '
 
 # GNU utilities are more feature-rich.
 if [[ -n "$CONFIG_DIR" ]]; then
-    while read util; do
-        if hash g$util 2>/dev/null; then
-            # Aliases aren't recursive. So isntead, just reassign the paths!
-            # TODO: would this work in zsh or other shells?
-            hash -p "$(which g$util)" $util
+    # The most important one is 'readlink'.
+    readlink --version | grep -q GNU
+    if [[ $? -ne 0 ]]; then
+        if hash greadlink 2>/dev/null; then
+            while read util; do
+                if hash g$util 2>/dev/null; then
+                    echo "have g$util"
+                    # Aliases aren't recursive. So instead, just reassign the paths!
+                    # TODO: would this work in zsh or other shells?
+                    hash -p "$(which g$util)" $util
+                fi
+            done < "$CONFIG_DIR/coreutils_list"
+        else
+            # If we haven't installed `greadlink`, and `readlink --version` isn't GNU,
+            # then we don't have GNU utilities available.
+            echo "warning: GNU utilities not available."
         fi
-    done < "$CONFIG_DIR/coreutils_list"
+    fi
 fi
 
 if ls --version 2>/dev/null | grep -w GNU -q ; then

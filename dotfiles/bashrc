@@ -76,3 +76,4 @@ fi
 
 # Print a message
 say green "<- bashrc"
+. "$HOME/.cargo/env"
