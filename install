@@ -2,6 +2,9 @@
 
 # XXX TODO: for 'TODO' items, it would be nice to print a message explaining
 # what's not already automated, prompting the user to do it manually.
+# ...also, it would be great to make this configurable, to skip stuff;
+# it's essentially all idempotent, but sometimes it gets stuff on a network op;
+# ctl-c doesn't work because of `set -e`
 
 if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
     # There aren't _too_ many things that rely on Bash 4.
@@ -361,9 +364,6 @@ else
     rustup update
 fi
 
-# XXX TEMP
-echo "finished Rust updates"
-
 # Just in case the above didn't work
 if ! hash cargo 2>/dev/null; then
     echo "Can't install rust tools; cargo not installed!" >&2
@@ -398,17 +398,6 @@ else
 
 fi
 
-cd ~/bin
-
-if $WSL; then
-    if ! hash wsl-open 2>/dev/null; then
-        echo "installing wsl-open"
-        # Install wsl-open
-        curl -o ~/bin/wsl-open https://raw.githubusercontent.com/4U6U57/wsl-open/master/wsl-open.sh
-        chmod a+x ~/bin/wsl-open
-    fi
-fi
-
 # The original sshrc repo apparently no longer exists. I have found forks, but
 # they are pretty old.
 # I should reconsider whether I actually want this functionality, and/or if
@@ -428,14 +417,29 @@ fi
 
 # TODO: automatically install windows tools?
 
-# Currently, We only need the 'bootstrap' file to find the stderred directory.
+# Currently, We only need the 'bootstrap' file to find the ToolsBld and stderred
+# directories.
 # Be a bit more permissive when running bash setup scripts; they use unset
 # variables.
 set +u
 set +e
-# . ~/.bash.d/source_first.0.bootstrap
+. ~/.bash.d/source_first.0.bootstrap
 set -u
 set -e
+
+if $WSL; then
+    if ! hash wsl-open 2>/dev/null; then
+        echo "installing wsl-open"
+        # Install wsl-open
+        git clone https://github.com/4U6U57/wsl-open/ ~/ToolsBld/wsl-open
+        cd ~/ToolsBld/wsl-open
+        # TODO keep this updated? tool hasn't changed in a year and a half, as of Oct 2022
+        git checkout v2.2.1
+        chmod a+x ./wsl-open.sh
+        cd ~/bin
+        link_s ~/ToolsBld/wsl-open/wsl-open.sh
+    fi
+fi
 
 # Install stderred
 skipstderred=false
