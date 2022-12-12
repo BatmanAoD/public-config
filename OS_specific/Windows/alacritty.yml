@@ -402,9 +402,7 @@ selection:
 #   - (Linux/BSD) user login shell
 #   - (Windows) powershell
 shell:
-  program: bash.exe
-  args:
-    - --login
+  program: wsl.exe
 
 # Startup directory
 #
