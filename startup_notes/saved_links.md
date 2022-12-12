@@ -16,7 +16,6 @@ https://docs.google.com/spreadsheets/d/1cv1XuHw1CyCxqN7p2Tv2duqWOI0cAzMXWa6Kz2mn
 ## non-work
 
 https://www.fidelity.com/insights/investing-ideas/i-bonds-interest#:~:text=Once%20you're%20in%20the,set%20up%20a%20recurring%20purchase
-https://www.scattered-thoughts.net/writing/how-safe-is-zig/
 https://docs.google.com/forms/d/e/1FAIpQLSf0thH-6z5ydHLCg6zoCqBpMFRBNrvNvd1a4CkkYOBGGx0yLw/viewform
 https://en.wikipedia.org/wiki/Margaret_(2011_film)
 https://en.wikipedia.org/wiki/25th_Hour
@@ -32,10 +31,10 @@ https://learning.oreilly.com/library/view/patterns-principles-and/9781118714706/
 https://opus.ch/ddd-concepts-and-patterns-aggregate-and-module/
 https://pkg.go.dev/github.com/serum-errors/go-serum
 
-## TODO tabs
+## Career tabs
 
-https://pieinsurance.atlassian.net/wiki/spaces/ENGINEERIN/pages/2699690027/DMF-18+RFC+Feature+Flag+API
 career doc
+https://github.com/PieInsurance/PolicyRecords/blob/139ac41e5b58f70eaf9185c08fcdb620b0aeab9b/data/latest.go#L64
 
 ## Docs repo
 https://github.com/PieInsurance/KyleDocs.git
