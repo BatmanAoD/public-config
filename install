@@ -373,6 +373,10 @@ else
         echo Installing ripgrep
         cargo install ripgrep
     fi
+    if ! hash fastmod 2>/dev/null; then
+        echo Installing fastmod
+        cargo install fastmod
+    fi
     if ! hash fd 2>/dev/null; then
         echo Installing fd
         cargo install fd-find
