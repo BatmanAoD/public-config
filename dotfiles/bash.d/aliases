@@ -12,6 +12,8 @@ if [[ -n "$CONFIG_DIR" ]]; then
     # The most important one is 'readlink'.
     readlink --version | grep -q GNU
     if [[ $? -ne 0 ]]; then
+        # TODO: next time I'm on a Mac, check if this approach with PATH works:
+        # https://apple.stackexchange.com/a/69332/331583
         if hash greadlink 2>/dev/null; then
             while read util; do
                 if hash g$util 2>/dev/null; then
