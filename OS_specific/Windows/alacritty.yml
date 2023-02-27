@@ -403,6 +403,8 @@ selection:
 #   - (Windows) powershell
 shell:
   program: wsl.exe
+  args:
+    - "~"
 
 # Startup directory
 #
