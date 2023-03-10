@@ -8,8 +8,8 @@ if (-Not (Get-Command choco -errorAction SilentlyContinue)) {
 }
 
 choco install -y git pwsh gsudo neovide zulip microsoft-windows-terminal
-
-# TODO install xmouse
+# TODO remove '--pre' if/when package gets approved
+choco install -y --pre xmouse-controls --version 1.1.0.0
 
 # PowerShell config
 cp $PSScriptRoot\dotfiles\profile.ps1 $profile.CurrentUserAllHosts
@@ -18,5 +18,10 @@ cp $PSScriptRoot\dotfiles\profile.ps1 $profile.CurrentUserAllHosts
 set-service beep -startuptype disabled
 
 # Install WSL
-# TODO not idempotent... fix this
-wsl --install
+$wsl_info = wsl -l -v
+if ($?) {
+    echo "WSL is already installed."
+}
+else {
+    wsl --install
+}
