@@ -9,8 +9,8 @@ if [ -r /usr/libexec/path_helper ]; then
     # Not sure why this isn't done by default for non-login shells on OS X.
     eval `/usr/libexec/path_helper`
 fi
-# Rust
-if [ -d "$HOME/.cargo" ]; then
+# Rust (except on Windows)
+if [ -e "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
 
