@@ -157,13 +157,23 @@ if ${LINUX_ANY}; then
     fi
 
     if $WSL; then
-        if ! hash wslpath 2>/dev/null; 
-        host_git=$(wslpath -u $(
-# find `git-credential-manager-core.exe` and use it:
-# git config --global credential.helper "/mnt/c/Program\ Files/Git/mingw64/libexec/git-core/git-credential-manager-core.exe"
-# For Scoop, this path was:
-# ~/scoop/apps/git/2.32.0.windows.2/mingw64/libexec/git-core/<exe>
-
+        host_git="$(where.exe git.exe)"
+        if [[ $? -ne 0 ]]; then
+            echo "can't set up Git credential manager!" >&2
+        else
+            if ! hash wslpath 2>/dev/null; then
+                echo "wslpath not found; not configuring Git credential manager"
+            else
+                host_git="$(wslpath -u "$host_git")"
+                # The `grep` is to ensure there's a 
+                cred_mgr="$(find "$(dirname "$(dirname "$host_git")")" -name git-credential-manager-core.exe | grep .)"
+                if [[ $? -ne 0 ]]; then
+                    echo "couldn't find Windows git credential manager." >&2
+                else
+                    git config --global credential.helper "$cred_mgr"
+                fi
+            fi
+        fi
 
         # TODO: automate this
         cat << EOF
