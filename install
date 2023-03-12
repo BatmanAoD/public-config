@@ -165,7 +165,7 @@ if ${LINUX_ANY}; then
                 echo "wslpath not found; not configuring Git credential manager"
             else
                 host_git="$(wslpath -u "$host_git")"
-                # The `grep` is to ensure there's a 
+                # The `grep` is to ensure we get a nonzero status if we can't find the manager
                 cred_mgr="$(find "$(dirname "$(dirname "$host_git")")" -maxdepth 3 -name git-credential-manager.exe | grep .)"
                 if [[ $? -ne 0 ]]; then
                     echo "couldn't find Windows git credential manager." >&2
