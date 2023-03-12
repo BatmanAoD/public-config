@@ -3,7 +3,7 @@
 # XXX TODO: for 'TODO' items, it would be nice to print a message explaining
 # what's not already automated, prompting the user to do it manually.
 # ...also, it would be great to make this configurable, to skip stuff;
-# it's essentially all idempotent, but sometimes it gets stuff on a network op;
+# it's essentially all idempotent, but sometimes it gets stuck on a network op;
 # ctl-c doesn't work because of `set -e`
 
 if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
@@ -114,16 +114,10 @@ fi
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
 # this config directory.
-git config --global --add include.path ~/public-config/includefile_gitconfig
+git config --global include.path ~/public-config/includefile_gitconfig
 # Use .gitignore globally
 git config --global core.excludesfile ~/.gitignore
 # TODO Set username and email now?
-
-# TODO: WSL using credential manager:
-# find `git-credential-manager-core.exe` and use it:
-# git config --global credential.helper "/mnt/c/Program\ Files/Git/mingw64/libexec/git-core/git-credential-manager-core.exe"
-# For Scoop, this path was:
-# ~/scoop/apps/git/2.32.0.windows.2/mingw64/libexec/git-core/<exe>
 
 mkdir -p ~/bin
 cd ~/bin
@@ -149,24 +143,48 @@ if ${LINUX_ANY}; then
         else
             echo "Xmodmap already exists; not overwriting"
         fi
+
+        # Install .i3 config
+        mkdir -p ~/.i3
+        cd ~/.i3
+        if [[ ! -e config ]]; then
+            echo Installing i3 config
+            link_s "${linux_specific}/i3_config"
+            mv i3_config config
+        else
+            echo i3 config already installed
+        fi
     fi
 
-    # TODO: if WSL, set WSL hostname in `/etc/wsl.conf`:
-    # ```toml
-    # [network]
-    # hostname = <name>
-    # ```
-    
-    # Install .i3 config
-    mkdir -p ~/.i3
-    cd ~/.i3
-    if [[ ! -e config ]]; then
-        echo Installing i3 config
-        link_s "${linux_specific}/i3_config"
-        mv i3_config config
-    else
-        echo i3 config already installed
+    if $WSL; then
+        host_git="$(where.exe git.exe)"
+        if [[ $? -ne 0 ]]; then
+            echo "can't set up Git credential manager!" >&2
+        else
+            if ! hash wslpath 2>/dev/null; then
+                echo "wslpath not found; not configuring Git credential manager"
+            else
+                host_git="$(wslpath -u "$host_git")"
+                # The `grep` is to ensure we get a nonzero status if we can't find the manager
+                cred_mgr="$(find "$(dirname "$(dirname "$host_git")")" -maxdepth 3 -name git-credential-manager.exe | grep .)"
+                if [[ $? -ne 0 ]]; then
+                    echo "couldn't find Windows git credential manager." >&2
+                else
+                    # Escape spaces
+                    cred_mgr=$(printf %q "$cred_mgr")
+                    git config --global credential.helper "$cred_mgr"
+                fi
+            fi
+        fi
+
+        # TODO: automate this
+        cat << EOF
+NOTE: you may set the WSL hostname in /etc/wsl.conf:
+[network]
+hostname = <name>
+EOF
     fi
+    
 elif ${MAC_OSX}; then
     # Currently nothing to do.
     :
@@ -238,41 +256,17 @@ fi
 
 # Install dev tools (Debian-based only)
 # TODO: other package managers
-# XXX TODO: Windows now has 'winget' (in preview)! Use that.
 # TODO: `brew` for Mac?
-installusingchoco=false
 installusingapt=false
-if ${WINDOWS}; then
-    # if ! hash choco 2>/dev/null; then
-    #     XXX TODO We need an ELEVATED command shell to install Chocolatey.
-    #     ...doing the install automatically is probably not worth the hassle.
-    #     And indeed by the time we're runing this script, we've already
-    #     installed some kind of Bash, which could have been installed using
-    #     Chocolatey!
-    #     It may be better to just make the Chocolatey install the manual
-    #     "first step" for all new machines; the setup would be:
-    #       * Open `cmd` as admin
-    #       * Run the Chocolatey install-command (below)
-    #       * `%ALLUSERSPROFILE%\chocolatey\bin\choco install git.install`
-    #       * `%ALLUSERSPROFILE%\chocolatey\bin\choco install conemu`
-    #       * Close the `cmd` window, open git bash in conemu, do manual conemu setup
-    #           * TODO: conemu setup is stored in `xml`; we could probably
-    #             include this as a config file!
-    #       * Here in `install`, just check if `choco` is installed.
-    #           * If not: print a warning
-    #           * If so: install packages
-    #     Command to install chocolatey:
-    #       @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
-    #     Chocolatey bin path is: %ALLUSERSPROFILE%\chocolatey\bin
-    # fi
-    if hash choco 2>/dev/null; then
-        installusingchoco=true
-    fi
-elif hash apt-get 2>/dev/null; then
+if hash apt-get 2>/dev/null; then
     installusingapt=true
 fi
 
-# TODO it should be able to unify our package-manager logic.
+if ${WINDOWS}; then
+    echo "To install Windows tools, run install.ps1."
+fi
+
+# TODO we should be able to unify our package-manager logic.
 # * Install commands are always (?) of the form `<pkg-mgr-install> <pkg-name>`
 # * We would need to set up a pkg-mgr-install-command function/alias/variable,
 #   then have a lookup table for known packages. Then something like:
@@ -442,31 +436,5 @@ if $WSL; then
         chmod a+x ./wsl-open.sh
         cd ~/bin
         link_s ~/ToolsBld/wsl-open/wsl-open.sh
-    fi
-fi
-
-# Install stderred
-skipstderred=false
-if ${WINDOWS}; then
-    echo "WINDOWS var is ${WINDOWS}"
-    echo "On WINDOWS; not installing stderred."
-    skipstderred=true
-fi
-if ! $havetoolchain; then
-    echo "No toolchain installed; not installing stderred."
-    skipstderred=true
-fi
-if ! $havecmake; then
-    echo "No cmake installed; not installing stderred."
-    skipstderred=true
-fi
-
-if ! $skipstderred; then
-    if [[ ! -d "${stderred_path}" ]]; then
-        echo Installing stderred
-        cd $(dirname "${stderred_path}")
-        git clone https://github.com/sickill/stderred.git
-        cd stderred
-        make
     fi
 fi

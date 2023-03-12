@@ -48,15 +48,6 @@ alias chomd=chmod
 
 alias follow="clear && tail -F -n +0"
 
-# because sometimes preloaded libraries (e.g. stderred) causes bad behavior
-if ! $MAC_OSX; then
-    alias nopreload='LD_PRELOAD= '
-else
-    alias nopreload='DYLD_INSERT_LIBRARIES= '
-fi
-# stderred doesn't work with 'rm' for some reason.
-alias rm="nopreload rm"
-
 alias addpath=ensure_on_path
 
 # Find a script to generically open files

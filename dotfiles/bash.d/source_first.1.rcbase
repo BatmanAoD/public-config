@@ -77,24 +77,6 @@ if $id_is_known; then
     mkdir -p "${toolsbld_path}"
 fi
 
-USING_STDERRED=false
-if [[ -v stderred_path ]]; then
-    stderred_path="${toolsbld_path}/stderred"
-    stderred_so="${stderred_path}/build/libstderred.$sharedobj_ext"
-    if [[ -d "${stderred_path}"  && \
-        -r "$stderred_so" && \
-        ":$LD_PRELOAD:" != *":${stderred_path}"* ]]; then
-        export LD_PRELOAD="${stderred_so}${LD_PRELOAD:+:$LD_PRELOAD}"
-        USING_STDERRED=true
-    fi
-fi
-
-# Convert LD_PRELOAD (if any) to the appropriate platform var (if any)
-if $MAC_OSX; then
-    export DYLD_INSERT_LIBRARIES="$LD_PRELOAD"
-    unset LD_PRELOAD
-fi
-
 # Set information about the history files
 export histchars='!^'  # Get comments saved in history
 export HISTSIZE=65536
