@@ -166,10 +166,12 @@ if ${LINUX_ANY}; then
             else
                 host_git="$(wslpath -u "$host_git")"
                 # The `grep` is to ensure there's a 
-                cred_mgr="$(find "$(dirname "$(dirname "$host_git")")" -name git-credential-manager-core.exe | grep .)"
+                cred_mgr="$(find "$(dirname "$(dirname "$host_git")")" -maxdepth 3 -name git-credential-manager.exe | grep .)"
                 if [[ $? -ne 0 ]]; then
                     echo "couldn't find Windows git credential manager." >&2
                 else
+                    # Escape spaces
+                    cred_mgr=$(printf %q "$cred_mgr")
                     git config --global credential.helper "$cred_mgr"
                 fi
             fi
