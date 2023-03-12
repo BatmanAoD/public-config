@@ -51,6 +51,7 @@ BASHRC_PATH="${BASH_SOURCE[0]}"
 cfg_HOME="$(dirname "${BASHRC_PATH}")"
 load_scripts "${cfg_HOME}/.sh.d"
 load_scripts "${cfg_HOME}/.bash.d"
+load_scripts ~/private-config/sh.d
 load_scripts ~/private-config/bash.d
 
 # This is here, rather than in .bash_aliases, due to how it determines the
