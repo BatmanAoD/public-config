@@ -68,6 +68,7 @@ link_s () {
     if [[ -e "${new_link}" ]]; then
         # XXX TODO: Provide option to force overwrite.
         echo "ERROR: Can't overwrite non-symlink file: ${new_link}" >&2
+        return 23
     else
         universal_symlink "${1}" "${new_link}"
     fi
@@ -80,11 +81,18 @@ shopt -s nullglob
 # `.bashrc` almost always exists.
 # XXX on Windows, don't have permission to do symlinks by default.
 # *CHECK* that symlink creation doesn't fail, *THEN* remove bashrc!
+# ...or:
+# mktemp, move bashrc to temp
+# trap ERR (restore bashrc)
+# set -e
+# do symlink stuff
+# set +e
+# unset trap
+#
+#
 # rm -f ~/.bashrc
 
 # TODO: consider using a dotfiles manager; probably either toml-bombadil or chezmoi
-# TODO: on Windows, OS_specific/Windows/alacritty.yml should be symlinked to
-# %APPDATA%\alacritty\alacritty.yml
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep profile sh; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/dotfiles/${prog}* ~/private-config/dotfiles/${prog}*; do
@@ -102,14 +110,11 @@ if ${WINDOWS}; then
     NVIM_PATH="$LOCALAPPDATA/nvim"
 fi
 
-if hash nvim 2>/dev/null; then
-    mkdir -p "${NVIM_PATH}"
-    link_s ~/public-config/dotfiles/nvim "${NVIM_PATH}/init.vim"
-fi
-
-# TODO: PowerShell profile:
-# PowerShell has `$POWERSHELL` variable
-# The version here is `dotfiles/Microsoft.PowerShell_profile.ps1`
+# Config files that don't live directly in $HOME
+mkdir -p "${NVIM_PATH}"
+link_s ~/public-config/dotfiles/nvim "${NVIM_PATH}/init.vim"
+mkdir -p ~/.config
+link_s ~/public-config/dotfiles/starship.toml ~/.config/starship.toml
 
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
