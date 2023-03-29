@@ -78,19 +78,22 @@ cd ~
 
 shopt -s nullglob
 
-# `.bashrc` almost always exists.
-# XXX on Windows, don't have permission to do symlinks by default.
-# *CHECK* that symlink creation doesn't fail, *THEN* remove bashrc!
-# ...or:
-# mktemp, move bashrc to temp
-# trap ERR (restore bashrc)
-# set -e
-# do symlink stuff
-# set +e
-# unset trap
-#
-#
-# rm -f ~/.bashrc
+# `.bashrc` almost always exists as a non-symlinked file.
+# On Windows, shells don't have permission to create symlinks by default, so
+# setting up the symlinks can fail. When that happens, we don't want to have
+# lost the original bashrc.
+if [[ (-e ~/.bashrc) && !(-h ~/.bashrc) ]]; then
+    orig_bashrc="$(mktemp -t bashrc.XXX)"
+    cat ~/.bashrc > "$orig_bashrc"
+    rm -f ~/.bashrc
+    restore_orig_bashrc () {
+        echo "Restoring original .bashrc file"
+        rm -f ~/.bashrc
+        mv "$orig_bashrc" ~/.bashrc
+    }
+    trap restore_orig_bashrc ERR 
+    trap "rm -f '$orig_bashrc'" EXIT 
+fi
 
 # TODO: consider using a dotfiles manager; probably either toml-bombadil or chezmoi
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep profile sh; do
@@ -100,6 +103,13 @@ for prog in bash input gdb irb vim zsh git ack ycm ripgrep profile sh; do
         link_s "${file}" ${rcname}
     done
 done
+
+if [[ -v orig_bashrc ]]; then
+    # We've successfully overwritten the old bashrc file.
+    rm -f "$orig_bashrc"
+    trap - ERR 
+    trap - EXIT
+fi
 
 NVIM_PATH=~/.config/nvim
 if ${WINDOWS}; then
