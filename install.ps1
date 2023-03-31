@@ -4,6 +4,10 @@ Set-StrictMode -Version Latest
 
 Set-ExecutionPolicy RemoteSigned
 
+# TODO: accept prompts, but don't update unless necessary
+Install-Module PsFzf
+Install-Module PSReadLine
+
 # Install Chocolatey
 if (-Not (Get-Command choco -errorAction SilentlyContinue)) {
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
