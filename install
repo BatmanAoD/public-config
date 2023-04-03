@@ -323,8 +323,15 @@ else
 fi
 
 if $installusingapt; then
-    echo Installing xclip using apt
-    sudo apt-get install xclip
+    echo Installing xclip and fzf using apt
+    sudo apt-get install xclip fzf
+elif ! $WINDOWS; then
+    # On windows, assume fzf will be installed with choco; otherwise, try to install from source
+    if [[ ! -d ~/.fzf ]]; then
+        echo Installing fzf
+        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        ~/.fzf/install
+    fi
 fi
 
 # TODO: install FiraCode font: https://github.com/tonsky/FiraCode
@@ -336,14 +343,6 @@ fi
 # ...actually, Consolas, the default Alacritty font on Windows, seems to
 # include most or all of the characters used by Starship.
 # Related: install Scoop and/or WinGet?
-
-# Install fzf
-if [[ ! -d ~/.fzf ]]; then
-    echo Installing fzf
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    # TODO currently, this fails on Windows with MinGW (no prebuilt binary found)
-    ~/.fzf/install
-fi
 
 # TODO: consider installing `zk` (which requires `sqlite3` as well): https://github.com/sirupsen/zk
 
