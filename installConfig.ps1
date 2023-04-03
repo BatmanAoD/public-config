@@ -8,5 +8,7 @@ $alacrittyCfgDir = "$env:APPDATA\alacritty"
 if (!(test-path $alacrittyCfgDir)) {
     mkdir $alacrittyCfgDir > $null
 }
-cp $PSScriptRoot\OS_specific\Windows\alacritty.yml $alacrittyCfgDir\alacritty.yml
+if (!(test-path $alacrittyCfgDir\alacritty.yml)) {
+    cp $PSScriptRoot\OS_specific\Windows\alacritty.yml $alacrittyCfgDir\alacritty.yml
+}
 
