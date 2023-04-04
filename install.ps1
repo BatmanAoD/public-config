@@ -14,6 +14,7 @@ choco install -y git pwsh gsudo neovide zulip microsoft-windows-terminal alacrit
 choco install -y --pre xmouse-controls --version 1.1.0.0
 
 # TODO: accept prompts, but don't update unless necessary
+Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 Install-Module PsFzf
 Install-Module PSReadLine
 
