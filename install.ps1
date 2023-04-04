@@ -15,8 +15,9 @@ choco install -y --pre xmouse-controls --version 1.1.0.0
 
 # TODO: accept prompts, but don't update unless necessary
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-Install-Module PsFzf
 Install-Module PSReadLine
+Install-Module PsFzf
+Install-Module posh-git
 
 # Don't beep at me
 set-service beep -startuptype disabled
