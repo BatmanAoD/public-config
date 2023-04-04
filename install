@@ -413,7 +413,7 @@ fi
 #   * multitail - better than `tail -F`?
 #   * tree - nice recursive dir printing (already installed at work)
 
-# TODO: automatically install windows tools?
+# Windows tools are not installed; those should be installed using `install.ps1`.
 
 # Currently, We only need the 'bootstrap' file to find the ToolsBld and stderred
 # directories.
