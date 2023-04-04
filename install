@@ -68,6 +68,7 @@ link_s () {
     if [[ -e "${new_link}" ]]; then
         # XXX TODO: Provide option to force overwrite.
         echo "ERROR: Can't overwrite non-symlink file: ${new_link}" >&2
+        return 23
     else
         universal_symlink "${1}" "${new_link}"
     fi
@@ -77,14 +78,24 @@ cd ~
 
 shopt -s nullglob
 
-# `.bashrc` almost always exists.
-# XXX on Windows, don't have permission to do symlinks by default.
-# *CHECK* that symlink creation doesn't fail, *THEN* remove bashrc!
-# rm -f ~/.bashrc
+# `.bashrc` almost always exists as a non-symlinked file.
+# On Windows, shells don't have permission to create symlinks by default, so
+# setting up the symlinks can fail. When that happens, we don't want to have
+# lost the original bashrc.
+if [[ (-e ~/.bashrc) && !(-h ~/.bashrc) ]]; then
+    orig_bashrc="$(mktemp -t bashrc.XXX)"
+    cat ~/.bashrc > "$orig_bashrc"
+    rm -f ~/.bashrc
+    restore_orig_bashrc () {
+        echo "Restoring original .bashrc file"
+        rm -f ~/.bashrc
+        mv "$orig_bashrc" ~/.bashrc
+    }
+    trap restore_orig_bashrc ERR 
+    trap "rm -f '$orig_bashrc'" EXIT 
+fi
 
 # TODO: consider using a dotfiles manager; probably either toml-bombadil or chezmoi
-# TODO: on Windows, OS_specific/Windows/alacritty.yml should be symlinked to
-# %APPDATA%\alacritty\alacritty.yml
 for prog in bash input gdb irb vim zsh git ack ycm ripgrep profile sh; do
     echo Installing rc files for ${prog}
     for file in ~/public-config/dotfiles/${prog}* ~/private-config/dotfiles/${prog}*; do
@@ -92,6 +103,13 @@ for prog in bash input gdb irb vim zsh git ack ycm ripgrep profile sh; do
         link_s "${file}" ${rcname}
     done
 done
+
+if [[ -v orig_bashrc ]]; then
+    # We've successfully overwritten the old bashrc file.
+    rm -f "$orig_bashrc"
+    trap - ERR 
+    trap - EXIT
+fi
 
 NVIM_PATH=~/.config/nvim
 if ${WINDOWS}; then
@@ -102,14 +120,11 @@ if ${WINDOWS}; then
     NVIM_PATH="$LOCALAPPDATA/nvim"
 fi
 
-if hash nvim 2>/dev/null; then
-    mkdir -p "${NVIM_PATH}"
-    link_s ~/public-config/dotfiles/nvim "${NVIM_PATH}/init.vim"
-fi
-
-# TODO: PowerShell profile:
-# PowerShell has `$POWERSHELL` variable
-# The version here is `dotfiles/Microsoft.PowerShell_profile.ps1`
+# Config files that don't live directly in $HOME
+mkdir -p "${NVIM_PATH}"
+link_s ~/public-config/dotfiles/nvim "${NVIM_PATH}/init.vim"
+mkdir -p ~/.config
+link_s ~/public-config/dotfiles/starship.toml ~/.config/starship.toml
 
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
@@ -308,8 +323,15 @@ else
 fi
 
 if $installusingapt; then
-    echo Installing xclip using apt
-    sudo apt-get install xclip
+    echo Installing xclip and fzf using apt
+    sudo apt-get install xclip fzf
+elif ! $WINDOWS; then
+    # On windows, assume fzf will be installed with choco; otherwise, try to install from source
+    if [[ ! -d ~/.fzf ]]; then
+        echo Installing fzf
+        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+        ~/.fzf/install
+    fi
 fi
 
 # TODO: install FiraCode font: https://github.com/tonsky/FiraCode
@@ -321,14 +343,6 @@ fi
 # ...actually, Consolas, the default Alacritty font on Windows, seems to
 # include most or all of the characters used by Starship.
 # Related: install Scoop and/or WinGet?
-
-# Install fzf
-if [[ ! -d ~/.fzf ]]; then
-    echo Installing fzf
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    # TODO currently, this fails on Windows with MinGW (no prebuilt binary found)
-    ~/.fzf/install
-fi
 
 # TODO: consider installing `zk` (which requires `sqlite3` as well): https://github.com/sirupsen/zk
 
