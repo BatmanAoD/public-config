@@ -36,8 +36,13 @@ ensure_on_path_if_exists () {
 }
 
 ensure_on_path_if_exists /usr/local/go/bin
-if [ -d "$HOME"/workspace/go ]; then
-    export GOPATH="$HOME"/workspace/go
+if hash go 2>/dev/null; then
+    if [ -d "$HOME"/workspace/go ]; then
+        export GOPATH="$HOME"/workspace/go
+    else 
+        export GOPATH="`go env GOPATH`"
+    fi
+    mkdir -p "$GOPATH/bin"
     ensure_on_path "$GOPATH"/bin
 fi
 

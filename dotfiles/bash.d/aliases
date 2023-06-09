@@ -10,20 +10,23 @@ alias xargs='xargs '
 # GNU utilities are more feature-rich.
 if [[ -n "$CONFIG_DIR" ]]; then
     # The most important one is 'readlink'.
-    readlink --version | grep -q GNU
+    readlink --version 2>/dev/null | grep -q GNU
     if [[ $? -ne 0 ]]; then
-        # TODO: next time I'm on a Mac, check if this approach with PATH works:
-        # https://apple.stackexchange.com/a/69332/331583
-        if hash greadlink 2>/dev/null; then
-            while read util; do
-                if hash g$util 2>/dev/null; then
-                    echo "have g$util"
-                    # Aliases aren't recursive. So instead, just reassign the paths!
-                    # TODO: would this work in zsh or other shells?
-                    hash -p "$(which g$util)" $util
-                fi
-            done < "$CONFIG_DIR/coreutils_list"
-        else
+        # recommended by https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
+        BREW_BIN="/usr/local/bin/brew"
+        if [ -f "/opt/homebrew/bin/brew" ]; then
+            BREW_BIN="/opt/homebrew/bin/brew"
+        fi
+        if type "${BREW_BIN}" &> /dev/null; then
+            export BREW_PREFIX="$("${BREW_BIN}" --prefix)"
+            for bindir in "${BREW_PREFIX}/opt/"*"/libexec/gnubin"; do export PATH=$bindir:$PATH; done
+            for bindir in "${BREW_PREFIX}/opt/"*"/bin"; do export PATH=$bindir:$PATH; done
+            for mandir in "${BREW_PREFIX}/opt/"*"/libexec/gnuman"; do export MANPATH=$mandir:$MANPATH; done
+            for mandir in "${BREW_PREFIX}/opt/"*"/share/man/man1"; do export MANPATH=$mandir:$MANPATH; done
+        fi
+        # repeat the same check
+        readlink --version 2>/dev/null | grep -q GNU
+        if [[ $? -ne 0 ]]; then
             # If we haven't installed `greadlink`, and `readlink --version` isn't GNU,
             # then we don't have GNU utilities available.
             echo "warning: GNU utilities not available."
