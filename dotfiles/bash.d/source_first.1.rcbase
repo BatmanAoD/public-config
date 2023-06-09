@@ -321,10 +321,11 @@ fi
 hash kubectl 2>/dev/null && . <(kubectl completion bash)
 set completion-ignore-case on
 
-# Maybe only works on Mac?
-if [[ -x /usr/libexec/java_home ]]; then
-    export JAVA_HOME="$(/usr/libexec/java_home)"
-fi
+# This is a Mac thing, apparently... and if Java isn't installed at all, it
+# doesn't work.
+# if [[ -x /usr/libexec/java_home ]]; then
+#     export JAVA_HOME="$(/usr/libexec/java_home)"
+# fi
 
 if $WSL; then
     if hash wsl-open 2>/dev/null; then
