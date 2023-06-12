@@ -129,7 +129,7 @@ link_s ~/public-config/dotfiles/starship.toml ~/.config/starship.toml
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
 # this config directory.
-git config --global include.path ~/public-config/includefile_gitconfig
+git config --global include.path ~/public-config/includefile_gitconfig public
 # Use .gitignore globally
 git config --global core.excludesfile ~/.gitignore
 # TODO Set username and email now?
