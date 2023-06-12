@@ -165,8 +165,8 @@ find_first_valid () {
 # native Windows. If this is needed at some point, check the git history for
 # notes on the old approaches, then...implement something better.
 editors="vim vi"
-if [[ -n $DISPLAY || $MAC_OSX ]]; then
-    editors="neovide nvim-qt gvim $editors"
+if [[ -n $DISPLAY || $MAC_OSX || $WINDOWS ]]; then
+    editors="neovide nvim-qt gvim code $editors"
 fi
 export NEWWINDOW_EDIT_CMD=$(find_first_valid $editors)
 if [[ $? -ne 0 ]]; then
@@ -175,18 +175,18 @@ else
     case $NEWWINDOW_EDIT_CMD in
         neovide|nvim-qt)
             VISUAL="$NEWWINDOW_EDIT_CMD --nofork"
-            EDITOR="$NEWWINDOW_EDIT_CMD --nofork"
             ;;
         gvim)
-            VISUAL="$NEWWINDOW_EDIT_CMD -f"
-            EDITOR="$NEWWINDOW_EDIT_CMD -f"
+            VISUAL="gvim -f"
+            ;;
+        code)
+            VISUAL="code --wait"
             ;;
         *)
             VISUAL="NEWWINDOW_EDIT_CMD"
-            EDITOR="NEWWINDOW_EDIT_CMD"
             ;;
     esac
-
+    EDITOR=$VISUAL
 fi
 
 export PEDITOR="$EDITOR"
