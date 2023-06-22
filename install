@@ -13,11 +13,12 @@ if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
     exit 2
 fi
 
-# Assumes not `set -e`
+set +e
+set +u
 . ~/public-config/dotfiles/bash.d/source_first.0.bootstrap
-
 set -e
 set -u
+
 # We use aliases in this script.
 shopt -s expand_aliases
 
@@ -129,10 +130,13 @@ link_s ~/public-config/dotfiles/starship.toml ~/.config/starship.toml
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
 # this config directory.
-git config --global include.path ~/public-config/includefile_gitconfig public
+git config --global include.path "$(pathgitconf ~/public-config/includefile_gitconfig public)"
 # Use .gitignore globally
-git config --global core.excludesfile ~/.gitignore
-# TODO Set username and email now?
+git config --global core.excludesfile "$(pathgitconf ~/.gitignore)"
+# I always use the same name...
+git config --global user.name "Kyle J Strand"
+# ...but not always the same email. TODO add this to the interactive component
+# at the beginning of the script
 
 mkdir -p ~/bin
 cd ~/bin
@@ -428,16 +432,6 @@ fi
 #   * tree - nice recursive dir printing (already installed at work)
 
 # Windows tools are not installed; those should be installed using `install.ps1`.
-
-# Currently, We only need the 'bootstrap' file to find the ToolsBld and stderred
-# directories.
-# Be a bit more permissive when running bash setup scripts; they use unset
-# variables.
-set +u
-set +e
-. ~/.bash.d/source_first.0.bootstrap
-set -u
-set -e
 
 if $WSL; then
     if ! hash wsl-open 2>/dev/null; then
