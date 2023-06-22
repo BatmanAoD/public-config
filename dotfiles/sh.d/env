@@ -9,33 +9,64 @@ if [ -r /usr/libexec/path_helper ]; then
     # Not sure why this isn't done by default for non-login shells on OS X.
     eval `/usr/libexec/path_helper`
 fi
-# Rust (except on Windows)
-if [ -e "$HOME/.cargo/env" ]; then
-    . "$HOME/.cargo/env"
-fi
 
 # Ensure particular dirs are on $PATH if they exist.
-# Logic to ensure path is only added *once* is taken from
-# http://superuser.com/a/39995/199803
-# For more PATH-editing convenience functions:
-# http://superuser.com/a/1001014/199803
-ensure_on_path () {
+ensure_on_path_if_exists () {
+    # PATH-editing convenience functions adapted from:
+    # http://superuser.com/a/1001014/199803
+
+    # TODO: restore the originals' ability to set a variable other than PATH,
+    # but do so without `eval`
+
+    # is $1 missing from $PATH?
+    not_on_path() {
+        case :${PATH}: in *:"$1":*) return 1;; *) return 0;; esac
+    }
+    # if $1 exists and is not in path, append it
+    append_path () {
+        [ -d "$1" ] && not_on_path "$1" && PATH="$PATH:$1"
+    }
+    # TODO: add a way to invoke these (sh-compliant and ideally without `eval`)
+    # if $1 exists and is not in path, prepend it
+    # prepend_path () {
+    #     [ -d "$1" ] && not_on_path "$1" && PATH="$1:$PATH"
+    # }
+    # if $1 is in PATH, remove it
+    # remove_from_path () {
+    #     not_on_path "$1" || PATH=`eval echo :'$'${2:-PATH}: |
+    #         sed -e "s;:$1:;:;g" -e "s;^:;;" -e "s;:\$;;"`
+    # }
+
+    # Preserve any existing explicit hashed paths
     save_paths="`mktemp`"
     hash -l | grep -v 'hash table empty' > "$save_paths"
-    if [[ -d "$1" ]] && [[ ":$PATH:" != *":$1:"* ]]; then
-        export PATH="${PATH:+"$PATH:"}$1"
-    fi
+    for p in "$@"; do
+        append_path "$p"
+    done
     . "$save_paths"
     rm "$save_paths"
 }
 
-ensure_on_path_if_exists () {
-    if [ -d "$1" ]; then
-        ensure_on_path "$1"
-    fi
-}
+ensure_on_path_if_exists \
+    "${HOME}/bin" \
+    /usr/local/go/bin \
+    "${HOME}/.yarn/bin" "${HOME}/.config/yarn/global/node_modules/.bin" \
+    "/home/linuxbrew/.linuxbrew/bin" \
+    "${HOME}/.local/bin" \
+    "${HOME}/.fluvio/bin" \
+    "$HOME/bin" \
+    "$HOME/.local/bin" \
+    "/opt/local/bin" "/opt/local/sbin"
 
-ensure_on_path_if_exists /usr/local/go/bin
+### other env stuff
+# TODO consider porting over the Bash logic, instead
+export EDITOR=vi
+
+# Setup from MacPorts
+# TODO: to avoid the duplication of `case` logic, extend the `not_on_path` function above to handle other vars
+case :${MANPATH}: in *:"$/opt/local/share/man":*) ;; *) export MANPATH="/opt/local/share/man:$MANPATH";; esac
+
+
 if hash go 2>/dev/null; then
     if [ -d "$HOME"/workspace/go ]; then
         export GOPATH="$HOME"/workspace/go
@@ -43,24 +74,16 @@ if hash go 2>/dev/null; then
         export GOPATH="`go env GOPATH`"
     fi
     mkdir -p "$GOPATH/bin"
-    ensure_on_path "$GOPATH"/bin
+    ensure_on_path_if_exists "$GOPATH"/bin
 fi
 
-ensure_on_path_if_exists "${HOME}/bin"
+# Homebrew
+if [ -f /opt/homebrew/bin/brew ]; then
+    eval "`/opt/homebrew/bin/brew shellenv`"
+fi
 
-# For Yarn
-ensure_on_path_if_exists "${HOME}/.yarn/bin"
-ensure_on_path_if_exists "${HOME}/.config/yarn/global/node_modules/.bin"
+# Rust
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+fi
 
-# TODO other possible brew paths?
-ensure_on_path_if_exists "/home/linuxbrew/.linuxbrew/bin"
-
-# pip (and maybe others?) use this
-ensure_on_path_if_exists "${HOME}/.local/bin"
-
-# fluvio
-ensure_on_path_if_exists "${HOME}/.fluvio/bin"
-
-### other env stuff
-# TODO consider porting over the Bash logic, instead
-export EDITOR=vi
