@@ -187,7 +187,8 @@ if has('win32')
         set renderoptions=type:directx
     endif
 else
-    set guifont=Fira\ Code\ Retina,DejaVu\ Sans\ Mono,Liberation\ Mono:h10
+    " TODO h10 is terrible on my Dell screen at Rigetti. Why?
+    set guifont=Fira\ Code\ Retina,DejaVu\ Sans\ Mono,Liberation\ Mono:h12
 endif
 
 " Don't use this; makes file recovery impossible
