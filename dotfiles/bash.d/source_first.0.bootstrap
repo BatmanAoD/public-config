@@ -80,13 +80,10 @@ CYGWIN=false
 WSL=false   # Linux Subsystem on Windows
 # See https://stackoverflow.com/a/43618657/1858225
 if grep -qE "([Mm]icrosoft|WSL)" /proc/version &>/dev/null; then
-    # TODO set WINDOWS=true?
     WSL=true
     # TODO check if X11 server is running somehow? (xset? not installed by
     # default...)
     export DISPLAY=:0.0
-    # Alternate:
-    # if grep -q '_NT-' <(uname -s); then
 elif [[ -d "$WINDIR" ]]; then
     WINDOWS=true
     # Cygwin-specific oddities
@@ -97,8 +94,17 @@ elif [[ -d "$WINDIR" ]]; then
         set -o igncr
         CDPATH=/cygdrive/c/:/cygdrive/c/Users/kjstrand/
     fi
-    # TODO: if using Git-Bash, fix `ln`!! (See `install` script)
 fi
+
+# Git config paths on Windows are very specific, for some reason.
+# See https://stackoverflow.com/a/28520596/1858225
+pathgitconf () {
+    if hash cygpath 2>/dev/null; then
+        cygpath -m "$1"
+    else
+        echo "$1"
+    fi
+}
 
 toolsbld_path="${primary_HOME}/ToolsBld"
 # stderred doesn't seem to work on OS X
