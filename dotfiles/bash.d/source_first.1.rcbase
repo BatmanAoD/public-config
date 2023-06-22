@@ -149,78 +149,44 @@ is_symlink () {
 if ! $WSL && ! hash gvim 2>/dev/null && type gvim.bat &>/dev/null; then
     alias gvim=gvim.bat
 fi
-# XXX TODO
-# How to determine if I want `nvim` or `gvim` as the default?
-# This suggests that my startup scripts should be more configurable on a
-# per-system basis...
-if false; then # hash nvim 2>/dev/null; then
-    export EDITOR=nvim
-    # Custom script for launcing nvim in a new gnome terminal
-    # TODO the native GUI interface for nvim should make this unnecessary
-    # TODO: on WSL: must be `nvim-qt.exe` (probably this applies elsewhere?)
-    if hash nvim-qt 2>/dev/null && test -n $DISPLAY; then
-        # `nvim-qt` and `gvim` both have an odd problem in git-bash
-        # that causes them not to fork appropriately.
-        # TODO figure out a better condition here.
-        # XXX check if this is still necessary
-        if $WINDOWS; then
-            export NEWWINDOW_EDIT_CMD="start nvim-qt"
-            # Exploit the bug mentioned above.
-            # TODO Since this is a bug, it probably isn't reliable...
-            export VISUAL=nvim-qt
-        else
-            export NEWWINDOW_EDIT_CMD="nvim-qt"
-            export VISUAL="nvim-qt --nofork"
+
+find_first_valid () {
+    while [[ $# -gt 0 ]]; do
+        if hash $1 2>/dev/null; then
+            echo $1
+            return
         fi
-    else
-        export NEWWINDOW_EDIT_CMD=nvim
-        export VISUAL=nvim
-    fi
-elif hash gvim 2>/dev/null; then
-    # Mac may or may not be running X11.
-    if [[ -n $DISPLAY || $MAC_OSX ]]; then
-        export NEWWINDOW_EDIT_CMD=gvim
-        export EDITOR="gvim -f"
-        export VISUAL="gvim -f"
-    else
-        export NEWWINDOW_EDIT_CMD=vim
-        export EDITOR=vim
-        export VISUAL=vim
-    fi
-elif $WSL; then
-    editor_launch_script="$CONFIG_DIR/OS_specific/Windows/wsl_edit"
-    if [[ -x "$editor_launch_script" ]]; then
-        export NEWWINDOW_EDIT_CMD="$editor_launch_script"
-    else
-        # This should be called with `cmd.exe`; see `wsl_batch`
-        # XXX in recent (Aug/Sept 2020) insider builds, wsl_batch is essentially
-        # broken: https://github.com/microsoft/WSL/issues/5811
-        # .... hence the `wsl_host_gvim` script above.
-        export NEWWINDOW_EDIT_CMD=gvim
-    fi
-    # It's unclear how to use the `edit` function in these variables; it
-    # probably requires a standalone script.
-    export EDITOR="vim -f"
-    export VISUAL="vim -f"
-# On Windows, git-bash will install `/usr/bin/vim` -- which is *NOT* what we
-# want if we have a full Windows gVim install. Ideally, we could use the
-# Windows `start` command to simply check if `gvim` is on the *Windows* PATH,
-# then use something like `start /b gvim` as our $NEWWINDOW_EDIT_COMMAND, but
-# for some reason the `/b` flag can't be used in git-bash.
-# So we simply explicitly check for the `gvim.bat` file in the location that
-# the Vim installer happens to use.
-# TODO this seems brittle--there's no particular reason for the Vim installer
-# to always install the batch files to C:\Windows. Re-evaluate the `start`
-# situation and/or try to find another way to search the Windows PATH for gvim.
-elif hash cygpath 2>/dev/null && [[ -e "$(cygpath 'C:\Windows\gvim.bat')" ]]; then
-    export NEWWINDOW_EDIT_CMD="$(cygpath 'C:\Windows\gvim.bat')"
-    export EDITOR="$NEWWINDOW_EDIT_CMD -f"
-    export VISUAL="$NEWWINDOW_EDIT_CMD  -f"
+        shift
+    done
+    return 1
+}
+
+# TODO: The editor-finding logic no longer handles special cases for Cygwin or
+# native Windows. If this is needed at some point, check the git history for
+# notes on the old approaches, then...implement something better.
+editors="vim vi"
+if [[ -n $DISPLAY || $MAC_OSX || $WINDOWS ]]; then
+    editors="neovide nvim-qt gvim code $editors"
+fi
+export NEWWINDOW_EDIT_CMD=$(find_first_valid $editors)
+if [[ $? -ne 0 ]]; then
+    echo "no editor (even vi) found!" >&2
 else
-    # `vi` is universal.
-    export NEWWINDOW_EDIT_CMD=vi
-    export EDITOR=vi
-    export VISUAL=vi
+    case $NEWWINDOW_EDIT_CMD in
+        neovide|nvim-qt)
+            VISUAL="$NEWWINDOW_EDIT_CMD --nofork"
+            ;;
+        gvim)
+            VISUAL="gvim -f"
+            ;;
+        code)
+            VISUAL="code --wait"
+            ;;
+        *)
+            VISUAL="NEWWINDOW_EDIT_CMD"
+            ;;
+    esac
+    EDITOR=$VISUAL
 fi
 
 export PEDITOR="$EDITOR"
@@ -321,10 +287,11 @@ fi
 hash kubectl 2>/dev/null && . <(kubectl completion bash)
 set completion-ignore-case on
 
-# Maybe only works on Mac?
-if [[ -x /usr/libexec/java_home ]]; then
-    export JAVA_HOME="$(/usr/libexec/java_home)"
-fi
+# This is a Mac thing, apparently... and if Java isn't installed at all, it
+# doesn't work.
+# if [[ -x /usr/libexec/java_home ]]; then
+#     export JAVA_HOME="$(/usr/libexec/java_home)"
+# fi
 
 if $WSL; then
     if hash wsl-open 2>/dev/null; then

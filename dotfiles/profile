@@ -30,6 +30,11 @@ if [ -d "$HOME/private-config/sh.d" ]; then
     done
 fi
 
+# Homebrew
+if [ -f /opt/homebrew/bin/brew ]; then
+    eval "`/opt/homebrew/bin/brew shellenv`"
+fi
+
 # TODO - nushell has a variety of blockers for me.
 # Continue trying it occasionally.
 # - No support at all for background tasks: https://github.com/nushell/nushell/issues/247 

@@ -105,9 +105,6 @@ abspath() {
     else
         targ="$PWD"
     fi
-    # TODO: This doesn't work with BSD's `readlink`...if nothing else, I should
-    # at least add `brew install coreutils` to the tools section of the
-    # `install` script.
     tmp_path="$(readlink -f -- "$targ")"
     # If on Windows, try to get a Windows path
     if $WINDOWS && hash cygpath 2>/dev/null; then
