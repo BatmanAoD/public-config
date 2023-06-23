@@ -154,7 +154,7 @@ augroup filetypes
                 \| endif
 augroup END
 
-" Quick manual indent-with control
+" Quick manual indent-width control
 nnoremap <Leader>i1 :call SetIndentWidth(1)<cr>
 nnoremap <Leader>i2 :call SetIndentWidth(2)<cr>
 nnoremap <Leader>i3 :call SetIndentWidth(3)<cr>
@@ -176,18 +176,15 @@ if has('nvim')
 endif
 " This limit exists to limit memory consuption.
 set undolevels=90000
-" TODO For NeoVim, use ~/.config/nvim/ginit.vim.
-" See https://github.com/equalsraf/neovim-qt/issues/213
+
 " Note: in comma-separated font lists, the fonts are tried in order until an
 " available font is found.
-if has('win32')
-    silent! set guifont="Fira Code:h10:cANSI,Consolas:h10:cANSI"
-    if !has('nvim')
-        " Enable ligatures
-        set renderoptions=type:directx
-    endif
-else
-    set guifont=Fira\ Code\ Retina,DejaVu\ Sans\ Mono,Liberation\ Mono:h10
+" Also note: ...nvim-qt doesn't actually work like this. NeoVide supports it
+" correctly.
+set guifont=Fira\ Code\ Retina,DejaVu\ Sans\ Mono,Liberation\ Mono:h10
+if has('win32') && !has('nvim')
+    " Enable ligatures (nvim doesn't support a concept of 'renderoptions')
+    set renderoptions=type:directx
 endif
 
 " Don't use this; makes file recovery impossible
