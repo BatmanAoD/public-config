@@ -376,6 +376,11 @@ else
     rustup update
 fi
 
+# TODO: consider using cargo-binstall instead of building everything from
+# scratch. This would be *especially* helpful on systems where I don't actually
+# have any reason to install Rust itself.
+# https://github.com/cargo-bins/cargo-binstall#installation
+
 # Just in case the above didn't work
 if ! hash cargo 2>/dev/null; then
     echo "Can't install rust tools; cargo not installed!" >&2

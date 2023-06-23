@@ -51,7 +51,7 @@ alias chomd=chmod
 
 alias follow="clear && tail -F -n +0"
 
-alias addpath=ensure_on_path
+alias addpath=ensure_on_path_if_exists
 
 # Find a script to generically open files
 if $WSL || $WINDOWS; then

@@ -181,6 +181,7 @@ set undolevels=90000
 " available font is found.
 " Also note: ...nvim-qt doesn't actually work like this. NeoVide supports it
 " correctly.
+" TODO h10 is terrible on my Dell screen at Rigetti. Why?
 set guifont=Fira\ Code\ Retina,DejaVu\ Sans\ Mono,Liberation\ Mono:h10
 if has('win32') && !has('nvim')
     " Enable ligatures (nvim doesn't support a concept of 'renderoptions')
