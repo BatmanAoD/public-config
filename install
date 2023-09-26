@@ -6,6 +6,8 @@
 # it's essentially all idempotent, but sometimes it gets stuck on a network op;
 # ctl-c doesn't work because of `set -e`
 
+# TODO: nushell & carapace
+
 if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
     # There aren't _too_ many things that rely on Bash 4.
     # But on the other hand, I don't ever plan to use Bash 3 as my primary shell.

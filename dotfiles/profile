@@ -20,21 +20,31 @@ if [ -d "$HOME/private-config/sh.d" ]; then
     done
 fi
 
-# TODO - nushell has a variety of blockers for me.
-# Continue trying it occasionally.
+# Nu issues:
 # - No support at all for background tasks: https://github.com/nushell/nushell/issues/247 
-# - can't suppress path-expansion even when it makes no sense:
-#   https://github.com/nushell/nushell/issues/5196
+#   ... except via a module using `pueue`: https://github.com/nushell/nu_scripts/blob/main/modules/background_task/README.md
+#   ... on Linux, there's this: https://github.com/yshui/job-security
 
 # This enables using nushell as the default shell WITHOUT `chsh` by just running it here.
 # This is *only* for interactive sessions.
-# case "$-" in
-#     *i*)
-#         if hash nu 2>/dev/null; then
-#             exec nu;
-#         fi ;;
-#     *) ;;
-# esac
+# Launching Nu this way ensures that the environment variables set above are available.
+# TODO: figure out how to configure Nu to use those sh scripts:
+# see https://www.nushell.sh/book/configuration.html
+case "$-" in
+    *i*)
+        # In Linux and Mac, when launched from a UI element instead of the
+        # shell, VSCode runs a process to read rc files to determine what
+        # variables should be set. It apparently uses the exact same options as
+        # launching a real terminal...so it pretends to be interactive, even
+        # though it isn't. Thus we need to explicitly check for VSCode here to
+        # prevent launching Nu.
+        env > ~/tmp/startup_$$
+        if hash nu 2>/dev/null && [[ "$VSCODE_RESOLVING_ENVIRONMENT" != 1 ]]; then
+            exec nu;
+        fi
+        ;;
+    *) ;;
+esac
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
@@ -44,3 +54,6 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
+
+# Added by OrbStack: command-line tools and integration
+source ~/.orbstack/shell/init.bash 2>/dev/null || :
