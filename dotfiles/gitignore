@@ -7,3 +7,7 @@ lib*.rlib
 target/
 *.ignore
 *.bak_gr
+neovide_backtraces.log
+
+# Remove this if we ever decide to start checking pyenv files into source repos
+.python-version

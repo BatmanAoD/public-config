@@ -1,13 +1,14 @@
 # This is *not* a complete git-config, but rather a set of "common" options that are *included* by my git-config.
 
-# TODO consider merge.conflictstyle = diff3
-
-# NEVER accidentally push feature branch to origin/master!
+# NEVER accidentally push feature branch to the trunk!
 [push]
     default = current
 
 [merge]
     conflictstyle = diff3
+
+[init]
+    defaultBranch = main
 
 # Make some commands colored
 [color]
@@ -59,5 +60,3 @@
         %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
     # Must use ! for meta-alias
     lg = "!git lg1"
-[init]
-	defaultBranch = main
