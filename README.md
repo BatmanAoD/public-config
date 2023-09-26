@@ -32,14 +32,11 @@ config files included directly
         exactly "config" files, but still used to configure a standardized
         working environment
 
-config to eventually include directly
------------
- * git config file? Or should this be generated?
-
 config files to eventually re-write as generated code
 -----------
  * .i3/config
  * crontab (how to generate programmatically?)
+ * Nu config - use Nu to generate, then append customizations
 
 other TODO items
 -----------
