@@ -113,3 +113,7 @@ docs:*.mkdn
 # Ignore Golang 'vendor' dirs
 -g
 !vendor/
+
+# Use VSCode hyperlinks (TODO: would Vim links work as well?)
+--hyperlink-format
+vscode

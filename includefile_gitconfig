@@ -1,11 +1,13 @@
 # This is *not* a complete git-config, but rather a set of "common" options that are *included* by my git-config.
+#
+# See also https://jvns.ca/blog/2024/02/16/popular-git-config-options/#merge-conflictstyle-zdiff3
 
 # NEVER accidentally push feature branch to the trunk!
 [push]
     default = current
 
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3
 
 [init]
     defaultBranch = main

@@ -1,4 +1,25 @@
-# XXX set up fzf without messing up `hash`
+# Note: for reference, current Nu config on MacOS is here:
+# /Users/kstrand/Library/Application Support/nushell/config.nu
+
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
 [ -f ~/.asdf/asdf.sh ] && source ~/.asdf/asdf.sh
 [ -f ~/.asdf/completions/asdf.bash ] && source ~/.asdf/completions/asdf.bash
+
+source <(carapace _carapace)
+export CARAPACE_MATCH=CASE_INSENSITIVE
+
+# TODO: `atuin` recommends ble.sh, a readline in Bash.
+# ... but `ble.sh` apparently doesn't respect .inputrc, so it's frustrating to use.
+# There were some other oddities I found while trying to use atuin in Bash.
+# eval "$(atuin init bash)"
+
+
+eval "$(zoxide init bash)"
+alias cd=z
+
+alias ls=eza
+
+if hash sccache 2>/dev/null; then
+    export RUSTC_WRAPPER=sccache
+fi
