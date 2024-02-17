@@ -96,7 +96,6 @@ autocmd BufNewFile,BufRead layout[123456789].txt set filetype=freestyle
 
 if has('nvim')
     Plug 'sakhnik/nvim-gdb'
-    Plug 'neovim/nvim-lspconfig' " common config for built-in LSP support
     Plug 'nvim-treesitter/nvim-treesitter'
     Plug 'nvim-lua/plenary.nvim' " needed for Telescope
     Plug 'nvim-telescope/telescope.nvim'
@@ -110,6 +109,10 @@ if has('nvim')
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/nvim-cmp'
+    " LSP
+    Plug 'williamboman/mason.nvim'
+    Plug 'williamboman/mason-lspconfig.nvim'
+    Plug 'neovim/nvim-lspconfig'
 endif
 
 call plug#end()
@@ -136,17 +139,19 @@ lua <<EOF
     })
 
     -- Setup lspconfig.
-    local servernames = {
-        "bashls", "csharp_ls", "dockerls", "gopls", "graphql",
-        "jsonls", "powershell_es", "pyright", "rust_analyzer",
-        "yamlls"
-    }
-    local lspcfg = require('lspconfig')
-    for i, server in ipairs(servernames) do
-        lspcfg[server].setup {
-            capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-        }
-    end
+    require("mason").setup()
+    require("mason-lspconfig").setup()
+    -- local servernames = {
+    --     "bashls", "csharp_ls", "dockerls", "gopls", "graphql",
+    --     "jsonls", "powershell_es", "pyright", "rust_analyzer",
+    --     "yamlls"
+    -- }
+    -- local lspcfg = require('lspconfig')
+    -- for i, server in ipairs(servernames) do
+    --     lspcfg[server].setup {
+    --         capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+    --     }
+    -- end
 EOF
 
 " which-key config

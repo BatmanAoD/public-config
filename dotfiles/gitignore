@@ -4,7 +4,6 @@ lib*.rlib
 .idea
 *.old
 *.pyc
-target/
 *.ignore
 *.bak_gr
 neovide_backtraces.log

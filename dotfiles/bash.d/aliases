@@ -117,8 +117,6 @@ alias cd=godir
 # allowing me to take advantage of all this muscle memory...
 alias :q="exit"
 
-alias lesspage="export PAGER='less -n -Q' "
-alias tmplesspage="PAGER='less -n -Q' "
 alias more="$PAGER"
 alias moer="$PAGER"
 alias mroe="$PAGER"

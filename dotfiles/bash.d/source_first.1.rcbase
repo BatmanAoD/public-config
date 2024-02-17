@@ -104,7 +104,7 @@ shopt -s autocd
 if [[ -e ${primary_HOME}/bin/vimpager ]]; then
     PAGER=$(readlink -f ${HOMEBIN}/vimpager)
 else
-  PAGER="less -n -Q"
+  PAGER="less -r -n -Q"
 fi
 export PAGER
 
