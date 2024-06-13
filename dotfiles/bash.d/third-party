@@ -6,19 +6,24 @@
 [ -f ~/.asdf/asdf.sh ] && source ~/.asdf/asdf.sh
 [ -f ~/.asdf/completions/asdf.bash ] && source ~/.asdf/completions/asdf.bash
 
-source <(carapace _carapace)
-export CARAPACE_MATCH=CASE_INSENSITIVE
+if hash carapace 2>/dev/null; then
+    source <(carapace _carapace)
+    export CARAPACE_MATCH=CASE_INSENSITIVE
+fi
 
 # TODO: `atuin` recommends ble.sh, a readline in Bash.
 # ... but `ble.sh` apparently doesn't respect .inputrc, so it's frustrating to use.
 # There were some other oddities I found while trying to use atuin in Bash.
 # eval "$(atuin init bash)"
 
+if hash zoxide 2>/dev/null; then
+    eval "$(zoxide init bash)"
+    alias cd=z
+fi
 
-eval "$(zoxide init bash)"
-alias cd=z
-
-alias ls=eza
+if hash eza 2>/dev/null; then
+    alias ls=eza
+fi
 
 if hash sccache 2>/dev/null; then
     export RUSTC_WRAPPER=sccache
