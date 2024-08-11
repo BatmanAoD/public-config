@@ -134,7 +134,7 @@ jj_path="$(jj config path --user)"
 if [[ !(-h ~/"$jj_path") ]]; then
     if [[ $(du -k "${jj_path}" | cut -f1) -ne 0 ]]; then
         # Keep at most one copy of existing non-symlink files
-        mv -f "$jj_path" "${jj_path}.old}"
+        mv -f "$jj_path" "${jj_path}.old"
     else
         rm "$jj_path"
     fi
