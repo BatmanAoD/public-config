@@ -255,7 +255,7 @@ edfunc () {
         return
     fi
     cp $tmp_def_file{,.bak}
-    edit $tmp_def_file
+    $EDITOR $tmp_def_file
     diff $tmp_def_file{,.bak} >/dev/null 2>&1 
     if [[ $? -eq 1 ]]; then
         . $tmp_def_file
@@ -264,7 +264,7 @@ edfunc () {
 
 edvar() {
     eval echo \$$1 > $TMP/editvar_$1
-    edit $TMP/editvar_$1
+    $EDITOR $TMP/editvar_$1
     eval export $1=\"`cat $TMP/editvar_$1`\"
     rm $TMP/editvar_$1
 }

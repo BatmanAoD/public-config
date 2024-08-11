@@ -72,6 +72,9 @@ build:*akefile
 build:go.mod
 
 --type-add
+build:pyproject.toml
+
+--type-add
 docs:*.txt
 
 --type-add

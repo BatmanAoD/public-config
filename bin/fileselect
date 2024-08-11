@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]]; then
+    echo "usage: $0 <files>"
+    echo 1
+fi
+
+TMP="${TMP:-/tmp}"
+
+rm -rf "$TMP"/openme
+mkdir -p "$TMP"/openme
+cd "$TMP"/openme
+
+for f in "$@"; do
+    if [[ -e "$f" ]]; then
+        ln -s "$f"
+    else
+        echo "$f does not exit." >&2
+    fi
+done
+
+open .

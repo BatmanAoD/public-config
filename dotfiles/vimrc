@@ -179,10 +179,12 @@ set undolevels=90000
 
 " Note: in comma-separated font lists, the fonts are tried in order until an
 " available font is found.
-" Also note: ...nvim-qt doesn't actually work like this. NeoVide supports it
-" correctly.
-" TODO h10 is terrible on my Dell screen at Rigetti. Why?
-set guifont=Monaspace\ Neon,Fira\ Code\ Retina,DejaVu\ Sans\ Mono,Liberation\ Mono:h10
+" Neither neovide 0.12 nor nvim-qt (last I checked) support this the way Vim
+" does, so instead I'll just use the neovide config:
+" * https://neovide.dev/config-file.html
+" * https://github.com/neovide/neovide/issues/2240
+" set guifont=Fira\ Code:h10
+" set guifont=Monaspace\ Neon,Fira\ Code\ Retina,DejaVu\ Sans\ Mono,Liberation\ Mono:h11
 if has('win32') && !has('nvim')
     " Enable ligatures (nvim doesn't support a concept of 'renderoptions')
     set renderoptions=type:directx

@@ -23,6 +23,17 @@
 # WOOOOOOOOOOOOOOOOO
 [diff]
     noprefix = true
+    tool = difftastic
+    external = difft
+
+[difftool]
+    prompt = false
+
+[difftool "difftastic"]
+    cmd = difft "$LOCAL" "$REMOTE"
+
+[pager]
+    difftool = true
 
 [alias]
 # Search aliases (from

@@ -18,6 +18,29 @@ fi
 
 if hash zoxide 2>/dev/null; then
     eval "$(zoxide init bash)"
+    # replace `cd` with my functions
+    __zoxide_cd() {
+        godir "$@"
+    }
+    function __zoxide_z() {
+        # shellcheck disable=SC2199
+        if [[ $# -eq 0 ]]; then
+            godir ~
+        elif [[ $# -eq 1 && $1 == '-' ]]; then
+            back
+        elif [[ $# -eq 1 && -d $1 ]]; then
+            godir "$1"
+        elif [[ ${@: -1} == "${__zoxide_z_prefix}"?* ]]; then
+            # shellcheck disable=SC2124
+            \builtin local result="${@: -1}"
+            godir "${result:${#__zoxide_z_prefix}}"
+        else
+            \builtin local result
+            # shellcheck disable=SC2312
+            result="$(\command zoxide query --exclude "$(__zoxide_pwd)" -- "$@")" &&
+                godir "${result}"
+        fi
+    }
     alias cd=z
 fi
 
