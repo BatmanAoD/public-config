@@ -26,3 +26,7 @@ PS1="%{$fg[yellow]%}%m:%~> %{$reset_color%}"
 . ~/.bash_aliases
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+. "$HOME/.cargo/env"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/nomad nomad

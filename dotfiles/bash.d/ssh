@@ -1,3 +1,6 @@
 #!/bin/bash
 
-eval $(ssh-agent) >/dev/null
+# TODO: figure out if/when this is necessary.
+# I think this may have been a workaround for a Mac issue that was later fixed.
+# A more robust approach is here: https://stackoverflow.com/a/48509425/1858225
+# eval $(ssh-agent) >/dev/null

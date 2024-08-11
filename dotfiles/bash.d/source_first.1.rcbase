@@ -173,8 +173,14 @@ if [[ $? -ne 0 ]]; then
     echo "no editor (even vi) found!" >&2
 else
     case $NEWWINDOW_EDIT_CMD in
-        neovide|nvim-qt)
-            VISUAL="$NEWWINDOW_EDIT_CMD --nofork"
+        neovide)
+            VISUAL="$NEWWINDOW_EDIT_CMD --no-fork"
+            # Neovide does not fork by default.
+            # See https://github.com/neovide/neovide/pull/2512
+            export NEOVIDE_FORK=1
+            ;;
+        nvim-qt)
+            VISUAL="$NEWWINDOW_EDIT_CMD --no-fork"
             ;;
         gvim)
             VISUAL="gvim -f"
