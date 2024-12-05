@@ -24,6 +24,8 @@
 [diff]
     noprefix = true
     tool = difftastic
+    # Note: this actually breaks `git diff -p`, in the sense that it no longer
+    # generates a valid patch. Womp womp
     external = difft
 
 [difftool]

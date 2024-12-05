@@ -7,6 +7,16 @@ lib*.rlib
 *.ignore
 *.bak_gr
 neovide_backtraces.log
+.vscode/*
+.DS_Store
+certs
 
 # Remove this if we ever decide to start checking pyenv files into source repos
 .python-version
+
+# Go debugging
+__debug_bin*
+
+# Never ignore .github or .gitlab files
+!/.github/
+!/.gitlab*
