@@ -287,8 +287,8 @@ if [[ -r /usr/local/etc/profile.d/bash_completion.sh ]]; then
 fi
 # TODO - figure out why OS X doesn't seem to have a standard way to install
 # Bash completions w/ Homebrew
-if [[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]]; then
-    . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+if [[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]]; then
+    . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
 fi
 if [[ -r "$HOME/.completions" ]]; then
     for completion in "$HOME/.completions"/*.bash; do
