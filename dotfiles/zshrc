@@ -29,4 +29,4 @@ PS1="%{$fg[yellow]%}%m:%~> %{$reset_color%}"
 . "$HOME/.cargo/env"
 
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /opt/homebrew/bin/nomad nomad
+complete -o nospace -C $(brew --prefix)/bin/nomad nomad

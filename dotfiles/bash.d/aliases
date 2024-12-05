@@ -14,8 +14,8 @@ if [[ -n "$CONFIG_DIR" ]]; then
     if [[ $? -ne 0 ]]; then
         # recommended by https://gist.github.com/skyzyx/3438280b18e4f7c490db8a2a2ca0b9da
         BREW_BIN="/usr/local/bin/brew"
-        if [ -f "/opt/homebrew/bin/brew" ]; then
-            BREW_BIN="/opt/homebrew/bin/brew"
+        if [ -f "$(brew --prefix)/bin/brew" ]; then
+            BREW_BIN="$(brew --prefix)/bin/brew"
         fi
         if type "${BREW_BIN}" &> /dev/null; then
             export BREW_PREFIX="$("${BREW_BIN}" --prefix)"
