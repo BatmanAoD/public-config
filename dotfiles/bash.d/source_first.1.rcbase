@@ -104,7 +104,8 @@ shopt -s autocd
 if [[ -e ${primary_HOME}/bin/vimpager ]]; then
     PAGER=$(readlink -f ${HOMEBIN}/vimpager)
 else
-  PAGER="less -r -n -Q"
+  PAGER="less"
+  export LESS="FRXQ"
 fi
 export PAGER
 
@@ -277,6 +278,7 @@ if [[ -r "$RIPGREP_CONFIG_PATH" ]]; then
 fi
 
 # Load completion function
+complete -r
 if [[ -r /etc/bash_completion ]]; then
      . /etc/bash_completion
 fi
@@ -294,6 +296,7 @@ if [[ -r "$HOME/.completions" ]]; then
     done
 fi
 hash kubectl 2>/dev/null && . <(kubectl completion bash)
+hash jj 2>/dev/null && . <(COMPLETE=bash jj)
 set completion-ignore-case on
 
 # This is a Mac thing, apparently... and if Java isn't installed at all, it

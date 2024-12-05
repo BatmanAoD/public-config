@@ -6,9 +6,20 @@
 [ -f ~/.asdf/asdf.sh ] && source ~/.asdf/asdf.sh
 [ -f ~/.asdf/completions/asdf.bash ] && source ~/.asdf/completions/asdf.bash
 
+if [[ -z "$USE_CARAPACE" ]]; then
+    # For now, default to not using Carapace. It has a slow update schedule and
+    # is non-trivial to build or provide fallbacks.
+    USE_CARAPACE=false
+fi
+
 if hash carapace 2>/dev/null; then
-    source <(carapace _carapace)
-    export CARAPACE_MATCH=CASE_INSENSITIVE
+    if $USE_CARAPACE; then
+        complete -r
+        source <(carapace _carapace bash)
+        export CARAPACE_MATCH=CASE_INSENSITIVE
+    else
+        echo "not using Carapace auto-complete."
+    fi
 fi
 
 # TODO: `atuin` recommends ble.sh, a readline in Bash.

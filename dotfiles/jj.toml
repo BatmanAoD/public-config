@@ -6,7 +6,7 @@ email = "kstrand@rigetti.com"
 # diff.tool = ["difft", "--color=always", "$left", "$right"]
 diff-editor = "vscode"
 merge-editor = "vscode"
-paginate = "never"
+paginate = "auto"
 default-command = "status"
 
 [revsets]
