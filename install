@@ -130,16 +130,20 @@ mkdir -p ~/.config
 link_s ~/public-config/dotfiles/starship.toml ~/.config/starship.toml
 
 # `jj config path` autopopulates an empty file.
-jj_path="$(jj config path --user)"
-if [[ !(-h ~/"$jj_path") ]]; then
-    if [[ $(du -k "${jj_path}" | cut -f1) -ne 0 ]]; then
-        # Keep at most one copy of existing non-symlink files
-        mv -f "$jj_path" "${jj_path}.old"
-    else
-        rm "$jj_path"
+if ! hash jj 2>/dev/null; then
+    echo "jj not installed; not symlinking jj config"
+else
+    jj_path="$(jj config path --user)"
+    if [[ !(-h ~/"$jj_path") ]]; then
+        if [[ $(du -k "${jj_path}" | cut -f1) -ne 0 ]]; then
+            # Keep at most one copy of existing non-symlink files
+            mv -f "$jj_path" "${jj_path}.old"
+        else
+            rm "$jj_path"
+        fi
     fi
+    link_s ~/public-config/dotfiles/jj.toml "$jj_path"
 fi
-link_s ~/public-config/dotfiles/jj.toml "$jj_path"
 
 echo "Installing common options for git"
 # I assume `git` is installed, because that's the easiest way to get a copy of
