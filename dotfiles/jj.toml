@@ -8,13 +8,29 @@ diff-editor = "vscode"
 merge-editor = "vscode"
 paginate = "auto"
 default-command = "status"
+revsets-use-glob-by-default = true
 
 [revsets]
 log = "trunk()..@ | trunk()"
 
 [experimental-advance-branches]
 enabled-branches = ["glob:*"]
-disabled-branches = ["main", "master", "glob:rigetti-integration-*", "glob:integration-rigetti-*"]
+disabled-branches = ["main", "master", "glob:rigetti-integration-*", "glob:integration-rigetti-*", "local-only"]
 
-# [git]
+[git]
 # abandon-unreachable-commits = false
+colocate = true
+
+[remotes.origin]
+auto-track-bookmarks = "glob:*"
+
+[aliases]
+clone = ["git", "clone", "--colocate"]
+
+[merge-tools.bat]
+diff-args = ["--color=always", "$right"]
+diff-invocation-mode = "file-by-file"
+
+[merge-tools.cat]
+diff-args = ["$right"]
+diff-invocation-mode = "file-by-file"

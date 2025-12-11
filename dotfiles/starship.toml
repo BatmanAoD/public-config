@@ -1,2 +1,53 @@
+# Config: https://starship.rs/config/
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# In order to insert the custom module in the right location, all of the preceding modules in '$all' are given explicitly.
+format="""
+$username\
+$hostname\
+$localip\
+$singularity\
+$kubernetes\
+$directory\
+$vcsh\
+${custom.jj}\
+$all\
+$shlvl\
+"""
+
+[shell]
+bash_indicator = '[\$](bold turquoise)'
+powershell_indicator  = '[_ ](bold bg:purple fg:white)'
+nu_indicator = '[>](bold green)'
+disabled = false
+
+[shlvl]
+disabled = false
+format = '[$symbol]($style)'
+repeat = true
+symbol = '❯'
+repeat_offset = 1
+threshold = 0
+
 [hostname]
 ssh_only = false
+
+# To make use in tandem with `jj` nicer
+[git_branch]
+only_attached = true
+[git_commit]
+disabled = true
+[git_state]
+disabled = true
+[git_metrics]
+disabled = true
+
+# config documented here: https://gitlab.com/lanastara_foss/starship-jj
+[custom.jj]
+command = "prompt"
+format = "$output"
+ignore_timeout = false
+shell = ["starship-jj", "--ignore-working-copy", "starship"]
+use_stdin = false
+when = true

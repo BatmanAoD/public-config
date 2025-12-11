@@ -32,13 +32,11 @@ shopt -s extglob
 load_scripts()
 {
     dir="$1"
-    # Skip everything with a dot in the filename, except for the bootstrap and
-    # rcbase files
     # Note: glob expansion is guaranteed to be alphabetical
     # (https://serverfault.com/a/122743)
     # So use that to determine the `source_first` order.
     shopt -s nullglob
-    for bashfile in "${dir}"/source_first.* "${dir}"/!(*.*); do
+    for bashfile in "${dir}"/source_first.* "${dir}"/!(source_first.*); do
 
         echo "Sourcing '$bashfile'"
         . "$bashfile"
@@ -86,3 +84,6 @@ case ":$PATH:" in
 esac
 # pnpm end
 . "$HOME/.cargo/env"
+
+# Added by Windsurf
+export PATH="/Users/kstrand/.codeium/windsurf/bin:$PATH"
