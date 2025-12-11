@@ -20,7 +20,6 @@ Plug 'terryma/vim-multiple-cursors'
 " wrecks things like 'c\{pat}' and 'V\pat'. It probably also causes
 " some slow-down when initiating a search. So I'm disabling it.
 " Plug 'SearchComplete'
-Plug 'rkitover/vimpager'
 Plug 'tpope/vim-surround'
 Plug 'AndrewRadev/linediff.vim'
 Plug 'vim-scripts/LargeFile'
@@ -43,7 +42,7 @@ Plug 'BenBergman/vsearch.vim'
 " TODO syntax highlighting for different filetypes within the same file:
 " http://www.vim.org/scripts/script.php?script_id=4168
 " TODO figure out how to use this
-Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+" Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " Er, NVM, I hate this.
 " Plug 'Raimondi/delimitMate'
 " For attempting to debug syntax issues
@@ -106,13 +105,13 @@ if has('nvim')
     Plug 'folke/which-key.nvim'
     " completions; see note above about completions in Vim8
     " TODO: figure out if this also supports refactoring (YCM, coc, et. al do)
-    Plug 'hrsh7th/cmp-nvim-lsp'
+    " Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/nvim-cmp'
     " LSP
     Plug 'williamboman/mason.nvim'
-    Plug 'williamboman/mason-lspconfig.nvim'
-    Plug 'neovim/nvim-lspconfig'
+    " Plug 'williamboman/mason-lspconfig.nvim'
+    " Plug 'neovim/nvim-lspconfig'
 endif
 
 call plug#end()
@@ -139,8 +138,8 @@ lua <<EOF
     })
 
     -- Setup lspconfig.
-    require("mason").setup()
-    require("mason-lspconfig").setup()
+    -- require("mason").setup()
+    -- require("mason-lspconfig").setup()
     -- local servernames = {
     --     "bashls", "csharp_ls", "dockerls", "gopls", "graphql",
     --     "jsonls", "powershell_es", "pyright", "rust_analyzer",
@@ -187,7 +186,7 @@ set guioptions-=L
 
 " for multi-cursor mode
 " XXX figure out why this make startup weird in WSL
-" nnoremap <C-m> :MultipleCursorsFind 
+nnoremap <C-m> :MultipleCursorsFind 
 
 " Use Git-flavored-markdown style tables
 let g:table_mode_corner="|"

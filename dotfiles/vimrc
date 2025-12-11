@@ -86,6 +86,9 @@ set autochdir
 filetype plugin indent on
 " All indentation levels should be rounded to a multiple of shiftwidth
 set shiftround
+" Display long lines readably.
+set linebreak
+let &showbreak = '>>> '
 
 " 'virtual' shenanigans:
 " switch back to 'block' if this is too open-ended.
@@ -319,8 +322,6 @@ vnoremap <C-Y> "+y
 " map ctrl-P to paste from system register
 nnoremap <C-P> "+p
 vnoremap <C-P> "+p
-
-nnoremap <Leader>w :set wrap!<cr>
 
 " quick uniquification
 nnoremap <Leader>u :sort u<cr>

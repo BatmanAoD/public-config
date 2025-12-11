@@ -118,5 +118,8 @@ docs:*.mkdn
 !vendor/
 
 # enable hyperlinks
---hyperlink-format
-vscode
+# ...disabling this for now, for two reasons:
+# [a] I don't always want Code, especially when I have Windsurf open, and
+# [b] it appears to break the code-search tool for Windsurf
+# --hyperlink-format
+# vscode

@@ -226,10 +226,6 @@ add_prompt_command () {
 }
 
 if hash starship 2>/dev/null; then
-    # TODO look into adding Kubernetes information. See
-    # personal-notes/context-items.md
-    # Jeff's setup:
-    # https://rms.slack.com/archives/CJJ7EQ285/p1557355726002600
     # TODO `starship init bash` is re-adding the prompt-command, because it
     # assumes that `starship_precmd` comes _last_.
     # Submit a bug report for this.

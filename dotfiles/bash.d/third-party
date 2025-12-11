@@ -5,6 +5,9 @@
 
 [ -f ~/.asdf/asdf.sh ] && source ~/.asdf/asdf.sh
 [ -f ~/.asdf/completions/asdf.bash ] && source ~/.asdf/completions/asdf.bash
+# [ -f ~/ToolsBld/cargo-make/extra/shell/makers-completion.bash ] && source ~/ToolsBld/cargo-make/extra/shell/makers-completion.bash
+
+hash aws_completer && complete -C "$(which aws_completer)" aws
 
 if [[ -z "$USE_CARAPACE" ]]; then
     # For now, default to not using Carapace. It has a slow update schedule and
