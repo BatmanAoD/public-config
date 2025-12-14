@@ -404,25 +404,33 @@ if ! hash cargo 2>/dev/null; then
     echo "Can't install rust tools; cargo not installed!" >&2
 else
     rustup default stable
+    if ! hash cargo-binstall 2>/dev/null; then
+        echo Installing cargo-binstall
+        cargo install cargo-binstall
+    fi
     if ! hash rg 2>/dev/null; then
         echo Installing ripgrep
-        cargo install ripgrep
+        cargo binstall -y ripgrep
     fi
     if ! hash fastmod 2>/dev/null; then
         echo Installing fastmod
-        cargo install fastmod
+        cargo binstall -y fastmod
     fi
     if ! hash fd 2>/dev/null; then
         echo Installing fd
-        cargo install fd-find
+        cargo binstall -y fd-find
     fi
     if ! hash tokei 2>/dev/null; then
         echo Installing tokei
-        cargo install tokei
+        cargo binstall -y tokei
     fi
     if ! hash bat 2>/dev/null; then
         echo Installing bat
-        cargo install bat
+        cargo binstall -y bat
+    fi
+    if ! hash jj 2>/dev/null; then
+        echo Installing jj
+        cargo binstall -y jj-cli
     fi
     # TODO install `broot`? Needs a script, `br`, to be sourced. Just symlink
     # as `.bash.d/br`?
