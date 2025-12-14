@@ -133,6 +133,7 @@ link_s ~/public-config/dotfiles/starship.toml ~/.config/starship.toml
 if ! hash jj 2>/dev/null; then
     echo "jj not installed; not symlinking jj config"
 else
+    echo "Installing config file for jj"
     jj_path="$(jj config path --user)"
     if [[ !(-h ~/"$jj_path") ]]; then
         if [[ $(du -k "${jj_path}" | cut -f1) -ne 0 ]]; then
