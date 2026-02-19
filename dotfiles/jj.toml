@@ -10,6 +10,9 @@ paginate = "auto"
 default-command = "status"
 revsets-use-glob-by-default = true
 
+[remotes.origin]
+auto-track-created-bookmarks = "*"
+
 [revsets]
 log = "trunk()..@ | trunk()"
 
@@ -20,9 +23,6 @@ disabled-branches = ["main", "master", "glob:rigetti-integration-*", "glob:integ
 [git]
 # abandon-unreachable-commits = false
 colocate = true
-
-[remotes.origin]
-auto-track-bookmarks = "glob:*"
 
 [aliases]
 clone = ["git", "clone", "--colocate"]
