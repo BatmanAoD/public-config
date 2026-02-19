@@ -2,6 +2,9 @@ local wezterm = require 'wezterm'
 
 config = wezterm.config_builder()
 
+config.default_cwd = wezterm.home_dir
+config.audible_bell = "Disabled"
+
 config.launch_menu = {
     {
         label = 'bottom',
