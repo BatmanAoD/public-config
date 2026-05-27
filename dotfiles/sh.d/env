@@ -47,6 +47,8 @@ ensure_on_path_if_exists () {
     rm "$save_paths"
 }
 
+export PNPM_HOME="${HOME}/Library/pnpm"
+
 ensure_on_path_if_exists \
     "${HOME}/bin" \
     /usr/local/go/bin \
@@ -54,6 +56,9 @@ ensure_on_path_if_exists \
     "/home/linuxbrew/.linuxbrew/bin" \
     "${HOME}/.local/bin" \
     "${HOME}/.fluvio/bin" \
+    "${HOME}/.codeium/windsurf/bin" \
+    "${HOME}.antigravity/antigravity/bin" \
+    "$PNPM_HOME" \
     "$HOME/bin" \
     "$HOME/.local/bin" \
     "/opt/local/bin" "/opt/local/sbin"
@@ -87,3 +92,7 @@ if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
 fi
 
+# NPM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

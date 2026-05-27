@@ -75,15 +75,3 @@ fi
 
 # Print a message
 say green "<- bashrc"
-
-# pnpm
-export PNPM_HOME="/Users/kstrand/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
-. "$HOME/.cargo/env"
-
-# Added by Windsurf
-export PATH="/Users/kstrand/.codeium/windsurf/bin:$PATH"

@@ -14,7 +14,7 @@ compinit
 HISTFILE=~/.zsh_hist
 HISTSIZE=100000
 SAVEHIST=100000
-setopt appendhistory autocd extendedglob notify
+setopt appendhistory autocd extendedglob notify interactive_comments
 unsetopt beep nomatch
 # End of lines configured by zsh-newuser-install
 
@@ -26,3 +26,5 @@ PS1="%{$fg[yellow]%}%m:%~> %{$reset_color%}"
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C $(brew --prefix)/bin/nomad nomad
+
+bindkey " " magic-space

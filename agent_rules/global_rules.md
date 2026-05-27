@@ -1,41 +1,69 @@
-# General
+# CLAUDE.md
 
-1. If a request seems non-idiomatic or non-standard, please ask me about it before proceeding. You may suggest alternatives, but do not implement them without my approval.
-2. I often come back to a session after having made changes to the codebase. This can even include abandoning commits that I've decided are no longer the correct direction. If there are unexpected changes, DO NOT undo them without asking, even if they are contrary to a previous request.
-3. My local time is usually mountain time. Be sure to do timezone conversions when appropriate, for instance when querying logs. If you see a timestamp and it does not include timezone information, please ask what timezone it is in before using it.
-4. Try to follow test-driven development: before fixing a problem or adding a feature, write a test that demonstrates the problem or exercises the feature. This test should compile, but fail at runtime. Once a test is written, ask me to review it before making any further changes.
-5. In general, expressing confusion is good! Try to be clear about how confident you are in your answers. For difficult problems, also try considering multiple possible answers.
+## Communication style
 
-# Running CLI commands
+Terse like caveman. Technical substance exact. Only fluff die.
+Drop: articles, filler (just/really/basically), pleasantries, hedging.
+Fragments OK. Short synonyms. Code unchanged.
+Pattern: [thing] [action] [reason]. [next step].
+ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift.
+Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 
-1. Working directories for most projects are in the form of `~/workspace/<project-name>`. Check here 
-2. Whenever you pipe the output of a command to a command such as `tail` or `grep` that eliminates lines from the output, use `|tee` to save the original output to a file in `~/tmp/` so that you can refer to it later rather than re-running the command.
+## Always applies
 
-## Rust repositories
+- If request seems non-idiomatic or non-standard, ask before proceeding. Suggest alternatives but don't implement without approval.
+- Unexpected workspace changes: DO NOT undo without asking — even if contrary to a previous request.
+- Projects live at `~/workspace/<project-name>`. If I name a crate/project, check there first.
+- Express confusion when uncertain. State confidence level. For hard problems, consider multiple answers.
 
-1. Before running a `Cargo` command, check if there is a `Makefile.toml` in the repository root. If so, use `cargo make --list-all-steps` to see whether there is a `cargo make` recipe that should be run instead.
-2. When running tests without `cargo make`, always use `cargo nextest run` rather than `cargo test`.
-3. Several repositories use a private `cargo` registry. If you see a `cargo` error about SSO having expired, ask me to re-authenticate.
-4. After making any changes in a Rust project, run `cargo fmt`.
+## Conditional
 
-## Terraform
+<important if="you are reading, querying, or interpreting timestamps or log output">
+- My local time is mountain time (MT). Convert timestamps when querying logs.
+- If a timestamp has no timezone info, ask before using it.
+</important>
 
-1. Use `terraform init -upgrade -backend=false` to upgrade lockfiles in a Terraform project.
+<important if="you are running CLI commands or shell commands">
+- When piping to `tail` or any line-trimming command, use `| tee ~/tmp/<name>` to preserve full output.
+- Prefer `rg`, `fd`, `jq` over `grep`, `find`, ad-hoc parsing.
+</important>
 
-## Source control
+<important if="you are writing, running, or modifying tests or fixing bugs">
+- Follow TDD: write a failing test first (must compile, fail at runtime), then ask me to review before changing anything else.
+</important>
 
-1. I use `jj` for most of my repositories. This puts git in "headless mode". In some repos, there is no visible `.git` directory at all. Consequently:
-   a. If you use `cargo fix` or `cargo clippy --fix`, you will need the `--allow-dirty` or `--allow-no-vcs` flag.
-   b. To interact with source control, if you know the `jj` command for the operation, use that instead of the `git` command. `git` commands will still work in most repositories.
-   c. To get the "current" branch, use `jj b l -r @- -T 'name'
-   d. To get a diff, use `jj diff --git --no-pager` so that the diff is formatted the way `git` would format it.
-2. The forges we use are GitLab and GitHub. Use `jj git remote list` to see which forge is being used.
-   a. For GitHub, the `gh` CLI is available.
-   b. For GitLab, the `glab` CLI is available.
-   c. When working on GitLab CI, use `glab ci config compile` and related commands to debug locally. Use `glab api "projects/:id/jobs/${job_id}/trace"`, where `${job_id}` is the ID of the job, to see the logs from a job.
-   d. If either `gh` or `glab` returns an authentication error, ask me to re-authenticate.
+<important if="you are working in a Rust project or running Cargo commands">
+- Check for `Makefile.toml` in repo root first. If present, run `cargo make --list-all-steps` to find the right recipe.
+- Use `cargo nextest run` instead of `cargo test`.
+- If Cargo SSO error, ask me to re-authenticate.
+- After any changes, run `cargo fmt`.
+</important>
 
-# Service observability
+<important if="you are working with Terraform or updating provider/module lockfiles">
+- Use `terraform init -upgrade -backend=false` to upgrade lockfiles.
+</important>
 
-1. Use the Honeycomb MCP to query traces. If there is an authentication failure, ask me to permit access.
-2. Use the CLI command `logcli --addr=https://loki.infra.rigetti.com` to query logs.
+<important if="you are using source control, making commits, diffing, or working with branches">
+- I use `jj` (Jujutsu) — git is in headless mode. No visible `.git` in some repos.
+- Use `jj` commands when known; `git` still works as fallback.
+- Current branch: `jj b l -r @- -T 'name'`
+- Diff: `jj diff --git --no-pager`
+- For `cargo fix` / `cargo clippy --fix`: add `--allow-dirty` or `--allow-no-vcs`.
+- Forge: check with `jj git remote list`. GitHub → `gh` CLI. GitLab → `glab` CLI.
+- Auth error on `gh` or `glab`: ask me to re-authenticate.
+</important>
+
+<important if="you are working with GitLab CI, pipelines, or CI job logs">
+- Debug locally: `glab ci config compile`
+- View job logs: `glab ci trace ${job_id}`
+</important>
+
+<important if="you are writing a shell script intended for CI">
+- Default image: `~kstrand/workspace/qcs-infrastructure/docker/cli-tools-base-image/Dockerfile`. Check it and `scripts/cli-tools-base-image/` for available commands.
+- Rust CI image: `~kstrand/workspace/qcs-infrastructure/docker/rust-ci-image/Dockerfile` (superset of cli-tools-base-image).
+</important>
+
+<important if="you are investigating service behavior, traces, errors, or logs">
+- Query traces via Honeycomb MCP. Auth failure → ask me to permit access.
+- Query logs: `logcli --addr=https://loki.infra.rigetti.com`
+</important>

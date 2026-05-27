@@ -16,6 +16,10 @@
 [color]
     ui = true
 
+[credential]
+	helper = /usr/local/bin/git-credential-manager
+	gitLabAuthModes = browser
+
 # Woooooo
 [help]
     autocorrect = 1

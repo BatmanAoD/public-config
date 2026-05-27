@@ -100,12 +100,17 @@ tildepath() {
 
 # get an absolute path
 abspath() {
-    if [[ -n "$1" ]]; then
+    if [[ $# -eq 0 ]]; then
+        targ="$PWD"
+    elif [[ $# -eq 1 ]]; then
         targ="$1"
     else
-        targ="$PWD"
+        for targ in "$@"; do
+            abspath "$targ"
+        done
+        return
     fi
-    tmp_path="$(readlink -f -- "$targ")"
+    local tmp_path="$(readlink -f -- "$targ")"
     # If on Windows, try to get a Windows path
     if $WINDOWS && hash cygpath 2>/dev/null; then
         tmp_path="$(cygpath -w -- "$tmp_path")"
@@ -113,8 +118,8 @@ abspath() {
         # If the file does not yet exist, wslpath will fail. Split off the
         # filename so that wslpath only fails if the directory does not yet
         # exist.
-        dirname="$(dirname "$tmp_path")"
-        basename="$(basename "$tmp_path")"
+        local dirname="$(dirname "$tmp_path")"
+        local basename="$(basename "$tmp_path")"
         tmp_path="$(wslpath -wa -- "$dirname")"
         tmp_path="$tmp_path"'\'"$basename"
     # Otherwise, try to substitute out `~<usr>`
