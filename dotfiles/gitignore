@@ -20,5 +20,8 @@ __debug_bin*
 # Never ignore .github or .gitlab files
 !/.github/
 !/.gitlab*
+# ...this one is primarily for RipGrep use across repo boundaries:
+# don't ignore gitlab-CI files, even when they're not at the root of the current repo.
+!.gitlab-ci.yml
 
 .tmp/

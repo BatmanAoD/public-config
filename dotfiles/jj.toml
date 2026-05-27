@@ -4,7 +4,7 @@ email = "kstrand@rigetti.com"
 
 [ui]
 # diff.tool = ["difft", "--color=always", "$left", "$right"]
-diff-editor = "vscode"
+diff-editor = "meld"
 merge-editor = "vscode"
 paginate = "auto"
 default-command = "status"
@@ -18,7 +18,7 @@ log = "trunk()..@ | trunk()"
 
 [experimental-advance-branches]
 enabled-branches = ["glob:*"]
-disabled-branches = ["main", "master", "glob:rigetti-integration-*", "glob:integration-rigetti-*", "local-only"]
+disabled-branches = ["main", "master", "rigetti-main", "glob:rigetti-integration-*", "glob:integration-rigetti-*", "local-only"]
 
 [git]
 # abandon-unreachable-commits = false
