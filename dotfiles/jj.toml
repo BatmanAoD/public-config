@@ -14,7 +14,9 @@ revsets-use-glob-by-default = true
 auto-track-created-bookmarks = "*"
 
 [revsets]
-log = "trunk()..@ | trunk()"
+log = "trunk()..@ | trunk() | @-"
+arrange = "trunk()..@ | trunk() | @-"
+converge = "trunk()..@ | trunk() | @-"
 
 [experimental-advance-branches]
 enabled-branches = ["glob:*"]

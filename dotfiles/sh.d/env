@@ -19,6 +19,7 @@ ensure_on_path_if_exists () {
     # but do so without `eval`
 
     # is $1 missing from $PATH?
+    # TODO: handle case where the argument ends with a slash, but the entry in `PATH` does not
     not_on_path() {
         case :${PATH}: in *:"$1":*) return 1;; *) return 0;; esac
     }
@@ -60,8 +61,8 @@ ensure_on_path_if_exists \
     "${HOME}.antigravity/antigravity/bin" \
     "$PNPM_HOME" \
     "$HOME/bin" \
-    "$HOME/.local/bin" \
-    "/opt/local/bin" "/opt/local/sbin"
+    "/opt/local/bin" \
+    "/opt/local/sbin"
 
 ### other env stuff
 # TODO consider porting over the Bash logic, instead
