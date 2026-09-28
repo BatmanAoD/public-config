@@ -25,3 +25,5 @@ __debug_bin*
 !.gitlab-ci.yml
 
 .tmp/
+
+**/.claude/settings.local.json

@@ -29,6 +29,7 @@ config.color_scheme = "Tango (terminal.sexy)"
 config.keys = {
   { key = 't', mods = 'CMD', action = wezterm.action.SpawnCommandInNewTab { cwd=wezterm.home_dir } },
   { key = 'n', mods = 'CMD', action = wezterm.action.SpawnCommandInNewWindow { cwd=wezterm.home_dir } },
+  { key = 'q', mods = 'CMD', action = wezterm.action.DisableDefaultAssignment },
 }
 
 config.tab_bar_at_bottom = true
