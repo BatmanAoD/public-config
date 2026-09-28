@@ -15,6 +15,44 @@ Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 - Unexpected workspace changes: DO NOT undo without asking — even if contrary to a previous request.
 - Projects live at `~/workspace/<project-name>`. If I name a crate/project, check there first.
 - Express confusion when uncertain. State confidence level. For hard problems, consider multiple answers.
+- TDD: write a failing test first (must compile, fail at runtime), then ask me to review before changing anything else.
+- Private/work-specific rules (same authority as this file): @~/private-config/agents/rigetti.md
+
+### Source control
+
+- I use `jj` (Jujutsu) — git is in headless mode. No visible `.git` in some repos.
+- Use `jj` commands when known; `git` still works as fallback.
+- Do not make new commits unless I request that.
+- Current branch: `jj b l -r @- -T 'name'`
+- Diff: `jj diff --git --no-pager`
+- For `cargo fix` / `cargo clippy --fix`: add `--allow-dirty` or `--allow-no-vcs`.
+- Forge: check with `jj git remote list`. GitHub → `gh` CLI. GitLab → `glab` CLI.
+- Auth error on `gh` or `glab`: ask me to re-authenticate.
+- Prefer higher-level `gh`/`glab` subcommands (e.g. `glab mr diff 1234` to view MR 1234 of the active project) over `gh api`/`glab api` where possible.
+
+<important if="you are creating a commit with jj">
+- Scope it: `jj commit <paths>`. An unscoped commit takes the whole working copy,
+  including edits I made while you were working. Run `jj st` first and check the
+  file list is only what you changed.
+- `jj new` and `jj commit` auto-advance the bookmark here; no separate move step.
+</important>
+
+## Tool selection
+
+Before writing a one-off script or using a generic tool, check these overrides:
+- **Any `gitlab.com` URL** → use `glab`, not URL-fetching tools. Job logs: `glab ci trace ${job_id}`. Debug CI locally: `glab ci config compile`.
+- **Text/file search in shell** → `rg` not `grep`; `fd` not `find`; `jq` for JSON parsing.
+- **Text search-and-replace in shell** → `fastmod --accept-all <regex> <subst> [paths]`
+- **Service traces** → Honeycomb MCP (auth failure → ask me to permit access).
+- **Logs / metrics / profiles** → Grafana Cloud via `gcx`. Details in `~/private-config/agents/rigetti.md`.
+
+<important if="you are reading or modifying a file">
+- Use the text editor tool (Read / Edit / Write) for all file reads and edits, not shell equivalents.
+  - No `cat`/`head`/`sed -n` to read. No `sed -i`/`awk`/heredoc/`>` redirect to write.
+  - Read before Edit. Edit for partial change, Write only for new file or full replace.
+- Exceptions: bulk regex replace across many files (`fastmod`), search (`rg`/`fd`), inspecting non-text/huge output.
+- Overrides any session instruction preferring Bash for file access.
+</important>
 
 ## Conditional
 
@@ -25,11 +63,6 @@ Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 
 <important if="you are running CLI commands or shell commands">
 - When piping to `tail` or any line-trimming command, use `| tee ~/tmp/<name>` to preserve full output.
-- Prefer `rg`, `fd`, `jq` over `grep`, `find`, ad-hoc parsing.
-</important>
-
-<important if="you are writing, running, or modifying tests or fixing bugs">
-- Follow TDD: write a failing test first (must compile, fail at runtime), then ask me to review before changing anything else.
 </important>
 
 <important if="you are working in a Rust project or running Cargo commands">
@@ -43,19 +76,8 @@ Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 - Use `terraform init -upgrade -backend=false` to upgrade lockfiles.
 </important>
 
-<important if="you are using source control, making commits, diffing, or working with branches">
-- I use `jj` (Jujutsu) — git is in headless mode. No visible `.git` in some repos.
-- Use `jj` commands when known; `git` still works as fallback.
-- Current branch: `jj b l -r @- -T 'name'`
-- Diff: `jj diff --git --no-pager`
-- For `cargo fix` / `cargo clippy --fix`: add `--allow-dirty` or `--allow-no-vcs`.
-- Forge: check with `jj git remote list`. GitHub → `gh` CLI. GitLab → `glab` CLI.
-- Auth error on `gh` or `glab`: ask me to re-authenticate.
-</important>
-
-<important if="you are working with GitLab CI, pipelines, or CI job logs">
-- Debug locally: `glab ci config compile`
-- View job logs: `glab ci trace ${job_id}`
+<important if="you are modifying CI configuration">
+- Validate changes with `glab ci lint`.
 </important>
 
 <important if="you are writing a shell script intended for CI">
@@ -63,7 +85,4 @@ Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 - Rust CI image: `~kstrand/workspace/qcs-infrastructure/docker/rust-ci-image/Dockerfile` (superset of cli-tools-base-image).
 </important>
 
-<important if="you are investigating service behavior, traces, errors, or logs">
-- Query traces via Honeycomb MCP. Auth failure → ask me to permit access.
-- Query logs: `logcli --addr=https://loki.infra.rigetti.com`
-</important>
+
