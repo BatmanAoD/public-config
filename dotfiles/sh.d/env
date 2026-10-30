@@ -51,6 +51,7 @@ ensure_on_path_if_exists () {
 export PNPM_HOME="${HOME}/Library/pnpm"
 
 ensure_on_path_if_exists \
+    "${HOME}/.local/share/mise/shims" \
     "${HOME}/bin" \
     /usr/local/go/bin \
     "${HOME}/.yarn/bin" "${HOME}/.config/yarn/global/node_modules/.bin" \

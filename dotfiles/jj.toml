@@ -36,3 +36,12 @@ diff-invocation-mode = "file-by-file"
 [merge-tools.cat]
 diff-args = ["$right"]
 diff-invocation-mode = "file-by-file"
+
+# `jj-vine` config
+[jj-vine]
+squashCommits = true
+openAsDraft = true
+
+[jj-vine.title]
+syncSingleRevision = false
+syncMultipleRevisions = false

@@ -1,0 +1,59 @@
+name "jj-vine"
+bin "jj-vine"
+version "0.5.4"
+about "GitLab MR submission tool for Jujutsu workflows"
+
+flag "-R --repository" help="Repository path (defaults to current directory)" global=#true {
+    arg "<REPOSITORY>"
+}
+flag "-v --verbose" help="Enable verbose logging" global=#true
+
+cmd "submit" help="Submit one or more bookmarks to the code forge" {
+    long_help "Submit one or more bookmarks to the code forge. Creates merge requests that don't exist, updates existing merge requests to the correct target branch, and syncs all merge request descriptions."
+    example "jj vine submit <bookmark>" header="Submit a single bookmark"
+    example "jj vine submit --tracked" header="Submit all tracked bookmarks"
+    example "jj vine submit -r <revset> --dry-run" header="Preview submitting a revset without making changes"
+
+    flag "-r --revset_arg" help="The revset to submit (may use -r or not)" {
+        arg "<revset_arg>"
+    }
+    flag "-t --tracked" help="Submit all tracked bookmarks" {
+        long_help "Submit all tracked bookmarks. Roughly equivalent to `(mine() & tracked_remote_bookmarks()) ~ trunk()`, with the additional stipulation that all submitted bookmarks must already be pushed to the remote. Bookmarks which have non-tracked parents or children are skipped."
+    }
+    flag "--remote" help="The remote to push to (defaults to `git.push` or `git.fetch` settings)" {
+        arg "<REMOTE>"
+    }
+    flag "--dry-run" help="Print what would be done without modifying MRs or pushing bookmarks"
+    flag "--show-plan" help="Show the submission plan and do not execute it"
+    flag "-c --create" help="Create bookmarks for changes that don't have one (via `jj git push -c`)" {
+        long_help "Create bookmarks for changes that don't have one (via `jj git push -c`). A bookmark is created for each revision in the revset for this parameter, intersected with the main revset being submitted. Without a value, defaults to `all()`. Revisions that already have a bookmark, tracked or not, are skipped. With no main revset, the value of `-c` is used as the submitting revset."
+        arg "[CREATE]" default="all()"
+    }
+
+    arg "[revset]" help="The revset to submit (may use -r or not)"
+}
+
+cmd "init" help="Initialize jj-vine configuration for this repository"
+
+cmd "status" help="Show status of tracked bookmarks and their MRs/PRs" {
+    flag "-f --format" help="Output format" {
+        arg "<FORMAT>" default="two-line-compact" {
+            choices "two-line-compact" "slack"
+        }
+    }
+    flag "-r --revset" help="Use a manual revset" {
+        arg "<REVSET>"
+    }
+    flag "--tracked" help="Include only `(mine() & tracked_remote_bookmarks()) ~ trunk()`"
+    flag "--drafts" help="Include draft pull/merge requests (default true)" {
+        arg "[DRAFTS]" {
+            choices "true" "false"
+        }
+    }
+    flag "--no-drafts" help="Exclude draft pull/merge requests"
+    flag "--approved" help="true: only approved; false: only unapproved; unset: all" {
+        arg "<APPROVED>" {
+            choices "true" "false"
+        }
+    }
+}

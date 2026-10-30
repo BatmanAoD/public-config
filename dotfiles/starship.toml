@@ -2,7 +2,8 @@
 
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# In order to insert the custom module in the right location, all of the preceding modules in '$all' are given explicitly.
+# `$vcs` must be included explicitly, since it is not included by default.
+# All modules must be included to keep them in the expected order.
 format="""
 $username\
 $hostname\
@@ -11,10 +12,23 @@ $singularity\
 $kubernetes\
 $directory\
 $vcsh\
-${custom.jj}\
+$vcs\
 $all\
 $shlvl\
 """
+
+[vcs]
+order = ["jj", "git"]
+
+# Make sure git entries are not separate from `$vcs`
+[git_branch]
+disabled = true
+[git_commit]
+disabled = true
+[git_state]
+disabled = true
+[git_metrics]
+disabled = true
 
 [shell]
 bash_indicator = '[\$](bold turquoise)'
@@ -33,17 +47,21 @@ threshold = 0
 [hostname]
 ssh_only = false
 
-[custom.jj]
-when = "jj-starship detect"
-shell = ["jj-starship"]
-format = "$output "
+[mise]
+disabled = true
 
-# To make use in tandem with `jj` nicer
-[git_branch]
-disabled = true
-[git_commit]
-disabled = true
-[git_state]
-disabled = true
-[git_metrics]
-disabled = true
+# third-party `jj` support, prior to first-party support being added to `starship`
+
+# [custom.jj]
+# # https://github.com/dmmulroy/jj-starship
+# when = "jj-starship detect"
+# shell = ["jj-starship"]
+# format = "$output "
+
+# # https://gitlab.com/lanastara_foss/starship-jj
+# command = "prompt"
+# format = "$output"
+# ignore_timeout = false
+# shell = ["starship-jj", "--ignore-working-copy", "starship"]
+# use_stdin = false
+# when = true
