@@ -59,6 +59,8 @@ Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 - You (and subagents) have permission to create new bookmarks and commits,
   to push your bookmarks, and to open *draft* MRs or PRs using `gh` or `glab`.
 - You (and subagents) have permission to trigger manually-run CI jobs in the relevant MR(s)/PR(s).
+- Before asking me to review a test (or any uncommitted change) in a workspace that you manage,
+  run `jj util snapshot` in that workspace, so that the working copy is recorded and I can see it from my other workspaces.
 - Use at least one subagent for every repo involved in the change.
 - Use adversarial subagents to review code changes.
   Use a separate subagent to review test code versus non-test code.
